@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+   Dosezy Backup Rules (API < 31)
+   Excludes unencrypted local SQLite database from cloud auto-backup to honor strict offline-first privacy.
+-->
+<full-backup-content>
+    <!-- Guard: Exclude patient medical SQLite database from cloud auto-backup to uphold offline-first privacy -->
+    <exclude domain="database" path="dosezy_database"/>
+    <exclude domain="database" path="dosezy_database-shm"/>
+    <exclude domain="database" path="dosezy_database-wal"/>
+</full-backup-content>

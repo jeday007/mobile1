@@ -1,0 +1,514 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="FAQs ✦ Dosezy Frequently Asked Questions">
+	<Header />
+	<main class="flex-grow pt-28 sm:pt-32 pb-16 bg-[#030407] bg-grid-pattern">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			
+			<!-- Hero Header -->
+			<div class="text-center max-w-3xl mx-auto mb-16">
+				<span class="px-3 py-1 rounded-full text-xs font-mono font-semibold bg-sky-500/10 text-sky-300 border border-sky-500/20">
+					FREQUENTLY ASKED QUESTIONS
+				</span>
+				<h1 class="mt-4 text-4xl sm:text-6xl font-extrabold text-white font-display">
+					Frequently Asked Questions
+				</h1>
+				<p class="mt-4 text-neutral-400 text-base sm:text-lg leading-relaxed">
+					Find simple, friendly answers about Dosezy features, pill reminders, stock tracking, adherence analytics, offline privacy, and family profile management.
+				</p>
+			</div>
+
+			<!-- Live Search Input -->
+			<div class="max-w-2xl mx-auto mb-14">
+				<div class="relative">
+					<input 
+						type="text" 
+						id="faq-search" 
+						placeholder="Search questions (e.g. undo intake, search medicines, snooze duration, refill, reliability shield)..." 
+						class="w-full px-5 py-4 rounded-2xl bg-[#0a0c10] border border-white/10 text-white placeholder-neutral-500 focus:outline-none focus:border-sky-500/50 text-sm shadow-xl"
+					/>
+					<svg class="w-5 h-5 text-neutral-500 absolute right-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
+				</div>
+			</div>
+
+			<!-- FAQ Accordion List -->
+			<div class="max-w-3xl mx-auto space-y-4" id="faq-list">
+				
+				<!-- Question 1: What is Dosezy -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden" open>
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>What is Dosezy?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4">
+						Dosezy is a simple, friendly, and smart medication reminder app. It helps you, your family members, and caregivers manage daily medicines, set alarms, track pill inventory, monitor adherence progress, and ensure no dose is ever missed.
+					</div>
+				</details>
+
+				<!-- Question 2: Account & Offline -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Do I need to create an account or have internet?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4">
+						No! Dosezy is 100% local-first and offline. You do not need to register, log in, or have an internet connection. All your health data and reminders stay safely stored directly on your phone in an offline database.
+					</div>
+				</details>
+
+				<!-- Question: Time Zones & Travel -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>What happens when I travel across time zones?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4">
+						Dosezy automatically keeps your scheduled medication routine anchored to your daily local routine without time distortion. Your dose reminders shift seamlessly with your active timezone so you never need to manually recalibrate schedules while traveling.
+					</div>
+				</details>
+
+				<!-- Question 3: Grouped Alarms & Dynamic Snooze -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>What happens if I take multiple medicines at the same time?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Dosezy automatically combines all medicines scheduled for the exact same minute into a single high-priority grouped alarm screen.</p>
+						<p>You get an interactive checklist with photos, meal instructions, a prominent green <strong>"Take All"</strong> button (which logs every dose and decrements stock in 1 tap), and a customizable <strong>"Snooze"</strong> button (5, 10, 15, 20, or 30 minutes).</p>
+					</div>
+				</details>
+
+								<!-- Question: Reminder Style (Alarm vs Gentle Notification) -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I choose between full-screen alarms and standard notifications?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! In <strong>Menu &gt; Preferences &gt; Notifications &amp; Alarms &gt; Reminder Style</strong>, you can configure your alerts:</p>
+						<p><strong class="text-white">Full-Screen Alarm:</strong> High-priority full-screen alerts that ring aloud, support sliding gesture confirmation, and bypass Do Not Disturb so critical medications are never missed.</p>
+						<p><strong class="text-white">Gentle Notification:</strong> Standard status bar notifications with customizable chime sounds that do not take over your screen, ideal for non-critical supplements.</p>
+						<p>You can also set this preference individually per medication when adding or editing a prescription.</p>
+					</div>
+				</details>
+
+<!-- Question: Physical Controls & Custom Alarms -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I silence alarms with volume buttons or pick custom ringtones?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p><strong class="text-white">Hardware Volume Silence:</strong> Press Volume Up or Down while an alarm rings to immediately silence the audio tone and stop vibration without dismissing the alert or unlocking your device.</p>
+						<p><strong class="text-white">Back-Gesture Snooze:</strong> Pressing your device's physical or gesture Back button automatically triggers a safe snooze for your configured duration.</p>
+						<p><strong class="text-white">Slide-to-Confirm Actions:</strong> Alarms feature separate sliding tracks: slide left to take doses (or Take All), and slide right to snooze, preventing accidental dismissals while half-asleep. You can switch to standard 1-tap buttons in Preferences.</p>
+						<p><strong class="text-white">Custom Tones &amp; Duration:</strong> In <em>Menu &gt; Preferences &gt; Notifications &amp; Alarms</em>, choose from built-in alert chimes, system alarms, or custom device ringtones with in-app audio preview playback. You can also configure alarm duration (30s, 1m, 2m, 3m, 5m, or continuous loop) and dedicated alarm volume.</p>
+					</div>
+				</details>
+
+				<!-- Question: Nagging Reminders -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>What are Nagging Reminders and how do they work?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>If you tend to sleep through alarms or get sidetracked, turn on <strong>Nagging Reminders</strong> in <strong>Menu &gt; Preferences &gt; Notifications &amp; Alarms</strong>.</p>
+						<p>Dosezy will repeat periodic reminder alarms every 5, 10, or 15 minutes up to 1, 2, 3, 5, or 10 times, or continuously until you confirm the dose as taken.</p>
+					</div>
+				</details>
+
+				<!-- Question: ADHD Intake Safeguard -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>What is the ADHD / Distraction Intake Safeguard?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Designed for busy routines and ADHD focus, the <strong>Intake Countdown Safeguard</strong> starts a timer (60s, 120s, 180s, or 300s) when you tap "Take".</p>
+						<p>If you get distracted or interrupted before actually swallowing your medication, Dosezy triggers an automatic re-alert so no dose is forgotten.</p>
+					</div>
+				</details>
+
+				<!-- Question: Lock Screen Privacy -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I protect my medical privacy on the Android lock screen?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! In <strong>Menu &gt; Preferences &gt; Notifications &amp; Alarms</strong>, turn on <strong>Mask Details on Lock Screen</strong>.</p>
+						<p>The notification alerts you that it is time for your medicine, while keeping specific medication names and dosages concealed until you unlock your phone.</p>
+					</div>
+				</details>
+
+				<!-- Question: Clinical Dose Skipping -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I skip a dose if I am unwell, fasting, or advised by my doctor?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! Under <em>Menu &gt; Preferences &gt; Dose Tracking</em>, turn on <strong>Allow Dose Skipping</strong>. An outlined "Skip" button will appear on dose cards and full-screen alarm screens.</p>
+						<p>Skipping requires selecting from 6 standardized clinical reasons: <em>Doctor advised pause</em>, <em>Side effects / adverse reaction</em>, <em>Fasting / medical procedure</em>, <em>Nausea / illness</em>, <em>Ran out of medicine</em>, or <em>Other reason</em>.</p>
+						<p>Skipped doses display a clear clinical badge (e.g. 📝 Skipped: Doctor advised pause), do <strong>not</strong> penalize your adherence score in Analytics, and can be undone at any time with the on-card Undo button.</p>
+					</div>
+				</details>
+
+				<!-- Question 4: Dose Undo -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>What if I accidentally tap "Take" on a dose by mistake?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Dosezy includes a configurable <strong>Dose Undo</strong> safety feature. To prevent accidental reversals, you can enable <em>Allow Dose Undo</em> in <strong>Menu &gt; Preferences &gt; Dose Tracking</strong>.</p>
+						<p>When enabled, tapping "Undo" on the 5-second snackbar or dose card displays a confirmation dialog asking you to confirm the action. Once confirmed, Dosezy safely reverts the dose status to Pending and returns the deducted pills back into your stock inventory.</p>
+					</div>
+				</details>
+
+				<!-- Question: Per-Dose Notes & Symptom Logging -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I add a note or record symptoms when taking a dose?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! Under <strong>Menu &gt; Preferences</strong>, turn on <strong>Dose Notes</strong>. When turned off, notes are completely disabled and "+ Add Note" is hidden for a clean interface.</p>
+						<p>When enabled, a <strong>+ Add Note</strong> button appears on taken doses. You can also turn on <strong>Prompt on Dose Taken</strong> to automatically open the note prompt whenever a dose is marked as Taken or Late. Tap quick suggestion tags (such as <em>"With food"</em>, <em>"Empty stomach"</em>, <em>"Before meal"</em>, <em>"Mild nausea"</em>, <em>"Headache"</em>) or type custom symptoms, and edit them later anytime from your cards or calendar.</p>
+					</div>
+				</details>
+
+				<!-- Question: Manually Record Past Dose Time -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>What if I took my medicine earlier but forgot to log it on time?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Dosezy lets you manually record your exact dose time. When confirming a dose later in the day, you can select the actual past time you took the medication rather than recording the current moment.</p>
+						<p>This ensures your daily adherence timeline, doctor reports, and analytics remain strictly accurate.</p>
+					</div>
+				</details>
+
+				
+
+				<!-- Question: Retrospective Past Dose Logging -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I mark a dose from yesterday or a previous day as taken?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! On the <strong>Schedule</strong> screen, navigate to the past date on the calendar. Dosezy allows you to tap any missed dose within a 48-hour clinical window (yesterday or today) to record it as taken or skipped with an explanation.</p>
+						<p>When recorded, your pill inventory stock is automatically decremented and an audit note is attached to ensure transparency in reports for your doctor. Entries older than 48 hours are permanently locked to preserve clinical authenticity.</p>
+					</div>
+				</details>
+
+				<!-- Question 5: Completion Banner -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I still review today's schedule after all medications are taken?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! When all doses for today are completed, Dosezy displays a celebratory completion banner at the top of the Home screen, while keeping the full day's medication schedule visible underneath.</p>
+						<p>You can review dosages, food instructions, and recorded taken timestamps anytime, as well as undo accidental marks if needed.</p>
+					</div>
+				</details>
+
+				<!-- Question 6: Search & Filter Medicines -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>How do I search or filter medications in large rosters?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4">
+						On the <strong>Medicines</strong> screen, an instant search bar is available at the top. Simply type any part of the medication name or instructions to filter your roster in real time.
+					</div>
+				</details>
+
+				<!-- Question: Sorting & Custom Reordering -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I sort or rearrange the order of my medications?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! On the <strong>Medicines</strong> screen, tap the <strong>Sort</strong> button next to the search bar.</p>
+						<p>You can sort prescriptions by <strong>Default</strong> (order added), <strong>Name (A-Z or Z-A)</strong>, <strong>Scheduled Time</strong>, or choose <strong>Custom Reorder</strong> to drag medications up and down into your preferred personal order.</p>
+					</div>
+				</details>
+
+				<!-- Question 7: Notification Reliability Shield -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>What is the shield icon on the top bar and how does it ensure alarms ring?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>The shield icon on the top bar is the <strong>Notification Reliability Status</strong> button, accessible from main screens and subpages. When green, all system permissions required for exact alarms are verified.</p>
+						<p>Tapping the shield opens a live diagnostic checklist covering Exact Alarms, Notifications, and Battery Optimization bypass, with 1-tap links directly to your OEM settings (Samsung, Xiaomi, etc.) so alarms are never suppressed by battery savers.</p>
+					</div>
+				</details>
+
+				<!-- Question 8: Discontinue & Archive -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>How do I stop a medication without losing past adherence history?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4">
+						Instead of permanently deleting the medicine, open the medication and select <strong>Discontinue / Archive</strong>. The medicine moves to your <strong>Discontinued Medications</strong> section at the bottom of the Medicines screen in a collapsible accordion. All past compliance logs, adherence statistics, and calendar history are preserved permanently, and you can expand the section to reactivate it at any time.
+					</div>
+				</details>
+
+				<!-- Question: Bottom Navigation Customization -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I customize the bottom navigation bar or hide the '+' button?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! In <strong>Menu &gt; Preferences &gt; General</strong>, toggle on <strong>Hide Navigation Add Button</strong>.</p>
+						<p>The 4 main tabs (<em>Home</em>, <em>Schedule</em>, <em>Medicines</em>, <em>Menu</em>) expand symmetrically across the bar, and a convenient <strong>"Add Medicine"</strong> button appears directly below your active medications on the Medicines screen.</p>
+					</div>
+				</details>
+
+				
+
+				<!-- Question: Spray Formulations -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Does Dosezy support sprays or inhalers?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! Dosezy includes dedicated support for spray medications with a convenient <strong>spray</strong> dosage unit and an intuitive spray bottle icon.</p>
+						<p>This is perfect for nasal sprays, throat sprays, and topical medicinal mists, with full stock tracking and refill reminders.</p>
+					</div>
+				</details>
+
+				<!-- Question 9: Stock Tracking -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>How does pill stock and refill tracking work?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>When adding or editing a medicine, turn on <strong>Track Stock Inventory</strong>, enter your current count (e.g. 60) and your low-stock threshold (e.g. 10).</p>
+						<p>Every time you mark a dose as "Taken", Dosezy automatically subtracts the dosage amount from your stock and displays an orange <strong>⚠️ Refill Warning</strong> badge when it is time to reorder.</p>
+					</div>
+				</details>
+
+				<!-- Question 10: Pharmacy Refill Order -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>How do I generate and share pharmacy refill orders?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Open <strong>Menu &gt; Data Management &gt; Pharmacy Refill Order</strong> to quickly compile a formatted medication reorder list.</p>
+						<p>You can combine prescriptions for multiple family members into a single unified order or generate an order for an individual profile. Filter by <strong class="text-white">Low Stock Only</strong> (medicines at or below their refill warning threshold) or select <strong class="text-white">All Active</strong> medications.</p>
+						<p>Choose your desired supply duration (<strong>15, 30, 60, or 90 Days</strong>). For liquid medications and eye drops, Dosezy automatically computes orders in whole bottles rather than raw drops or milliliters. Inspect the live formatted preview, then tap <strong class="text-emerald-400">Share via Chat</strong> to send directly to your pharmacist via WhatsApp, Telegram, or SMS, or tap <strong class="text-sky-400">Copy to Clipboard</strong> to paste into any app.</p>
+					</div>
+				</details>
+
+				<!-- Question 10: Supported Languages -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Does Dosezy support my native language?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! Dosezy features complete native translations across all alarms, notifications, cards, and menus in 12 major languages:</p>
+						<p class="font-mono text-[11px] text-sky-300">English, Spanish, Hindi, Chinese, Portuguese, Arabic, French, German, Japanese, Russian, Italian, and Bengali.</p>
+						<p>The app automatically detects your phone's system language, and you can change it anytime in <strong>Menu > Preferences > General > Language</strong>.</p>
+					</div>
+				</details>
+
+				<!-- Question 11: Status Colors -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>How do dose status colors work on the Home screen?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p><strong class="text-emerald-400">Green:</strong> Dose confirmed as Taken (shows exact recorded time).</p>
+						<p><strong class="text-white">Normal Text:</strong> Dose is upcoming or due recently (within your customizable Late Window).</p>
+						<p><strong class="text-amber-400">Orange:</strong> Dose is Late (within your customizable late-to-missed window). An orange "Mark Late" action appears.</p>
+						<p><strong class="text-rose-400">Red:</strong> Dose is Missed (past your "Consider Missed After" window).</p>
+						<p><strong class="text-sky-400">Blue:</strong> Dose is Clinically Skipped (shows reason badge with active Undo button).</p>
+					</div>
+				</details>
+
+				<!-- Question: Late & Missed Thresholds -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Can I customize when a dose is considered "Late" or "Missed"?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! Under <strong>Menu &gt; Preferences &gt; Dose Tracking</strong>, you can fine-tune both time boundaries:</p>
+						<ul class="list-disc list-inside space-y-1 text-neutral-300 text-[11px] pl-1">
+							<li><strong class="text-white">Consider Late After:</strong> Options from 15, 30, 45, 60 minutes up to 4 hours (default is 3 hours).</li>
+							<li><strong class="text-white">Consider Missed After:</strong> Options from 30 minutes up to 12 hours (default is 6 hours).</li>
+						</ul>
+					</div>
+				</details>
+
+				<!-- Question: Schedule Calendar & TalkBack -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>Is the schedule calendar accessible with TalkBack screen readers?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>Yes! Dosezy provides complete TalkBack screen reader accessibility on the Schedule calendar.</p>
+						<p>Instead of generic status labels, TalkBack audibly announces the exact clinical status of each dose (*"Taken"*, *"Late"*, *"Skipped"*, *"Missed"*, or *"Pending"*), allowing visually impaired users to navigate their full medication history with ease.</p>
+					</div>
+				</details>
+ 
+ 				<!-- Question: Timeline Mode & Calendar Day Highlights -->
+ 				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+ 					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+ 						<span>Can I use a timeline view on Home or make calendar days more visible?</span>
+ 						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+ 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+ 						</svg>
+ 					</summary>
+ 					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+ 						<p><strong class="text-white">Home Timeline Mode:</strong> Tap the timeline toggle icon in the top app bar of your Home screen or turn on <em>Timeline Mode</em> in <strong>Menu &gt; Preferences &gt; Appearance</strong> to see today's doses along an expanded vertical progress line with color-coded nodes.</p>
+ 						<p><strong class="text-white">Thicker Calendar Day Highlight:</strong> In <strong>Menu &gt; Preferences &gt; Appearance</strong>, turn on <em>Thicker Calendar Day Highlight</em> to outline all scheduled days with a prominent full-frame border and container tint on your Schedule calendar.</p>
+ 					</div>
+ 				</details>
+
+				<!-- Question 12: Emergency Contacts & Backup -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>How do emergency calling and personal contact backups work?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>In <strong>Menu > Emergency Contacts</strong>, Dosezy offers 1-tap dialing for national public emergency lines across 10 regions, plus personal contacts for your doctor or caregiver.</p>
+						<p>Emergency contacts are scoped per user profile to keep personal contacts isolated between family members, and are automatically included in encrypted backups in <strong>Menu > Backup & Restore</strong>.</p>
+					</div>
+				</details>
+
+				<!-- Question: Selective Profile Restore & Conflict Resolution -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>How does backup restore handle profiles that already exist on my phone?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4 space-y-2">
+						<p>When you restore a backup ZIP, Dosezy displays an in-front inspection loader and presents the <strong>Select Profiles to Import</strong> dialog.</p>
+						<p>For any profile with a matching name, you can pick a specific conflict resolution strategy:</p>
+						<ul class="list-disc list-inside space-y-1 text-[11px] text-neutral-300 pl-1">
+							<li><strong class="text-white">Create New Profile:</strong> Imports the profile as a separate new user with a distinct name.</li>
+							<li><strong class="text-white">Merge Records:</strong> Intelligently merges incoming medicines and compliance history into the existing profile.</li>
+							<li><strong class="text-white">Replace Profile:</strong> Completely overwrites the existing profile with the backup data.</li>
+						</ul>
+					</div>
+				</details>
+
+				<!-- Question 13: Doctor Reports & Exports -->
+				<details class="faq-item vercel-card rounded-2xl border border-white/10 bg-[#0a0c10]/95 group overflow-hidden">
+					<summary class="flex items-center justify-between p-6 cursor-pointer font-bold text-white text-base hover:text-sky-300 transition-colors list-none">
+						<span>How do I export my data for doctor visits?</span>
+						<svg class="w-5 h-5 text-neutral-500 group-open:rotate-180 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						</svg>
+					</summary>
+					<div class="px-6 pb-6 text-xs text-neutral-300 leading-relaxed border-t border-white/5 pt-4">
+						Go to <strong>Menu > Export Data</strong> and choose <strong>PDF Report</strong> to generate a clean, printable medical report with current prescriptions, timings, food instructions, and adherence logs formatted for your doctor. You can also export full CSV or encrypted ZIP backup archives.
+					</div>
+				</details>
+
+			</div>
+
+		</div>
+	</main>
+	<Footer />
+</Layout>
+
+<script>
+	const faqSearch = document.getElementById('faq-search') as HTMLInputElement;
+	const faqItems = document.querySelectorAll('.faq-item');
+
+	if (faqSearch) {
+		faqSearch.addEventListener('input', (e) => {
+			const query = (e.target as HTMLInputElement).value.toLowerCase();
+			faqItems.forEach(item => {
+				const text = item.textContent?.toLowerCase() || '';
+				const match = text.includes(query);
+				(item as HTMLElement).style.display = match ? 'block' : 'none';
+			});
+		});
+	}
+</script>

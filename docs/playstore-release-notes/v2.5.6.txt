@@ -1,0 +1,60 @@
+<en-IN>
+• Android 14+ Alarm Fix: Resolved background PendingIntent crash preventing alarms from sounding on Android 14-16
+• Dose Undo Confirmation: Added preference toggle and confirmation dialog before reverting dose status
+• Per-Dose Notes: Added option to record notes, meals, and symptoms when taking medications
+</en-IN>
+<en-US>
+• Android 14+ Alarm Fix: Resolved background PendingIntent crash preventing alarms from sounding on Android 14-16
+• Dose Undo Confirmation: Added preference toggle and confirmation dialog before reverting dose status
+• Per-Dose Notes: Added option to record notes, meals, and symptoms when taking medications
+</en-US>
+<ar>
+• إصلاح تنبيهات أندرويد 14+: معالجة استثناء PendingIntent لضمان تشغيل المنبهات دون انقطاع
+• تأكيد التراجع عن الجرعة: إضافة إعداد وتأكيد لمنع التراجع العرضي
+• ملاحظات الجرعات: إمكانية تسجيل ملاحظات وأعراض عند تناول الأدوية
+</ar>
+<de-DE>
+• Android 14+ Alarm-Fix: Fehler mit Hintergrund-PendingIntent behoben, damit Alarme zuverlässig auslösen
+• Dosis-Rückgängig-Bestätigung: Neue Einstellung mit Sicherheitsabfrage vor dem Zurücksetzen
+• Dosis-Notizen: Option zum Erfassen von Notizen und Symptomen bei der Einnahme
+</de-DE>
+<es-419>
+• Corrección para Android 14+: Solucionado el fallo de PendingIntent para que las alarmas suenen en Android 14-16
+• Confirmación de deshacer: Ajuste para activar/desactivar y confirmación antes de revertir dosis
+• Notas de dosis: Opción para registrar notas y síntomas al tomar medicamentos
+</es-419>
+<fr-FR>
+• Correctif alarmes Android 14+: Résolution de l'exception PendingIntent pour déclencher les rappels
+• Confirmation d'annulation: Préférence et confirmation requise pour annuler une dose
+• Notes de dose: Possibilité d'ajouter des notes et symptômes lors de la prise
+</fr-FR>
+<hi-IN>
+• Android 14+ अलार्म सुधार: Android 14-16 पर अलार्म बजना सुनिश्चित करने के लिए PendingIntent त्रुटि ठीक की गई
+• खुराक पूर्ववत पुष्टि: आकस्मिक रीसेट रोकने के लिए प्राथमिकता टॉगल और पुष्टि डायलॉग
+• खुराक नोट: दवा लेते समय नोट और लक्षण दर्ज करने का विकल्प
+</hi-IN>
+<it-IT>
+• Risoluzione allarmi Android 14+: Risolto l'errore PendingIntent per garantire allarmi affidabili su Android 14-16
+• Conferma annullamento dose: Nuova preferenza e finestra di conferma prima di annullare la dose
+• Note sulla dose: Opzione per registrare note e sintomi all'assunzione
+</it-IT>
+<ja-JP>
+• Android 14+アラーム修正: Android 14〜16でアラームが鳴らないPendingIntent例外を解消
+• 服薬取り消しの確認: 誤操作を防ぐ設定トグルと取り消し前確認ダイアログを追加
+• 服薬メモ: 服薬時に食事や症状などのメモを記録する機能を追加
+</ja-JP>
+<pt-BR>
+• Correção para Android 14+: Corrigida exceção de PendingIntent para garantir alarmes pontuais no Android 14-16
+• Confirmação de desfazer: Ajuste e confirmação de segurança antes de reverter doses
+• Notas de dose: Opção de registrar notas e sintomas ao tomar remédios
+</pt-BR>
+<ru-RU>
+• Исправление будильника Android 14+: Устранена ошибка PendingIntent, мешавшая срабатыванию напоминаний
+• Подтверждение отмены дозы: Переключатель в настройках и диалог подтверждения отмены
+• Заметки к дозе: Возможность добавлять заметки и симптомы при приеме лекарств
+</ru-RU>
+<zh-CN>
+• Android 14+ 闹钟修复：解决后台 PendingIntent 异常，确保闹钟与通知正常触发
+• 撤销服药确认：新增偏好设置开关与二次确认弹窗，防止误触撤销
+• 服药备注：新增在标记服药时记录饮食与身体症状的功能
+</zh-CN>

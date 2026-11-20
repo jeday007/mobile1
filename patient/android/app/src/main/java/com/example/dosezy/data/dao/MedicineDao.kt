@@ -1,0 +1,55 @@
+// MedicineDao.kt
+package com.example.dosezy.data.dao
+
+import androidx.room.Dao
+import androidx.room.Delete
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import androidx.room.Update
+import com.example.dosezy.data.model.Medicine
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface MedicineDao {
+    @Query("SELECT * FROM medicines WHERE userId = :userId")
+    fun getMedicinesByUser(userId: String): Flow<List<Medicine>>
+
+    @Query("SELECT * FROM medicines WHERE medicineId = :medicineId")
+    fun getMedicineById(medicineId: String): Flow<Medicine?>
+
+    @Query("SELECT * FROM medicines WHERE medicineId = :medicineId")
+    suspend fun getMedicineByIdDirect(medicineId: String): Medicine?
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insertMedicine(medicine: Medicine)
+
+    @Update
+    suspend fun updateMedicine(medicine: Medicine)
+
+    @Delete
+    suspend fun deleteMedicine(medicine: Medicine)
+
+    @Query("DELETE FROM medicines WHERE userId = :userId")
+    suspend fun deleteMedicinesByUser(userId: String)
+
+    // ADD THIS METHOD:
+    @Query("DELETE FROM medicines WHERE medicineId = :medicineId")
+    suspend fun deleteMedicineById(medicineId: String)
+
+    @Query("SELECT * FROM medicines WHERE userId = :userId AND isArchived = 0")
+    fun getActiveMedicinesByUser(userId: String): Flow<List<Medicine>>
+
+    // Guard: Direct suspend query bypasses InvalidationTracker Flow observer allocation and thread churn for one-shot reads
+    @Query("SELECT * FROM medicines WHERE userId = :userId AND isArchived = 0")
+    suspend fun getActiveMedicinesByUserDirect(userId: String): List<Medicine>
+
+    @Query("SELECT * FROM medicines WHERE userId = :userId AND isArchived = 1")
+    fun getArchivedMedicinesByUser(userId: String): Flow<List<Medicine>>
+
+    @Query("UPDATE medicines SET isArchived = :isArchived WHERE medicineId = :medicineId")
+    suspend fun setArchivedStatus(medicineId: String, isArchived: Boolean)
+
+    @Query("SELECT * FROM medicines WHERE userId = :userId")
+    suspend fun getMedicinesByUserDirect(userId: String): List<Medicine>
+}

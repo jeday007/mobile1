@@ -1,0 +1,1096 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<Layout title="User Manual ✦ Friendly Step-by-Step Guide | Dosezy">
+	<Header />
+	<main class="flex-grow pt-28 sm:pt-32 pb-16 bg-[#030407] bg-grid-pattern relative">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			
+			<!-- Hero Header -->
+			<div class="text-center max-w-3xl mx-auto mb-12">
+				<div class="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-sky-500/10 text-sky-300 border border-sky-500/20 text-xs font-mono font-bold mb-4">
+					<svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+					</svg>
+					<span>DOSEZY USER MANUAL</span>
+				</div>
+				
+				<h1 class="text-4xl sm:text-6xl font-extrabold text-white font-display tracking-tight">
+					Dosezy User Manual
+				</h1>
+				<p class="mt-4 text-neutral-300 text-base sm:text-lg leading-relaxed">
+					Simple, step-by-step instructions to help you track daily medications, manage pill inventory, view adherence analytics, and keep your family healthy.
+				</p>
+
+				<!-- Developer Docs Redirect Banner -->
+				<div class="mt-4 p-3 rounded-2xl bg-sky-500/10 border border-sky-500/20 text-xs text-sky-200 inline-flex items-center space-x-2 print:hidden">
+					<svg class="w-4 h-4 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+					<span>Looking for technical schemas and OpenAPI specs? Visit our <a href="https://github.com/saad2134/dosezy/tree/main/docs" target="_blank" rel="noopener noreferrer" class="text-white font-bold underline hover:text-sky-300 transition-colors inline-flex items-center space-x-1"><span>Technical Documentation Portal →</span></a></span>
+				</div>
+
+			</div>
+
+			<!-- Three Section Module Switcher Tabs & Print Action Row -->
+			<div class="max-w-6xl mx-auto mb-8 print:hidden flex flex-row items-stretch gap-3">
+				
+				<!-- 3 Tabs Glass Card Container -->
+				<div class="p-2 sm:p-2.5 rounded-3xl bg-[#0a0c10]/95 backdrop-blur-2xl border border-white/15 grid grid-cols-1 sm:grid-cols-3 gap-2.5 shadow-[0_20px_50px_rgba(0,0,0,0.6)] flex-1 min-w-0">
+					
+					<!-- Patient App Tab -->
+					<button 
+						type="button"
+						data-section="patient"
+						class="module-tab-btn relative group overflow-hidden py-3 px-3.5 sm:px-4 rounded-2xl text-left transition-all duration-300 flex items-center space-x-3 bg-gradient-to-r from-sky-500/20 via-sky-500/10 to-transparent border border-sky-500/40 text-white shadow-[0_0_25px_rgba(14,165,233,0.15)]"
+					>
+						<div class="tab-icon-wrapper w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-sky-500 text-white border border-sky-400 flex items-center justify-center shrink-0 shadow-lg shadow-sky-500/30 transition-all duration-300">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+							</svg>
+						</div>
+						<div class="flex-1 min-w-0">
+							<div class="flex items-center justify-between">
+								<span class="tab-title text-xs sm:text-sm font-bold truncate block text-white">Patient App</span>
+								<span class="tab-badge hidden lg:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase bg-sky-500/20 text-sky-300 border border-sky-500/30">13 Guides</span>
+							</div>
+							<span class="tab-desc text-[11px] text-sky-200/80 truncate block mt-0.5">Offline mobile medication app</span>
+						</div>
+					</button>
+
+					<!-- Server Node Tab -->
+					<button 
+						type="button"
+						data-section="server"
+						class="module-tab-btn relative group overflow-hidden py-3 px-3.5 sm:px-4 rounded-2xl text-left transition-all duration-300 flex items-center space-x-3 bg-[#030407]/60 border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/[0.04]"
+					>
+						<div class="tab-icon-wrapper w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 group-hover:text-white shrink-0 transition-all duration-300">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2" />
+							</svg>
+						</div>
+						<div class="flex-1 min-w-0">
+							<div class="flex items-center justify-between">
+								<span class="tab-title text-xs sm:text-sm font-bold truncate block text-neutral-300 group-hover:text-white">Server Node</span>
+								<span class="tab-badge hidden lg:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase bg-amber-500/10 text-amber-300 border border-amber-500/20">Roadmap v3.x</span>
+							</div>
+							<span class="tab-desc text-[11px] text-neutral-500 truncate block mt-0.5">Optional self-hosted sync</span>
+						</div>
+					</button>
+
+					<!-- Caregiver Portal Tab -->
+					<button 
+						type="button"
+						data-section="caregiver"
+						class="module-tab-btn relative group overflow-hidden py-3 px-3.5 sm:px-4 rounded-2xl text-left transition-all duration-300 flex items-center space-x-3 bg-[#030407]/60 border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/[0.04]"
+					>
+						<div class="tab-icon-wrapper w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 group-hover:text-white shrink-0 transition-all duration-300">
+							<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+							</svg>
+						</div>
+						<div class="flex-1 min-w-0">
+							<div class="flex items-center justify-between">
+								<span class="tab-title text-xs sm:text-sm font-bold truncate block text-neutral-300 group-hover:text-white">Caregiver Portal</span>
+								<span class="tab-badge hidden lg:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">Roadmap v3.x</span>
+							</div>
+							<span class="tab-desc text-[11px] text-neutral-500 truncate block mt-0.5">Family web monitoring</span>
+						</div>
+					</button>
+
+				</div>
+
+				<!-- Printer Icon Button -->
+				<button 
+					onclick="window.print()" 
+					class="w-14 sm:w-16 rounded-3xl bg-[#0a0c10]/95 hover:bg-white/[0.08] backdrop-blur-2xl border border-white/15 hover:border-white/30 transition-all flex items-center justify-center shrink-0 group shadow-[0_20px_50px_rgba(0,0,0,0.6)] cursor-pointer"
+					title="Print or Save User Manual as PDF"
+					aria-label="Print or Save User Manual as PDF"
+				>
+					<svg class="w-5 h-5 text-sky-400 group-hover:scale-110 transition-transform shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+					</svg>
+				</button>
+
+			</div>
+
+			<!-- Search Bar & Filters Control Box -->
+			<div class="max-w-6xl mx-auto mb-10 space-y-4 print:hidden">
+				<div class="relative">
+					<input 
+						type="text" 
+						id="manual-search" 
+						placeholder="Search user manual (e.g., adding pills, presets, stock refill, analytics, grouped alarms, status colors)..." 
+						class="w-full px-5 py-4 rounded-2xl bg-[#0a0c10]/95 border border-white/15 text-white text-xs sm:text-sm placeholder-neutral-500 focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400/30 transition-all shadow-xl"
+					/>
+					<svg class="w-5 h-5 text-neutral-500 absolute right-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+					</svg>
+				</div>
+
+				<div class="flex flex-col md:flex-row items-stretch gap-3">
+					<div class="p-3 sm:p-3.5 rounded-2xl bg-[#0a0c10]/95 backdrop-blur-xl border border-white/15 shadow-xl flex items-center space-x-3 flex-wrap gap-y-2 flex-1 min-w-0">
+						<div class="flex items-center space-x-1.5 text-sky-400 pl-1 shrink-0">
+							<svg class="w-4 h-4 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+							</svg>
+							<span class="text-[10px] font-mono text-neutral-400 uppercase font-bold hidden sm:inline">Filter:</span>
+						</div>
+						
+						<div class="flex items-center space-x-1.5 flex-wrap gap-y-1.5" id="filter-pills-container">
+							<button type="button" data-filter="all" class="filter-pill px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all bg-sky-500 text-white border border-sky-400 shadow-sm shadow-sky-500/20">All Guides</button>
+							<button type="button" data-filter="basics" class="filter-pill px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all text-neutral-400 bg-[#030407]/60 border border-white/15 hover:text-white hover:border-white/30 hover:bg-white/10">Quick Start</button>
+							<button type="button" data-filter="config" class="filter-pill px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all text-neutral-400 bg-[#030407]/60 border border-white/15 hover:text-white hover:border-white/30 hover:bg-white/10">Settings & Stock</button>
+							<button type="button" data-filter="family" class="filter-pill px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all text-neutral-400 bg-[#030407]/60 border border-white/15 hover:text-white hover:border-white/30 hover:bg-white/10">Family & Analytics</button>
+						</div>
+					</div>
+
+					<div class="p-2 sm:p-2.5 rounded-2xl bg-[#0a0c10]/95 backdrop-blur-xl border border-white/15 shadow-xl flex items-center shrink-0 self-stretch md:self-auto">
+						<div class="relative w-full md:w-auto" id="custom-sort-dropdown">
+							<input type="hidden" id="manual-sort" value="step" />
+
+							<button 
+								type="button" 
+								id="manual-sort-btn"
+								aria-expanded="false"
+								aria-haspopup="listbox"
+								class="w-full md:w-auto px-4 py-2 rounded-xl bg-[#030407] border border-white/15 text-white text-xs font-mono flex items-center justify-between space-x-2.5 text-left focus:outline-none focus:border-sky-400 focus:ring-1 focus:ring-sky-400/30 transition-all hover:bg-white/[0.04]"
+							>
+								<div class="flex items-center space-x-2">
+									<svg class="w-4 h-4 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+									</svg>
+									<span class="text-[10px] text-neutral-400 uppercase font-bold">Sort:</span>
+									<span id="selected-sort-text" class="text-sky-300 font-bold truncate max-w-[140px]">Step Order</span>
+								</div>
+								<svg id="manual-sort-chevron" class="w-3.5 h-3.5 text-neutral-400 transition-transform duration-200 shrink-0 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+								</svg>
+							</button>
+
+							<div 
+								id="manual-sort-menu" 
+								class="hidden absolute right-0 top-full mt-1.5 z-50 w-52 p-1.5 rounded-xl bg-[#0a0c10]/98 backdrop-blur-xl border border-white/15 shadow-2xl space-y-1"
+								role="listbox"
+							>
+								<button type="button" data-value="step" class="sort-option w-full px-3 py-2 rounded-lg text-xs font-mono flex items-center justify-between transition-colors bg-white/10 text-white font-medium">
+									<span>Step Order</span>
+									<svg class="sort-checkmark w-3.5 h-3.5 text-sky-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+								</button>
+								<button type="button" data-value="difficulty" class="sort-option w-full px-3 py-2 rounded-lg text-xs font-mono flex items-center justify-between transition-colors text-neutral-300 hover:bg-white/5 hover:text-white font-medium">
+									<span>Difficulty Level</span>
+									<svg class="sort-checkmark w-3.5 h-3.5 text-sky-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+								</button>
+								<button type="button" data-value="title" class="sort-option w-full px-3 py-2 rounded-lg text-xs font-mono flex items-center justify-between transition-colors text-neutral-300 hover:bg-white/5 hover:text-white font-medium">
+									<span>Alphabetical (A-Z)</span>
+									<svg class="sort-checkmark w-3.5 h-3.5 text-sky-400 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" /></svg>
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Manual Content Sections Container -->
+			<div class="max-w-6xl mx-auto">
+				
+				<!-- ==================== TAB 1: PATIENT APP ==================== -->
+				<div id="section-patient" class="manual-section space-y-6">
+					
+					<!-- Card 1: Getting Started & Languages -->
+					<article 
+						data-section="patient"
+						data-step="1"
+						data-filter="basics"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="overview languages preferences theme getting started offline"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">1</span>
+								<h2 class="text-xl font-bold text-white font-display">Getting Started, 12 Languages & Themes</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Easy</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Dosezy is designed to be friendly, high-contrast, and easy to read. It operates completely offline without requiring any user registration or internet connection.
+						</p>
+
+						<div class="bg-[#030407] p-4 rounded-2xl border border-white/10 text-xs text-neutral-300 space-y-3">
+							<h4 class="font-bold text-white uppercase font-mono text-[10px] tracking-wider text-sky-400">Supported Languages:</h4>
+							<p class="text-[11px]">English, Spanish, Hindi, Chinese, Portuguese, Arabic, French, German, Japanese, Russian, Italian, and Bengali.</p>
+							
+							<h4 class="font-bold text-white uppercase font-mono text-[10px] tracking-wider text-sky-400 pt-1">How to Change Language or Theme:</h4>
+							<ol class="list-decimal list-inside space-y-1.5 text-neutral-300">
+								<li>Tap the <strong class="text-white">Menu</strong> tab at the bottom right.</li>
+								<li>Tap <strong class="text-white">Preferences</strong>.</li>
+								<li>Choose your preferred <strong class="text-white">Language</strong> under General, customize Light/Dark mode and visual styles under <strong class="text-white">Appearance</strong>, or switch to 24-Hour time format.</li>
+							</ol>
+						</div>
+					</article>
+
+					<!-- Card 2: Home Screen Status Colors -->
+					<article 
+						data-section="patient"
+						data-step="2"
+						data-filter="basics"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="home dashboard status colors taken late missed skipped undo schedule badges"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">2</span>
+								<h2 class="text-xl font-bold text-white font-display">Home Screen, Time Headers & Dose Badges</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Easy</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Your Home screen lists your daily doses grouped by chronological time, with an optional vertical <strong class="text-white">Timeline Mode</strong> available via the top bar icon. Helpful real-time indicators and colored badges show your compliance status at a glance:
+						</p>
+
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+							<div class="bg-[#030407] p-3 rounded-xl border border-white/10 flex items-center space-x-3">
+								<span class="w-3.5 h-3.5 rounded-full bg-emerald-400 shrink-0"></span>
+								<div>
+									<strong class="text-white block">Green (Taken)</strong>
+									<span class="text-neutral-400 text-[11px]">Logged with exact completion timestamp</span>
+								</div>
+							</div>
+							<div class="bg-[#030407] p-3 rounded-xl border border-white/10 flex items-center space-x-3">
+								<span class="w-3.5 h-3.5 rounded-full bg-neutral-400 shrink-0"></span>
+								<div>
+									<strong class="text-white block">Standard Text</strong>
+									<span class="text-neutral-400 text-[11px]">Due soon or within your late window</span>
+								</div>
+							</div>
+							<div class="bg-[#030407] p-3 rounded-xl border border-white/10 flex items-center space-x-3">
+								<span class="w-3.5 h-3.5 rounded-full bg-amber-400 shrink-0"></span>
+								<div>
+									<strong class="text-white block">Orange (Late)</strong>
+									<span class="text-neutral-400 text-[11px]">Past due (shows active Mark Late button)</span>
+								</div>
+							</div>
+							<div class="bg-[#030407] p-3 rounded-xl border border-white/10 flex items-center space-x-3">
+								<span class="w-3.5 h-3.5 rounded-full bg-rose-500 shrink-0"></span>
+								<div>
+									<strong class="text-white block">Red (Missed)</strong>
+									<span class="text-neutral-400 text-[11px]">Past your configured missed window</span>
+								</div>
+							</div>
+							<div class="bg-[#030407] p-3 rounded-xl border border-white/10 flex items-center space-x-3 sm:col-span-2">
+								<span class="w-3.5 h-3.5 rounded-full bg-sky-400 shrink-0"></span>
+								<div>
+									<strong class="text-white block">Blue (Skipped)</strong>
+									<span class="text-neutral-400 text-[11px]">Shows clinical reason badge (e.g. 📝 Skipped: Doctor advised pause) with active Undo option</span>
+								</div>
+							</div>
+						</div>
+
+						<div class="bg-[#030407] p-4 rounded-2xl border border-white/10 text-xs text-neutral-300 space-y-2 mt-3">
+							<h4 class="font-bold text-white uppercase font-mono text-[10px] tracking-wider text-sky-400">Dose Undo, Notes & Time Zones:</h4>
+							<ul class="list-disc list-inside space-y-1.5 text-neutral-300">
+								<li><strong class="text-white">Configurable Dose Undo:</strong> Turn on Dose Undo in Preferences to revert accidental taps with a confirmation dialog, safely returning deducted tablets to inventory.</li>
+								<li><strong class="text-white">Per-Dose Notes &amp; Symptoms:</strong> Prompt for meal conditions (<em>"With food"</em>, <em>"Empty stomach"</em>) or side effects when logging a dose, with quick-tap suggestions and easy editing from your dose cards or schedule calendar.</li>
+								<li><strong class="text-white">Manually Record Dose Time:</strong> If you took a medication earlier, select the exact past time you consumed it rather than the current moment, ensuring adherence logs remain strictly accurate.</li>
+								<li><strong class="text-white">Crossing Time Zones:</strong> When traveling across time zones, dose reminders shift seamlessly with your local daily routine without manual recalibration.</li>
+								<li><strong class="text-white">Celebratory Completion Banner:</strong> When all doses for today are completed, a cheerful banner appears at the top while keeping today's full schedule visible underneath for continuous review.</li>
+							</ul>
+						</div>
+					</article>
+
+					<!-- Card 3: Adding Medication & Presets -->
+					<article 
+						data-section="patient"
+						data-step="3"
+						data-filter="basics"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="adding medication search filter time picker daily presets frequency dosage food instructions photos archive discontinue"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">3</span>
+								<h2 class="text-xl font-bold text-white font-display">Adding, Searching & Archiving Medicines</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Easy</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">2 min read</span>
+							</div>
+						</div>
+
+						<div class="space-y-3 text-xs text-neutral-300">
+							<ol class="list-decimal list-inside space-y-2 text-neutral-300">
+								<li>Tap <strong class="text-white">Medicines</strong> in the bottom bar, then tap <strong class="text-white">"+ Add Medicine"</strong> (or <strong class="text-white">"Add Your First Medication"</strong> on empty lists).</li>
+								<li>Enter the medicine name and dose unit (tablet, capsule, mg, mL, drops, puffs, spray, units). Helpful validation toasts and red input highlights guide you if required fields are missing.</li>
+								<li>(Optional) Tap the camera icon to take or crop a pill box photo.</li>
+								<li>Select meal instructions (🍽️ Before Food, 🍲 With Food, 🥗 After Food, or ⏱️ No Instructions).</li>
+								<li>Choose <strong class="text-white">Daily</strong>, <strong class="text-white">Weekly</strong>, <strong class="text-white">Monthly</strong>, or <strong class="text-white">As Needed (PRN)</strong> frequency.</li>
+								<li>Tap <strong class="text-sky-300 font-bold">1x, 2x, 3x, or 4x Daily</strong> chips to schedule standard multi-dose times instantly.</li>
+								<li>Adjust individual times using the intuitive <strong>12-First Grid Time Picker</strong> (12 is at the top).</li>
+							</ol>
+
+							<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 space-y-1.5 mt-2">
+								<p><strong class="text-sky-300">Live Search &amp; Filter:</strong> Use the top search bar on the Medicines screen to instantly filter pills by name or instructions in real time.</p>
+								<p><strong class="text-sky-300">Prescription Sorting &amp; Custom Reorder:</strong> Tap the Sort button next to search to organize your list by Default, Name (A-Z or Z-A), Scheduled Time, or choose Custom Reorder to drag and drop medicines into your personal preferred sequence.</p>
+								<p><strong class="text-sky-300">Discontinue &amp; Archive Accordion:</strong> When a course finishes, tap <em>Edit &gt; Discontinue</em>. The medicine moves to a collapsible accordion at the bottom of your Medicines screen, keeping your active list clutter-free while preserving all past logs and reports.</p>
+								<p><strong class="text-sky-300">Flexible Add Button:</strong> When the bottom navigation '+' button is hidden in Preferences, an "Add Medicine" button appears conveniently below your active medications roster.</p>
+							</div>
+						</div>
+					</article>
+
+					<!-- Card 4: Grouped Slot Alarms -->
+					<article 
+						data-section="patient"
+						data-step="4"
+						data-filter="basics"
+						data-difficulty="1"
+						data-readtime="2"
+						data-keywords="slot alarms grouped medicines take all snooze dynamic duration volume rocker silence custom ringtones duration"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">4</span>
+								<h2 class="text-xl font-bold text-white font-display">Critical Alarms, Volume Silence & Custom Sounds</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Easy</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">2 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							When taking multiple tablets at the same minute, Dosezy rings with a single high-priority full-screen alarm. You can check off items individually or tap the large green <strong class="text-white">"TAKE ALL"</strong> button in 1 tap to record all doses and decrement inventory simultaneously.
+						</p>
+
+						<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+							<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 space-y-1 sm:col-span-2">
+								<strong class="text-sky-300 block">Slide to Take &amp; Snooze Gestures:</strong>
+								<span class="text-neutral-400 text-[11px]">Alarms feature separate sliding tracks: slide the green track left to record intake (or Take All), and slide the orange track right to snooze, avoiding accidental dismissals while half-asleep (can be toggled in Preferences).</span>
+							</div>
+							<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 space-y-1">
+								<strong class="text-sky-300 block">Hardware Volume Rocker Silence:</strong>
+								<span class="text-neutral-400 text-[11px]">Press Volume Up or Down while an alarm rings to immediately silence ringtone and vibration without unlocking your device.</span>
+							</div>
+							<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 space-y-1">
+								<strong class="text-sky-300 block">Back-Gesture Snooze:</strong>
+								<span class="text-neutral-400 text-[11px]">Pressing the device Back button automatically snoozes the alarm safely, preventing accidental dismissals into a missed state.</span>
+							</div>
+							<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 space-y-1">
+								<strong class="text-sky-300 block">Nagging Follow-Up Alarms:</strong>
+								<span class="text-neutral-400 text-[11px]">Repeats reminder alarms every 5, 10, or 15 minutes up to 10 times or until marked taken, ensuring snoozed doses are never forgotten.</span>
+							</div>
+							<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 space-y-1">
+								<strong class="text-sky-300 block">ADHD Intake Safeguard:</strong>
+								<span class="text-neutral-400 text-[11px]">Starts a countdown timer upon tapping Take that sounds an automatic re-alert if you get distracted before actually consuming your pills.</span>
+							</div>
+						</div>
+
+						<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 text-xs text-neutral-300 space-y-1.5 mt-2">
+							<strong class="text-amber-400 block mb-1">Custom Sounds, Volumes & Durations:</strong>
+							<p>Under <strong class="text-white">Menu &gt; Preferences &gt; Notifications &amp; Alarms</strong>:</p>
+							<ul class="list-disc list-inside space-y-1 text-neutral-300 text-[11px]">
+								<li><strong class="text-white">Reminder Style:</strong> Choose between <strong class="text-white">Full-Screen Alarm</strong> (rings aloud with slide gestures and volume silencing) or <strong class="text-white">Gentle Notification</strong> (standard notification chime).</li>
+								<li><strong class="text-white">Custom Tones:</strong> Choose built-in alert chimes, system alarms, or your own device ringtones with in-app audio preview playback.</li>
+								<li><strong class="text-white">Alarm Duration:</strong> Choose ring length: 30 seconds, 1 minute, 2 minutes, 3 minutes, 5 minutes, or continuous loop.</li>
+								<li><strong class="text-white">Dynamic Snooze:</strong> Choose 5, 10, 15, 20, or 30 minute intervals, or pick custom snooze chips directly on the alarm screen.</li>
+							</ul>
+						</div>
+					</article>
+
+					<!-- Card 5: Stock Tracking & Pharmacy Refill Orders -->
+					<article 
+						data-section="patient"
+						data-step="5"
+						data-filter="config"
+						data-difficulty="1"
+						data-readtime="2"
+						data-keywords="stock tracking refill warning inventory tablet count deduction pharmacy refill order share chat whatsapp"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">5</span>
+								<h2 class="text-xl font-bold text-white font-display">Pill Inventory & Pharmacy Refill Orders</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Inventory</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">2 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Keep track of your medicine stock so you never run out of critical prescriptions, and generate formatted refill orders for your pharmacist:
+						</p>
+
+						<ol class="list-decimal list-inside space-y-1.5 text-xs text-neutral-300">
+							<li>When adding or editing a medicine, enter your <strong class="text-white">Current Stock</strong> (e.g. 60 pills) and <strong class="text-white">Refill Threshold</strong> (e.g. 10 pills).</li>
+							<li>Dosezy automatically subtracts pills whenever you mark a dose as <strong class="text-white">Taken</strong>.</li>
+							<li>An orange <strong class="text-amber-400 font-bold">⚠️ Refill Warning</strong> badge appears on your Home screen and Medicines list when stock drops low.</li>
+						</ol>
+
+						<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 space-y-2 mt-2">
+							<strong class="text-sky-300 block text-xs">Pharmacy Refill Order Generator:</strong>
+							<p class="text-[11px] text-neutral-300 leading-relaxed">
+								Under <strong class="text-white">Menu &gt; Data Management &gt; Pharmacy Refill Order</strong>, compile clean prescription refill orders:
+							</p>
+							<ul class="list-disc list-inside space-y-1 text-neutral-300 text-[11px]">
+								<li><strong class="text-white">Multi-Profile Consolidation:</strong> Combine prescription refills for multiple family members into a single unified order, or generate an order for an individual profile.</li>
+								<li><strong class="text-white">Filter Modes:</strong> Select <strong class="text-white">Low Stock Only</strong> (items needing replenishment) or <strong class="text-white">All Active</strong> medications.</li>
+								<li><strong class="text-white">Supply Durations &amp; Smart Bottles:</strong> Choose 15, 30, 60, or 90 days. For liquid medicines and eye drops, Dosezy automatically calculates whole bottles needed rather than raw drops or milliliters.</li>
+								<li><strong class="text-white">Share via Chat &amp; Copy:</strong> Preview the formatted WhatsApp markdown text, then tap <strong class="text-white">Share via Chat</strong> or copy to clipboard in 1 tap.</li>
+							</ul>
+						</div>
+					</article>
+
+					<!-- Card 6: Schedule Calendar -->
+					<article 
+						data-section="patient"
+						data-step="6"
+						data-filter="basics"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="schedule calendar adherence dot markers month history"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">6</span>
+								<h2 class="text-xl font-bold text-white font-display">Interactive Schedule Calendar</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Easy</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Tap the <strong class="text-white">Schedule</strong> tab in the bottom bar to view your full medication calendar. Tap any date to inspect past adherence or upcoming doses. Colored dot markers on calendar days show at a glance whether medicines were taken on time, late, or missed.
+						</p>
+						<p class="text-xs text-neutral-300 leading-relaxed mt-2">
+							<strong class="text-sky-300">Retrospective Dose Logging:</strong> If you took a past dose but forgot to log it, or took it late after midnight, you can mark missed doses from the past 48 hours directly on the calendar. Taking a past dose decrements your inventory accurately and preserves your adherence streak with a transparent audit note.
+						</p>
+					</article>
+
+					<!-- Card 7: Adherence Analytics -->
+					<article 
+						data-section="patient"
+						data-step="7"
+						data-filter="family"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="analytics score percentage compliance week month year all breakdown"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">7</span>
+								<h2 class="text-xl font-bold text-white font-display">Adherence Analytics & Compliance Scores</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Analytics</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Open <strong class="text-white">Menu > Analytics</strong> to view your compliance score ring across <strong class="text-white">WEEK</strong>, <strong class="text-white">MONTH</strong>, <strong class="text-white">YEAR</strong>, and <strong class="text-white">ALL TIME</strong>. Review counts of on-time vs late vs missed doses and see compliance rates for each specific medicine.
+						</p>
+					</article>
+
+					<!-- Card 8: Late & Missed Thresholds -->
+					<article 
+						data-section="patient"
+						data-step="8"
+						data-filter="config"
+						data-difficulty="2"
+						data-readtime="2"
+						data-keywords="late missed alerts settings thresholds reminders preferences dose skipping clinical reason"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">8</span>
+								<h2 class="text-xl font-bold text-white font-display">Structured Preferences & Clinical Dose Skipping</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Preferences</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">2 min read</span>
+							</div>
+						</div>
+
+						<div class="bg-[#030407] p-4 rounded-2xl border border-white/10 text-xs text-neutral-300 space-y-2">
+							<p>Preferences are organized into clean, focused sections in <strong class="text-white">Menu &gt; Preferences</strong>:</p>
+							<ul class="list-disc list-inside space-y-1.5 text-neutral-300">
+								<li><strong class="text-white">General:</strong> App language (12 languages) and 12h/24h time format.</li>
+								<li><strong class="text-white">Appearance:</strong> Light/Dark theme, Home vertical Timeline Mode, Thicker Calendar Day Highlights, and <em>Hide Navigation Add Button</em> (hides the center '+' button for a symmetrical 4-tab bar and places an "Add Medicine" button on the Medicines screen).</li>
+								<li><strong class="text-white">Notifications &amp; Alarms:</strong> Reminder Style (Full-Screen Alarm vs Gentle Notification), Slide to Take &amp; Snooze gestures, default snooze interval (5-30 min), Nagging Reminders, ADHD Intake Safeguard, Mask Details on Lock Screen, custom ringtone selection, volume slider, and alarm sound duration (30s-5m/loop).</li>
+								<li><strong class="text-white">Dose Tracking:</strong>
+									<ul class="list-disc list-inside ml-3 mt-1 space-y-1 text-[11px] text-neutral-300">
+										<li><strong class="text-white">Allow Dose Undo:</strong> Toggle whether doses can be undone from cards or snackbars, with a safety confirmation dialog before restoring stock counts (default off).</li>
+										<li><strong class="text-white">Dose Notes:</strong> Master toggle to allow attaching meal context and symptom notes to doses, with optional <em>Prompt on Dose Taken</em> automation (default off; hides "+ Add Note" when disabled).</li>
+										<li><strong class="text-white">Allow Dose Skipping:</strong> Opt-in secondary "Skip" button with mandatory clinical reasons that protect your compliance streak.</li>
+										<li><strong class="text-white">Late &amp; Missed Windows:</strong> Adjust <em>Consider Late After</em> (15m to 4h, default 3h) and <em>Consider Missed After</em> (30m to 12h, default 6h).</li>
+									</ul>
+								</li>
+							</ul>
+						</div>
+					</article>
+
+					<!-- Card 9: Emergency Dialing -->
+					<article 
+						data-section="patient"
+						data-step="9"
+						data-filter="basics"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="emergency dialer 911 112 108 helpline international personal contacts profile backup"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">9</span>
+								<h2 class="text-xl font-bold text-white font-display">International Emergency & Profile Contacts</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Easy</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Go to <strong class="text-white">Menu &gt; Emergency Contacts</strong>:
+						</p>
+
+						<ul class="list-disc list-inside space-y-1.5 text-xs text-neutral-300">
+							<li><strong class="text-white">Official Emergency Services:</strong> Dosezy automatically detects your country (India, US/Canada, UK, EU, China, Japan, Russia, Brazil, Bangladesh, Australia) to dial police, fire, or ambulance in 1 tap.</li>
+							<li><strong class="text-white">Profile-Isolated Contacts:</strong> Tap <strong class="text-white">"+ Add Emergency Contact"</strong> to save numbers for your doctor or caregiver. Personal contacts are isolated per profile and included in encrypted backups.</li>
+						</ul>
+					</article>
+
+					<!-- Card 10: Family Profiles -->
+					<article 
+						data-section="patient"
+						data-step="10"
+						data-filter="family"
+						data-difficulty="2"
+						data-readtime="1"
+						data-keywords="family profiles switch profile elderly parents children multi-user"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">10</span>
+								<h2 class="text-xl font-bold text-white font-display">Managing Multiple Family Profiles</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Family</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Tap <strong class="text-white">Menu &gt; Switch Profile</strong> to create independent profiles for family members. Each profile keeps its own schedule, medicine list, stock counts, and compliance logs completely separate.
+						</p>
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							<strong class="text-white">Deletion Safeguards:</strong> Single-profile accounts cannot delete their only profile. Removing secondary profiles requires a deliberate <strong>5-second safety countdown</strong> before the confirmation button activates, preventing accidental loss of medical records.
+						</p>
+					</article>
+
+					<!-- Card 11: Exporting Reports -->
+					<article 
+						data-section="patient"
+						data-step="11"
+						data-filter="config"
+						data-difficulty="2"
+						data-readtime="2"
+						data-keywords="sharing doctor reports pdf summary download history backup selective restore conflict resolution csv json"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">11</span>
+								<h2 class="text-xl font-bold text-white font-display">Doctor PDF Reports &amp; Selective Backups</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Quick Tip</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">2 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Go to <strong class="text-white">Menu &gt; Export Data</strong> and select <strong class="text-white">PDF Report</strong> to generate a clean, printable clinical summary complete with current prescriptions, dosages, food instructions, skipped dose reasons, and compliance rates. You can also export raw CSV or JSON data files.
+						</p>
+
+						<div class="bg-[#030407] p-3.5 rounded-2xl border border-white/10 text-xs text-neutral-300 space-y-1.5 mt-2">
+							<strong class="text-sky-300 block mb-1">Full ZIP Backup &amp; Selective Profile Restore:</strong>
+							<p class="text-[11px] text-neutral-400">Under <strong class="text-white">Menu &gt; Backup &amp; Restore</strong>, switch between the <strong class="text-white">Automatic</strong> tab (cloud and self-hosted server options) and the <strong class="text-white">Manual</strong> tab to export an encrypted ZIP archive. When restoring on any phone, Dosezy inspects the archive with an in-front loader and lets you choose a conflict resolution strategy per profile: <strong class="text-white">Create New Profile</strong>, <strong class="text-white">Merge Records</strong>, or <strong class="text-white">Replace Profile</strong>.</p>
+						</div>
+					</article>
+
+					<!-- Card 12: Updates -->
+					<article 
+						data-section="patient"
+						data-step="12"
+						data-filter="config"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="updates store detection google play fdroid github more section"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">12</span>
+								<h2 class="text-xl font-bold text-white font-display">Checking for App Updates</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">Easy</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							Tap <strong class="text-white">Menu &gt; More &gt; Check for Updates</strong>. Dosezy automatically detects where you downloaded the app from (Google Play, F-Droid, Huawei AppGallery, Samsung Galaxy Store, Xiaomi GetApps, Amazon Appstore, or GitHub) and opens your store client or browser safely.
+						</p>
+					</article>
+
+					<!-- Card 13: Notification Troubleshooting -->
+					<article 
+						data-section="patient"
+						data-step="13"
+						data-filter="config"
+						data-difficulty="2"
+						data-readtime="1"
+						data-keywords="notification status reliability shield battery optimization exact alarms permissions"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400 font-bold text-xs">13</span>
+								<h2 class="text-xl font-bold text-white font-display">Notification Reliability Shield &amp; Battery</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 border border-indigo-500/20">Troubleshooting</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							A persistent <strong class="text-emerald-400">Reliability Shield</strong> button is accessible in the TopBar across all main screens and subpages. Tapping it opens a live system diagnostic checklist:
+						</p>
+
+						<ol class="list-decimal list-inside space-y-1.5 text-xs text-neutral-300">
+							<li><strong class="text-white">Exact Alarms:</strong> Verifies precision alarm dispatch permission.</li>
+							<li><strong class="text-white">Notifications:</strong> Checks that alert channels are enabled.</li>
+							<li><strong class="text-white">Battery Optimization:</strong> Direct manufacturer links (Samsung, Xiaomi, Huawei, etc.) to prevent battery savers from killing alarms when the phone is locked.</li>
+						</ol>
+					</article>
+
+				</div>
+
+
+				<!-- ==================== TAB 2: SERVER NODE (ROADMAP) ==================== -->
+				<div id="section-server" class="manual-section space-y-6 hidden">
+					
+					<!-- Roadmap Notice Banner -->
+					<div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-center justify-between gap-4 print:hidden">
+						<div class="space-y-0.5">
+							<strong class="text-white font-mono uppercase text-[11px] block">🗺️ Roadmap Notice (Planned for v3.x)</strong>
+							<p class="text-neutral-300 text-[11px]">Dosezy currently operates 100% offline on your device for complete privacy. Self-hosted private server syncing is planned as an optional capability in our upcoming v3.0-v3.9 roadmap.</p>
+						</div>
+					</div>
+
+					<!-- Card 1 -->
+					<article 
+						data-section="server"
+						data-step="1"
+						data-filter="basics"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="what is server node private home host"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xs">1</span>
+								<h2 class="text-xl font-bold text-white font-display">What is the Dosezy Server Node?</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">Roadmap v3.x</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							When released, the open-source Dosezy Server Node will allow privacy-conscious users to sync medication schedules across family devices using their own home server or Raspberry Pi without relying on third-party cloud providers.
+						</p>
+					</article>
+
+					<!-- Card 2 -->
+					<article 
+						data-section="server"
+						data-step="2"
+						data-filter="basics"
+						data-difficulty="2"
+						data-readtime="1"
+						data-keywords="starting private server docker home server"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xs">2</span>
+								<h2 class="text-xl font-bold text-white font-display">Docker Deployment & Hardware</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">Roadmap v3.x</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed">
+							The server node will be ultra-lightweight (requiring under 512MB RAM) and deployable with a single Docker command (<code class="text-sky-300 font-mono">docker compose up -d</code>).
+						</p>
+					</article>
+
+				</div>
+
+
+				<!-- ==================== TAB 3: CAREGIVER PORTAL (ROADMAP) ==================== -->
+				<div id="section-caregiver" class="manual-section space-y-6 hidden">
+					
+					<!-- Roadmap Notice Banner -->
+					<div class="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-center justify-between gap-4 print:hidden">
+						<div class="space-y-0.5">
+							<strong class="text-white font-mono uppercase text-[11px] block">🗺️ Roadmap Notice (Planned for v3.x)</strong>
+							<p class="text-neutral-300 text-[11px]">The Caregiver Web Dashboard is currently in development under the v3.0-v3.9 product roadmap. In the current release, you can export PDF adherence reports directly to share with caregivers.</p>
+						</div>
+					</div>
+
+					<!-- Card 1 -->
+					<article 
+						data-section="caregiver"
+						data-step="1"
+						data-filter="family"
+						data-difficulty="1"
+						data-readtime="1"
+						data-keywords="connecting family member QR code pairing scan connect caregiver"
+						class="manual-card vercel-card p-6 sm:p-8 rounded-3xl border border-white/10 bg-[#0a0c10]/95 space-y-4"
+					>
+						<div class="flex items-center justify-between border-b border-white/10 pb-4">
+							<div class="flex items-center space-x-3">
+								<span class="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 font-bold text-xs">1</span>
+								<h2 class="text-xl font-bold text-white font-display">Caregiver Remote Adherence Monitoring</h2>
+							</div>
+							<div class="flex items-center space-x-2">
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-500/10 text-amber-300 border border-amber-500/20">Roadmap v3.x</span>
+								<span class="px-2.5 py-0.5 rounded text-[10px] font-mono text-neutral-400 bg-white/5">1 min read</span>
+							</div>
+						</div>
+
+						<p class="text-xs text-neutral-300 leading-relaxed mb-2">
+							Planned for v3.x, caregivers will be able to pair via secure QR code to view live dose confirmations and receive missed-dose alerts while patient data remains protected by granular permissions.
+						</p>
+					</article>
+
+				</div>
+
+				<!-- Empty Search State Box -->
+				<div id="manual-empty-state" class="hidden p-12 text-center rounded-3xl bg-[#0a0c10]/95 border border-white/10 space-y-3">
+					<svg class="w-10 h-10 text-neutral-500 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 9.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+					</svg>
+					<h3 class="text-lg font-bold text-white">No matching user manual guides found</h3>
+					<p class="text-xs text-neutral-400">Try adjusting your search terms or selecting "All Guides" under the filter options.</p>
+				</div>
+
+			</div>
+
+		</div>
+	</main>
+	<Footer />
+</Layout>
+
+<style>
+	@media print {
+		header, footer, nav, #main-navbar, #mobile-menu, #ai-chat-widget, #ai-chat-window, .print\:hidden {
+			display: none !important;
+			opacity: 0 !important;
+			visibility: hidden !important;
+			height: 0 !important;
+		}
+		body, main {
+			background: #ffffff !important;
+			color: #000000 !important;
+			padding-top: 0 !important;
+		}
+		.manual-section {
+			display: block !important;
+			visibility: visible !important;
+			margin-bottom: 2rem !important;
+		}
+		.manual-card {
+			display: block !important;
+			background: #ffffff !important;
+			border: 1px solid #d1d5db !important;
+			color: #000000 !important;
+			page-break-inside: avoid;
+			box-shadow: none !important;
+			margin-bottom: 1rem !important;
+		}
+		.manual-card h2, .manual-card h3, .manual-card strong {
+			color: #000000 !important;
+		}
+		.manual-card p, .manual-card li, .manual-card span {
+			color: #374151 !important;
+		}
+		.manual-card .bg-\[\#030407\] {
+			background: #f9fafb !important;
+			border: 1px solid #e5e7eb !important;
+			color: #111827 !important;
+		}
+	}
+</style>
+
+<script>
+	const moduleTabBtns = document.querySelectorAll('.module-tab-btn');
+	const manualSections = document.querySelectorAll('.manual-section');
+	const searchInput = document.getElementById('manual-search') as HTMLInputElement | null;
+	const filterPills = document.querySelectorAll('.filter-pill');
+	const hiddenSortInput = document.getElementById('manual-sort') as HTMLInputElement | null;
+	const emptyState = document.getElementById('manual-empty-state');
+
+	const sortDropdownContainer = document.getElementById('custom-sort-dropdown');
+	const sortDropdownBtn = document.getElementById('manual-sort-btn');
+	const sortDropdownMenu = document.getElementById('manual-sort-menu');
+	const sortDropdownChevron = document.getElementById('manual-sort-chevron');
+	const selectedSortText = document.getElementById('selected-sort-text');
+	const sortOptions = document.querySelectorAll('.sort-option');
+
+	let activeSection = 'patient';
+	let activeFilter = 'all';
+
+	const tabConfigs: Record<string, { btnClass: string; iconClass: string; titleClass: string; badgeClass: string; descClass: string }> = {
+		patient: {
+			btnClass: 'module-tab-btn relative group overflow-hidden py-3 px-3.5 sm:px-4 rounded-2xl text-left transition-all duration-300 flex items-center space-x-3 bg-gradient-to-r from-sky-500/20 via-sky-500/10 to-transparent border border-sky-500/40 text-white shadow-[0_0_25px_rgba(14,165,233,0.15)]',
+			iconClass: 'tab-icon-wrapper w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-sky-500 text-white border border-sky-400 flex items-center justify-center shrink-0 shadow-lg shadow-sky-500/30 transition-all duration-300',
+			titleClass: 'tab-title text-xs sm:text-sm font-bold truncate block text-white',
+			badgeClass: 'tab-badge hidden lg:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase bg-sky-500/20 text-sky-300 border border-sky-500/30',
+			descClass: 'tab-desc text-[11px] text-sky-200/80 truncate block mt-0.5'
+		},
+		server: {
+			btnClass: 'module-tab-btn relative group overflow-hidden py-3 px-3.5 sm:px-4 rounded-2xl text-left transition-all duration-300 flex items-center space-x-3 bg-gradient-to-r from-amber-500/20 via-amber-500/10 to-transparent border border-amber-500/40 text-white shadow-[0_0_25px_rgba(245,158,11,0.15)]',
+			iconClass: 'tab-icon-wrapper w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-amber-500 text-white border border-amber-400 flex items-center justify-center shrink-0 shadow-lg shadow-amber-500/30 transition-all duration-300',
+			titleClass: 'tab-title text-xs sm:text-sm font-bold truncate block text-white',
+			badgeClass: 'tab-badge hidden lg:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase bg-amber-500/20 text-amber-300 border border-amber-500/30',
+			descClass: 'tab-desc text-[11px] text-amber-200/80 truncate block mt-0.5'
+		},
+		caregiver: {
+			btnClass: 'module-tab-btn relative group overflow-hidden py-3 px-3.5 sm:px-4 rounded-2xl text-left transition-all duration-300 flex items-center space-x-3 bg-gradient-to-r from-emerald-500/20 via-emerald-500/10 to-transparent border border-emerald-500/40 text-white shadow-[0_0_25px_rgba(16,185,129,0.15)]',
+			iconClass: 'tab-icon-wrapper w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-emerald-500 text-white border border-emerald-400 flex items-center justify-center shrink-0 shadow-lg shadow-emerald-500/30 transition-all duration-300',
+			titleClass: 'tab-title text-xs sm:text-sm font-bold truncate block text-white',
+			badgeClass: 'tab-badge hidden lg:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase bg-emerald-500/20 text-emerald-300 border border-emerald-500/30',
+			descClass: 'tab-desc text-[11px] text-emerald-200/80 truncate block mt-0.5'
+		}
+	};
+
+	const inactiveConfig = {
+		btnClass: 'module-tab-btn relative group overflow-hidden py-3 px-3.5 sm:px-4 rounded-2xl text-left transition-all duration-300 flex items-center space-x-3 bg-[#030407]/60 border border-white/10 text-neutral-400 hover:text-white hover:border-white/20 hover:bg-white/[0.04]',
+		iconClass: 'tab-icon-wrapper w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-neutral-400 group-hover:text-white shrink-0 transition-all duration-300',
+		titleClass: 'tab-title text-xs sm:text-sm font-bold truncate block text-neutral-300 group-hover:text-white',
+		badgeClass: 'tab-badge hidden lg:inline-block px-2 py-0.5 rounded-full text-[9px] font-mono font-bold tracking-wider uppercase bg-white/5 text-neutral-400 border border-white/10',
+		descClass: 'tab-desc text-[11px] text-neutral-500 truncate block mt-0.5'
+	};
+
+	const setActiveSection = (sectionName: string) => {
+		activeSection = sectionName;
+		
+		moduleTabBtns.forEach(btn => {
+			const sec = btn.getAttribute('data-section');
+			const iconElem = btn.querySelector('.tab-icon-wrapper');
+			const titleElem = btn.querySelector('.tab-title');
+			const badgeElem = btn.querySelector('.tab-badge');
+			const descElem = btn.querySelector('.tab-desc');
+
+			if (sec === sectionName && tabConfigs[sec]) {
+				const cfg = tabConfigs[sec];
+				btn.className = cfg.btnClass;
+				if (iconElem) iconElem.className = cfg.iconClass;
+				if (titleElem) titleElem.className = cfg.titleClass;
+				if (badgeElem) badgeElem.className = cfg.badgeClass;
+				if (descElem) descElem.className = cfg.descClass;
+			} else {
+				btn.className = inactiveConfig.btnClass;
+				if (iconElem) iconElem.className = inactiveConfig.iconClass;
+				if (titleElem) titleElem.className = inactiveConfig.titleClass;
+				if (badgeElem) badgeElem.className = inactiveConfig.badgeClass;
+				if (descElem) descElem.className = inactiveConfig.descClass;
+			}
+		});
+
+		manualSections.forEach(sec => {
+			if (sec.id === `section-${sectionName}`) {
+				sec.classList.remove('hidden');
+			} else {
+				sec.classList.add('hidden');
+			}
+		});
+
+		filterAndSortCards();
+	};
+
+	moduleTabBtns.forEach(btn => {
+		btn.addEventListener('click', () => {
+			const targetSection = btn.getAttribute('data-section');
+			if (targetSection) setActiveSection(targetSection);
+		});
+	});
+
+	filterPills.forEach(pill => {
+		pill.addEventListener('click', () => {
+			const f = pill.getAttribute('data-filter') || 'all';
+			activeFilter = f;
+
+			filterPills.forEach(p => {
+				if (p === pill) {
+					p.className = 'filter-pill px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all bg-sky-500 text-white border border-sky-400 shadow-sm shadow-sky-500/20';
+				} else {
+					p.className = 'filter-pill px-3 py-1.5 rounded-xl text-[11px] font-mono font-bold transition-all text-neutral-400 bg-[#030407]/60 border border-white/15 hover:text-white hover:border-white/30 hover:bg-white/10';
+				}
+			});
+
+			filterAndSortCards();
+		});
+	});
+
+	if (sortDropdownBtn && sortDropdownMenu && sortDropdownChevron) {
+		const toggleSortMenu = (open?: boolean) => {
+			const isExpanded = open !== undefined ? open : sortDropdownMenu.classList.contains('hidden');
+			if (isExpanded) {
+				sortDropdownMenu.classList.remove('hidden');
+				sortDropdownChevron.classList.add('rotate-180');
+				sortDropdownBtn.setAttribute('aria-expanded', 'true');
+				sortDropdownBtn.classList.add('border-sky-400', 'ring-1', 'ring-sky-400/30');
+			} else {
+				sortDropdownMenu.classList.add('hidden');
+				sortDropdownChevron.classList.remove('rotate-180');
+				sortDropdownBtn.setAttribute('aria-expanded', 'false');
+				sortDropdownBtn.classList.remove('border-sky-400', 'ring-1', 'ring-sky-400/30');
+			}
+		};
+
+		sortDropdownBtn.addEventListener('click', (e) => {
+			e.stopPropagation();
+			toggleSortMenu();
+		});
+
+		sortOptions.forEach(opt => {
+			opt.addEventListener('click', (e) => {
+				e.stopPropagation();
+				const target = opt as HTMLButtonElement;
+				const val = target.dataset.value || 'step';
+				const labelText = target.querySelector('span')?.textContent || 'Step Order';
+
+				if (hiddenSortInput) hiddenSortInput.value = val;
+				if (selectedSortText) selectedSortText.textContent = labelText;
+
+				sortOptions.forEach(o => {
+					const btn = o as HTMLButtonElement;
+					const checkmark = btn.querySelector('.sort-checkmark');
+					if (btn === target) {
+						btn.classList.add('bg-white/10', 'text-white');
+						btn.classList.remove('text-neutral-300', 'hover:bg-white/5');
+						if (checkmark) checkmark.classList.remove('hidden');
+					} else {
+						btn.classList.remove('bg-white/10', 'text-white');
+						btn.classList.add('text-neutral-300', 'hover:bg-white/5');
+						if (checkmark) checkmark.classList.add('hidden');
+					}
+				});
+
+				toggleSortMenu(false);
+				filterAndSortCards();
+			});
+		});
+
+		document.addEventListener('click', (e) => {
+			if (sortDropdownContainer && !sortDropdownContainer.contains(e.target as Node)) {
+				toggleSortMenu(false);
+			}
+		});
+
+		document.addEventListener('keydown', (e) => {
+			if (e.key === 'Escape') {
+				toggleSortMenu(false);
+			}
+		});
+	}
+
+	const filterAndSortCards = () => {
+		const query = searchInput?.value.toLowerCase().trim() || '';
+		const currentSectionElem = document.getElementById(`section-${activeSection}`);
+		if (!currentSectionElem) return;
+
+		const cardsArray = Array.from(currentSectionElem.querySelectorAll('.manual-card')) as HTMLElement[];
+		let visibleCount = 0;
+
+		cardsArray.forEach(card => {
+			const cardFilter = card.getAttribute('data-filter') || 'all';
+			const keywords = (card.getAttribute('data-keywords') || '').toLowerCase();
+			const text = card.textContent?.toLowerCase() || '';
+
+			const matchesFilter = activeFilter === 'all' || cardFilter === activeFilter;
+			const matchesQuery = query === '' || keywords.includes(query) || text.includes(query);
+
+			if (matchesFilter && matchesQuery) {
+				card.style.display = 'block';
+				visibleCount++;
+			} else {
+				card.style.display = 'none';
+			}
+		});
+
+		if (emptyState) {
+			if (visibleCount === 0) {
+				emptyState.classList.remove('hidden');
+			} else {
+				emptyState.classList.add('hidden');
+			}
+		}
+
+		const sortVal = hiddenSortInput?.value || 'step';
+
+		cardsArray.sort((a, b) => {
+			if (sortVal === 'difficulty') {
+				return parseInt(a.getAttribute('data-difficulty') || '0', 10) - parseInt(b.getAttribute('data-difficulty') || '0', 10);
+			} else if (sortVal === 'readtime') {
+				return parseInt(a.getAttribute('data-readtime') || '0', 10) - parseInt(b.getAttribute('data-readtime') || '0', 10);
+			} else if (sortVal === 'title') {
+				const titleA = a.querySelector('h2')?.textContent || '';
+				const titleB = b.querySelector('h2')?.textContent || '';
+				return titleA.localeCompare(titleB);
+			} else {
+				return parseInt(a.getAttribute('data-step') || '0', 10) - parseInt(b.getAttribute('data-step') || '0', 10);
+			}
+		});
+
+		cardsArray.forEach(card => currentSectionElem.appendChild(card));
+	};
+
+	if (searchInput) searchInput.addEventListener('input', filterAndSortCards);
+</script>

@@ -1,0 +1,350 @@
+package com.example.dosezy.ui.subscreens
+
+import androidx.compose.material3.MaterialTheme
+import com.example.dosezy.R
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ArrowOutward
+import androidx.compose.material.icons.outlined.Book
+import androidx.compose.material.icons.outlined.Call
+import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.Help
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import com.example.dosezy.ui.components.TopBar
+import com.example.dosezy.ui.viewmodels.UserViewModel
+
+import androidx.compose.material.icons.outlined.BugReport
+import androidx.compose.material.icons.outlined.Info
+
+@Composable
+fun HelpSupportScreen(navController: NavController) {
+    val userViewModel: UserViewModel = com.example.dosezy.utils.sharedUserViewModel()
+    val currentUser by userViewModel.currentUser.collectAsState()
+
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            TopBar(
+                navController = navController,
+                currentUser = currentUser,
+                title = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_title),
+                showBackButton = true,
+                actions = {}
+            )
+
+            HelpSupportContent(navController)
+        }
+
+        CornerVersion()
+    }
+}
+
+@Composable
+fun HelpSupportContent(navController: NavController) {
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(16.dp)
+    ) {
+        // Resources Section
+        Text(
+            text = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_resources),
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // FAQ Card
+        SupportCard(
+            icon = Icons.Outlined.Help,
+            title = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_faqs_title),
+            description = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_faqs_desc),
+            onClick = {
+                openUrl(context, "https://github.com/saad2134/dosezy/blob/main/resources/FAQs.md")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // User Manual Card
+        SupportCard(
+            icon = Icons.Outlined.Book,
+            title = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_user_manual_title),
+            description = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_user_manual_desc),
+            onClick = {
+                openUrl(context, "https://github.com/saad2134/dosezy/blob/main/resources/UserManual.md")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Medical Disclaimer Card (#FDA, #MDR)
+        SupportCard(
+            icon = Icons.Outlined.Info,
+            title = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.disclaimer_link_medical),
+            description = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.disclaimer_dialog_title),
+            onClick = {
+                openUrl(context, "https://dosezy.attenomy.com/disclaimer")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Privacy Policy & Terms Card (#GDPR, #HIPAA)
+        SupportCard(
+            icon = Icons.Outlined.Info,
+            title = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.disclaimer_link_privacy),
+            description = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.disclaimer_link_terms),
+            onClick = {
+                openUrl(context, "https://dosezy.attenomy.com/privacy")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        // Contact Support Section
+        Text(
+            text = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_contact_support),
+            fontSize = 22.sp,
+            fontWeight = FontWeight.Bold,
+            color = MaterialTheme.colorScheme.onSurface,
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+
+        // Email Support Card
+        SupportCard(
+            icon = Icons.Outlined.Email,
+            title = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_email_support_title),
+            description = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_email_support_desc),
+            onClick = {
+                openEmail(context, "reach.saad@outlook.com", "Help & Support Request")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // Create New Issue / GitHub Card
+        SupportCard(
+            icon = Icons.Outlined.BugReport,
+            title = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_github_issues_title),
+            description = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.help_github_issues_desc),
+            onClick = {
+                openUrl(context, "https://github.com/saad2134/dosezy/issues/new/choose")
+            }
+        )
+
+        Spacer(modifier = Modifier.height(10.dp))
+
+        // About & Support Project Card
+        SupportCard(
+            icon = Icons.Outlined.Info,
+            title = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.about_title),
+            description = androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.about_tagline),
+            onClick = {
+                navController.navigate("about")
+            }
+        )
+
+        // Add bottom padding for version info
+        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+        Spacer(modifier = Modifier.height(32.dp))
+    }
+}
+
+@Composable
+fun CornerVersion() {
+    val context = LocalContext.current
+    val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+    val versionName = packageInfo.versionName
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "v$versionName",
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+        )
+    }
+}
+
+@Composable
+fun BottomVersion() {
+    val context = LocalContext.current
+    val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+    val versionName = packageInfo.versionName
+    val versionCode = androidx.core.content.pm.PackageInfoCompat.getLongVersionCode(packageInfo)
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Dosezy v$versionName",
+            fontSize = 14.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Medium
+        )
+        Text(
+            text = "Build $versionCode",
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SupportCard(
+    icon: ImageVector,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
+        tonalElevation = 0.dp,
+        shadowElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = null,
+                tint = Color(0xFF3B82F6),
+                modifier = Modifier.size(48.dp)
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
+                Text(
+                    text = title,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = description,
+                    fontSize = 18.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Icon(
+                imageVector = Icons.Outlined.ArrowOutward,
+                contentDescription = "Open",
+                tint = Color(0xFF94A3B8)
+            )
+        }
+    }
+}
+
+// Utility functions for opening external apps
+// Guard: Add FLAG_ACTIVITY_NEW_TASK and sanitize dialer/email intents to prevent AndroidRuntimeException on non-Activity contexts and dialer truncation
+internal fun createSupportUrlIntent(url: String): android.content.Intent {
+    return android.content.Intent(android.content.Intent.ACTION_VIEW, android.net.Uri.parse(url)).apply {
+        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+}
+
+internal fun createSupportEmailIntent(email: String, subject: String): android.content.Intent {
+    return android.content.Intent(android.content.Intent.ACTION_SENDTO).apply {
+        data = android.net.Uri.parse("mailto:")
+        putExtra(android.content.Intent.EXTRA_EMAIL, arrayOf(email))
+        putExtra(android.content.Intent.EXTRA_SUBJECT, subject)
+        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+}
+
+internal fun createSupportDialIntent(phoneNumber: String): android.content.Intent {
+    val cleaned = phoneNumber.replace(Regex("[^0-9+*#]"), "")
+    return android.content.Intent(android.content.Intent.ACTION_DIAL).apply {
+        data = android.net.Uri.fromParts("tel", cleaned, null)
+        addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+}
+
+private fun openUrl(context: android.content.Context, url: String) {
+    try {
+        context.startActivity(createSupportUrlIntent(url))
+    } catch (e: Exception) {
+        android.widget.Toast.makeText(context, context.getString(R.string.err_cannot_open_link), android.widget.Toast.LENGTH_SHORT).show()
+    }
+}
+
+private fun openEmail(context: android.content.Context, email: String, subject: String) {
+    try {
+        context.startActivity(createSupportEmailIntent(email, subject))
+    } catch (e: Exception) {
+        android.widget.Toast.makeText(context, context.getString(R.string.err_no_email_app), android.widget.Toast.LENGTH_SHORT).show()
+    }
+}
+
+private fun openPhone(context: android.content.Context, phoneNumber: String) {
+    try {
+        context.startActivity(createSupportDialIntent(phoneNumber))
+    } catch (e: Exception) {
+        android.widget.Toast.makeText(context, context.getString(R.string.err_cannot_make_call), android.widget.Toast.LENGTH_SHORT).show()
+    }
+}

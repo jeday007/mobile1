@@ -1,0 +1,642 @@
+package com.example.dosezy.ui.subscreens
+
+import android.content.Context
+import android.content.Intent
+import android.net.Uri
+import android.widget.Toast
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Accessibility
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.People
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.outlined.ArrowOutward
+import androidx.compose.material.icons.outlined.Star
+import androidx.compose.ui.text.style.TextOverflow
+import com.example.dosezy.utils.AppSignature
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.pm.PackageInfoCompat
+import androidx.navigation.NavController
+import com.example.dosezy.R
+import com.example.dosezy.ui.components.TopBar
+import com.example.dosezy.ui.viewmodels.UserViewModel
+
+@Composable
+fun AboutScreen(navController: NavController) {
+    val userViewModel: UserViewModel = com.example.dosezy.utils.sharedUserViewModel()
+    val currentUser by userViewModel.currentUser.collectAsState()
+    val context = LocalContext.current
+    val scrollState = rememberScrollState()
+
+    val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+    val versionName = packageInfo.versionName
+    val versionCode = PackageInfoCompat.getLongVersionCode(packageInfo)
+
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+    ) {
+        TopBar(
+            navController = navController,
+            currentUser = currentUser,
+            title = stringResource(R.string.about_title),
+            showBackButton = true,
+            actions = {}
+        )
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(scrollState)
+                .padding(16.dp)
+        ) {
+            // Header / App Branding
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surface,
+                shadowElevation = 2.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(RoundedCornerShape(18.dp))
+                            .background(Color(0xFF2084E4).copy(alpha = 0.12f)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.loader_icon),
+                            contentDescription = "Dosezy Logo",
+                            modifier = Modifier.size(48.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = "Dosezy",
+                        fontSize = 24.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Text(
+                        text = stringResource(R.string.about_version_build, versionName ?: "2.5.13", versionCode),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    val buildFlavorName = if (com.example.dosezy.BuildConfig.FLAVOR.equals("foss", ignoreCase = true)) {
+                        stringResource(R.string.about_build_foss)
+                    } else {
+                        stringResource(R.string.about_build_play)
+                    }
+                    val buildBadgeLabel = if (com.example.dosezy.BuildConfig.DEBUG) "$buildFlavorName (Debug)" else buildFlavorName
+
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)
+                    ) {
+                        Text(
+                            text = buildBadgeLabel,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    Text(
+                        text = stringResource(R.string.about_tagline),
+                        fontSize = 14.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = TextAlign.Center,
+                        lineHeight = 20.sp
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Why Dosezy? (Core Pillars & Features)
+            Text(
+                text = stringResource(R.string.about_features_title),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                AboutFeatureItem(
+                    icon = Icons.Default.Security,
+                    iconTint = Color(0xFF10B981),
+                    title = stringResource(R.string.about_feat_offline_title),
+                    description = stringResource(R.string.about_feat_offline_desc)
+                )
+
+                AboutFeatureItem(
+                    icon = Icons.Default.Schedule,
+                    iconTint = Color(0xFF0284C7),
+                    title = stringResource(R.string.about_feat_smart_alarms_title),
+                    description = stringResource(R.string.about_feat_smart_alarms_desc)
+                )
+
+                AboutFeatureItem(
+                    icon = Icons.Default.People,
+                    iconTint = Color(0xFF8B5CF6),
+                    title = stringResource(R.string.about_feat_family_title),
+                    description = stringResource(R.string.about_feat_family_desc)
+                )
+
+                AboutFeatureItem(
+                    icon = Icons.Default.Accessibility,
+                    iconTint = Color(0xFFF59E0B),
+                    title = stringResource(R.string.about_feat_accessible_title),
+                    description = stringResource(R.string.about_feat_accessible_desc)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // About the Developer Section
+            Text(
+                text = stringResource(R.string.about_developer_title),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surface,
+                shadowElevation = 2.dp
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(18.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        // Developer avatar (Squircle frame)
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Color(0xFF2084E4).copy(alpha = 0.15f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = null,
+                                tint = Color(0xFF2084E4),
+                                modifier = Modifier.size(26.dp)
+                            )
+                        }
+
+                        Spacer(modifier = Modifier.width(14.dp))
+
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = AppSignature.authorName,
+                                fontSize = 17.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = stringResource(R.string.about_developer_role),
+                                fontSize = 13.sp,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Text(
+                        text = stringResource(R.string.about_developer_bio),
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        lineHeight = 18.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(14.dp))
+
+                    AboutLinkCard(
+                        icon = Icons.Outlined.Star,
+                        iconTint = Color(0xFF2084E4),
+                        title = stringResource(R.string.about_developer_github),
+                        description = "@${AppSignature.authorHandle}",
+                        onClick = {
+                            openUrl(context, AppSignature.githubProfileUrl)
+                        }
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Open Source & Community
+            Text(
+                text = stringResource(R.string.about_community_open_source),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            AboutLinkCard(
+                icon = Icons.Outlined.Star,
+                iconTint = Color(0xFFEAB308),
+                title = stringResource(R.string.about_star_github),
+                description = stringResource(R.string.about_star_github_desc),
+                onClick = {
+                    openUrl(context, "https://github.com/saad2134/dosezy")
+                }
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Guard: Support Development Section (Flavor specific: absent on Play Store, active on F-Droid)
+            SupportDevelopmentSection()
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Legal & Policies Section (#FDA, #MDR, #HIPAA, #PlayStore)
+            Text(
+                text = "Legal & Policies",
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            AboutLinkCard(
+                icon = Icons.Default.Security,
+                iconTint = Color(0xFFF59E0B),
+                title = stringResource(R.string.disclaimer_link_medical),
+                description = "Non-clinical software utility disclaimer",
+                onClick = {
+                    openUrl(context, "https://dosezy.attenomy.com/disclaimer")
+                }
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            AboutLinkCard(
+                icon = Icons.Default.Security,
+                iconTint = Color(0xFF10B981),
+                title = stringResource(R.string.disclaimer_link_privacy),
+                description = "Data protection and privacy policy",
+                onClick = {
+                    openUrl(context, "https://dosezy.attenomy.com/privacy")
+                }
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            AboutLinkCard(
+                icon = Icons.Default.Security,
+                iconTint = Color(0xFF0284C7),
+                title = stringResource(R.string.disclaimer_link_terms),
+                description = "Terms of service and software license",
+                onClick = {
+                    openUrl(context, "https://dosezy.attenomy.com/terms")
+                }
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Social Media / Official Channels Section
+            Text(
+                text = stringResource(R.string.about_social_links_title),
+                fontSize = 18.sp,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+
+            val isDark = isSystemInDarkTheme()
+            val socials = listOf(
+                SocialMediaItem("X (Twitter)", "@dosezyapp", "https://x.com/dosezyapp", if (isDark) Color.White else Color(0xFF14171A), R.drawable.ic_brand_x),
+                SocialMediaItem("YouTube", "@dosezyapp", "https://www.youtube.com/@dosezyapp", Color(0xFFFF0000), R.drawable.ic_brand_youtube),
+                SocialMediaItem("Reddit", "r/Dosezy", "https://www.reddit.com/r/Dosezy/", Color(0xFFFF4500), R.drawable.ic_brand_reddit),
+                SocialMediaItem("Facebook", "@dosezyapp", "https://www.facebook.com/dosezyapp", Color(0xFF1877F2), R.drawable.ic_brand_facebook),
+                SocialMediaItem("Instagram", "@dosezyapp", "https://www.instagram.com/dosezyapp", Color(0xFFE4405F), R.drawable.ic_brand_instagram),
+                SocialMediaItem("TikTok", "@dosezyapp", "https://www.tiktok.com/@dosezyapp", if (isDark) Color.White else Color(0xFF111827), R.drawable.ic_brand_tiktok)
+            )
+
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                socials.chunked(2).forEach { pair ->
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        SocialMediaCard(
+                            iconResId = pair[0].iconResId,
+                            brandColor = pair[0].brandColor,
+                            title = pair[0].name,
+                            handle = pair[0].handle,
+                            onClick = { openUrl(context, pair[0].url) },
+                            modifier = Modifier.weight(1f)
+                        )
+                        if (pair.size > 1) {
+                            SocialMediaCard(
+                                iconResId = pair[1].iconResId,
+                                brandColor = pair[1].brandColor,
+                                title = pair[1].name,
+                                handle = pair[1].handle,
+                                onClick = { openUrl(context, pair[1].url) },
+                                modifier = Modifier.weight(1f)
+                            )
+                        } else {
+                            Spacer(modifier = Modifier.weight(1f))
+                        }
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+            Spacer(modifier = Modifier.height(32.dp))
+        }
+    }
+}
+
+@Composable
+fun AboutLinkCard(
+    icon: ImageVector,
+    iconTint: Color,
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 2.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Link card icon (Squircle frame)
+            Box(
+                modifier = Modifier
+                    .size(44.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(iconTint.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconTint,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Text(
+                    text = description,
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 17.sp
+                )
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Icon(
+                imageVector = Icons.Outlined.ArrowOutward,
+                contentDescription = "Open Link",
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                modifier = Modifier.size(20.dp)
+            )
+        }
+    }
+}
+
+private fun openUrl(context: Context, url: String) {
+    try {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        context.startActivity(intent)
+    } catch (e: Exception) {
+        Toast.makeText(context, context.getString(R.string.err_cannot_open_link), Toast.LENGTH_SHORT).show()
+    }
+}
+
+@Composable
+fun AboutFeatureItem(
+    icon: ImageVector,
+    iconTint: Color,
+    title: String,
+    description: String,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 1.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(14.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(iconTint.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = iconTint,
+                    modifier = Modifier.size(22.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(14.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+                Spacer(modifier = Modifier.height(2.dp))
+                Text(
+                    text = description,
+                    fontSize = 13.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 17.sp
+                )
+            }
+        }
+    }
+}
+
+private data class SocialMediaItem(
+    val name: String,
+    val handle: String,
+    val url: String,
+    val brandColor: Color,
+    val iconResId: Int
+)
+
+@Composable
+fun SocialMediaCard(
+    iconResId: Int,
+    brandColor: Color,
+    title: String,
+    handle: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Surface(
+        modifier = modifier.clickable { onClick() },
+        shape = RoundedCornerShape(12.dp),
+        color = MaterialTheme.colorScheme.surface,
+        shadowElevation = 1.5.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 12.dp, vertical = 10.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Social media card icon (Squircle frame)
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(brandColor.copy(alpha = 0.12f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(id = iconResId),
+                    contentDescription = null,
+                    tint = brandColor,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.width(10.dp))
+
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    fontSize = 13.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = handle,
+                    fontSize = 11.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+
+            Icon(
+                imageVector = Icons.Outlined.ArrowOutward,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.45f),
+                modifier = Modifier.size(16.dp)
+            )
+        }
+    }
+}

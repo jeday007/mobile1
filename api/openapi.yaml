@@ -1,0 +1,1199 @@
+openapi: 3.0.3
+info:
+  title: Dosezy API
+  description: |
+    Official OpenAPI 3.0 specification for **Dosezy** - Open-Source, Offline-First Medicine Tracking & Caregiver Cloud Platform.
+    
+    ### Domain Alignment
+    - **API Base URL:** `https://api.dosezy.app`
+    - **Status Page:** `https://status.dosezy.app`
+    - **Documentation:** `https://docs.dosezy.app`
+    - **Patient Web App:** `https://patient.dosezy.app`
+    - **Caregiver Portal:** `https://caregiver.dosezy.app`
+  version: 2.5.13
+  contact:
+    name: Dosezy Maintainers
+    email: reach.saad@outlook.com
+    url: https://dosezy.app
+  license:
+    name: MIT License
+    url: https://opensource.org/licenses/MIT
+
+security:
+  - BearerAuth: []
+
+servers:
+  - url: https://api.dosezy.app
+    description: Official Hosted Cloud Production Server
+  - url: https://api.stage.dosezy.app
+    description: Staging Environment Server
+
+tags:
+  - name: Health & System
+    description: Server health checks, system status, and info
+  - name: User Profiles
+    description: Patient profile management and metadata
+  - name: Medicines
+    description: Medication definitions, dosages, and schedules
+  - name: Schedule Logs
+    description: Historical dose tracking, adherence logs, and status updates
+  - name: Incremental Sync
+    description: Local-first delta synchronization protocol
+  - name: Caregiver Platform
+    description: Caregiver pairing, patient monitoring, and adherence metrics
+
+paths:
+  /health:
+    get:
+      security: []
+      tags:
+        - Health & System
+      summary: Get server health and status
+      operationId: getHealthStatus
+      responses:
+        '200':
+          description: Server is healthy and operational
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: ok
+                  version:
+                    type: string
+                    example: 2.5.13
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2026-09-03T18:45:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '503':
+          description: Service temporarily unavailable or in maintenance mode
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/users:
+    get:
+      tags:
+        - User Profiles
+      summary: List all user profiles
+      operationId: listUsers
+      responses:
+        '200':
+          description: List of user profiles
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+    post:
+      tags:
+        - User Profiles
+      summary: Create a new patient profile
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateInput'
+      responses:
+        '201':
+          description: User profile created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - User Profiles
+      summary: Get user profile details
+      operationId: getUserById
+      responses:
+        '200':
+          description: User profile details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - User Profiles
+      summary: Update user profile
+      operationId: updateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreateInput'
+      responses:
+        '200':
+          description: User profile updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - User Profiles
+      summary: Delete user profile
+      operationId: deleteUser
+      responses:
+        '204':
+          description: Profile deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/users/{userId}/medicines:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Medicines
+      summary: List medicines for a user
+      operationId: listMedicines
+      responses:
+        '200':
+          description: List of medications
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Medicine'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Medicines
+      summary: Add a new medicine
+      operationId: createMedicine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicineInput'
+      responses:
+        '201':
+          description: Medicine created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medicine'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/medicines/{medicineId}:
+    parameters:
+      - name: medicineId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Medicines
+      summary: Get medicine details
+      operationId: getMedicineById
+      responses:
+        '200':
+          description: Medicine details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medicine'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags:
+        - Medicines
+      summary: Update medicine
+      operationId: updateMedicine
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MedicineInput'
+      responses:
+        '200':
+          description: Medicine updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Medicine'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags:
+        - Medicines
+      summary: Delete medicine
+      operationId: deleteMedicine
+      responses:
+        '204':
+          description: Medicine deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/users/{userId}/schedules:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      tags:
+        - Schedule Logs
+      summary: Get dose schedule history
+      operationId: listScheduleEntries
+      parameters:
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/MedicationStatus'
+      responses:
+        '200':
+          description: List of dose schedule history entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ScheduleEntry'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    post:
+      tags:
+        - Schedule Logs
+      summary: Log a dose action (Taken, Snoozed, Missed)
+      operationId: createScheduleEntry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScheduleEntryInput'
+      responses:
+        '201':
+          description: Dose action logged successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ScheduleEntry'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /v1/sync:
+    post:
+      tags:
+        - Incremental Sync
+      summary: Incremental Delta Sync (Offline-First)
+      operationId: performDeltaSync
+      description: Push local database changes and receive remote updates since `lastSyncedAt`.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SyncPushRequest'
+      responses:
+        '200':
+          description: Sync completed successfully with deltas returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SyncPullResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/caregiver/pair:
+    post:
+      tags:
+        - Caregiver Platform
+      summary: Generate or redeem a caregiver pairing code
+      operationId: pairCaregiver
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PairingRequest'
+      responses:
+        '200':
+          description: Pairing code generated or redeemed successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PairingResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /v1/caregiver/patients:
+    get:
+      tags:
+        - Caregiver Platform
+      summary: List monitored patients & adherence metrics for caregiver
+      operationId: listMonitoredPatients
+      responses:
+        '200':
+          description: List of monitored patients and adherence metrics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CaregiverPatientSummary'
+        '401':
+          description: Unauthorized caregiver access
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    Gender:
+      type: string
+      enum: [MALE, FEMALE, DO_NOT_SPECIFY]
+
+    Theme:
+      type: string
+      enum: [LIGHT, DARK, SYSTEM]
+      default: SYSTEM
+
+    TimeFormat:
+      type: string
+      enum: [HOUR_12, HOUR_24]
+      default: HOUR_12
+
+    Language:
+      type: string
+      enum: [SYSTEM, ENGLISH, SPANISH, HINDI, CHINESE, PORTUGUESE, ARABIC, FRENCH, GERMAN, JAPANESE, RUSSIAN, ITALIAN, BENGALI]
+      default: SYSTEM
+
+    DosageUnit:
+      type: string
+      enum: [MG, MCG, ML, DROP, TABLET, CAPSULE, MEQ, PUFF, AMPULE, SPRAY]
+
+    FrequencyPattern:
+      type: string
+      description: Recurrence cadence pattern for medication scheduling (DAILY, WEEKLY, MONTHLY, EVERY_X_HOURS, EVERY_X_DAYS, CUSTOM [Every X Weeks], AS_NEEDED [PRN])
+      enum: [DAILY, WEEKLY, MONTHLY, EVERY_X_HOURS, EVERY_X_DAYS, CUSTOM, AS_NEEDED]
+
+    Frequency:
+      type: object
+      required:
+        - pattern
+      properties:
+        pattern:
+          $ref: '#/components/schemas/FrequencyPattern'
+        daysPerWeek:
+          type: integer
+          nullable: true
+          example: 3
+        daysPerMonth:
+          type: integer
+          nullable: true
+          example: 15
+        selectedDaysOfWeek:
+          type: array
+          nullable: true
+          description: ISO standard day of week numbers (1=Monday .. 7=Sunday)
+          items:
+            type: integer
+          example: [1, 3, 5]
+        selectedDaysOfMonth:
+          type: array
+          nullable: true
+          description: Specific calendar days of the month (1-31)
+          items:
+            type: integer
+          example: [1, 15, 30]
+        intervalHours:
+          type: integer
+          nullable: true
+          description: Hourly interval for EVERY_X_HOURS pattern
+          example: 6
+        intervalDays:
+          type: integer
+          nullable: true
+          description: Day interval for EVERY_X_DAYS pattern
+          example: 2
+        intervalWeeks:
+          type: integer
+          nullable: true
+          description: Week interval for CUSTOM recurrence pattern (e.g. 2 for every 2 weeks)
+          example: 2
+
+    MedicationStatus:
+      type: string
+      enum: [PENDING, TAKEN_ON_TIME, TAKEN_LATE, MISSED, SKIPPED]
+
+    PillShape:
+      type: string
+      enum: [ROUND, CAPSULE, OVAL, LIQUID, INHALER, INJECTION, DROPS, PATCH, SPRAY]
+      default: ROUND
+      example: ROUND
+
+    ReminderType:
+      type: string
+      description: Reminder alert delivery mechanism (ALARM for full-screen alarm activity bypassing DND, NOTIFICATION for notification shade chime respecting DND)
+      enum: [ALARM, NOTIFICATION]
+      default: ALARM
+      example: ALARM
+
+    AlarmSound:
+      type: string
+      enum: [SYSTEM_DEFAULT, GENTLE_CHIME, MEDICAL_MARIMBA, BRISK_PULSE, CALM_BELL, CUSTOM]
+      default: SYSTEM_DEFAULT
+      example: SYSTEM_DEFAULT
+
+    User:
+      type: object
+      required:
+        - userId
+        - fullName
+        - age
+        - gender
+        - contactNumber
+      properties:
+        userId:
+          type: string
+          example: usr_8f9a2b1c
+        fullName:
+          type: string
+          example: John Doe
+        age:
+          type: integer
+          example: 45
+        gender:
+          $ref: '#/components/schemas/Gender'
+        contactNumber:
+          type: string
+          example: '+1234567890'
+        profilePicPath:
+          type: string
+          nullable: true
+        isCurrentUser:
+          type: boolean
+          example: true
+        theme:
+          $ref: '#/components/schemas/Theme'
+        timeFormat:
+          $ref: '#/components/schemas/TimeFormat'
+        language:
+          $ref: '#/components/schemas/Language'
+        considerLateAfter:
+          type: integer
+          description: Minutes after scheduled time to consider dose late (options 15, 30, 45, 60, 90, 120, 180, 240; legacy 1-14 interpreted as hours)
+          default: 180
+          example: 180
+        considerMissedAfter:
+          type: integer
+          description: Minutes after scheduled time to consider dose missed (options 30, 45, 60, 90, 120, 180, 240, 360, 480, 720; legacy 1-14 interpreted as hours)
+          default: 360
+          example: 360
+        snoozeDuration:
+          type: integer
+          description: Snooze duration in minutes (options 5, 10, 15, 20, 30)
+          default: 10
+          example: 10
+        allergies:
+          type: string
+          nullable: true
+          description: Known patient drug or substance allergies
+          example: Penicillin, Sulfa drugs
+        medicalConditions:
+          type: string
+          nullable: true
+          description: Diagnosed medical conditions or comorbidities
+          example: Hypertension, Type 2 Diabetes
+        naggingRemindersEnabled:
+          type: boolean
+          description: Whether nagging periodic reminder alarms are enabled
+          default: false
+          example: false
+        naggingIntervalMinutes:
+          type: integer
+          description: Interval in minutes between nagging alarms (5, 10, 15)
+          default: 5
+          example: 5
+        naggingMaxRepeats:
+          type: integer
+          description: Maximum number of nagging reminder repeats (0=continuous/until taken, 1, 2, 3, 5, 10 repeats)
+          default: 3
+          example: 3
+        alarmSound:
+          $ref: '#/components/schemas/AlarmSound'
+        customAlarmSoundPath:
+          type: string
+          nullable: true
+          description: File path to custom imported alarm sound
+        customAlarmSoundTitle:
+          type: string
+          nullable: true
+          description: Display title of custom alarm sound
+        alarmDurationSeconds:
+          type: integer
+          description: Alarm auto-silence duration in seconds (-1=once, 0=continuous, 15, 30, 60, 120, 300)
+          default: 0
+          example: 0
+        allowDoseSkipping:
+          type: boolean
+          description: Whether patient is allowed to log a dose as skipped with a clinical reason
+          default: false
+          example: false
+        allowCustomDoseTime:
+          type: boolean
+          description: Whether patient can record a custom backdated or forward timestamp when taking a dose
+          default: false
+          example: false
+        hideAddMedicineNavButton:
+          type: boolean
+          description: Whether the bottom navigation bar hides the center Add button
+          default: false
+          example: false
+        allowDoseUndo:
+          type: boolean
+          description: Whether user can revert a recorded dose back to pending
+          default: false
+          example: false
+        allowDoseNotes:
+          type: boolean
+          description: Whether user is allowed to log optional symptom and meal notes with doses
+          default: false
+          example: false
+        promptDoseNotes:
+          type: boolean
+          description: Whether to prompt for an optional note or symptom log whenever a dose is marked as taken
+          default: false
+          example: false
+        slideActionsEnabled:
+          type: boolean
+          description: Whether sliding gestures are required to confirm taking or snoozing doses in alarms
+          default: true
+          example: true
+        timelineModeEnabled:
+          type: boolean
+          description: Whether home page displays today's schedule in an expanded vertical timeline view
+          default: false
+          example: false
+        thickerCalendarDayHighlight:
+          type: boolean
+          description: Whether schedule calendar renders a full colored border frame around each scheduled day
+          default: false
+          example: false
+        intakeSafeguardEnabled:
+          type: boolean
+          description: Whether ADHD intake countdown timer safeguard with automatic re-alert is enabled
+          default: false
+          example: false
+        intakeCountdownSeconds:
+          type: integer
+          description: Countdown timer duration in seconds for intake confirmation before re-alerting (60, 120, 180, 300)
+          default: 120
+          example: 120
+        lockscreenDetailsEnabled:
+          type: boolean
+          description: Whether sensitive prescription details are masked on the lock screen
+          default: true
+          example: true
+        customSnoozePopupEnabled:
+          type: boolean
+          description: Whether multiple custom snooze duration chips are presented in alarm alert
+          default: false
+          example: false
+        reminderType:
+          $ref: '#/components/schemas/ReminderType'
+
+    UserCreateInput:
+      type: object
+      required:
+        - fullName
+        - age
+        - gender
+        - contactNumber
+      properties:
+        fullName:
+          type: string
+          example: Jane Doe
+        age:
+          type: integer
+          example: 38
+        gender:
+          $ref: '#/components/schemas/Gender'
+        contactNumber:
+          type: string
+          example: '+1234567890'
+        profilePicPath:
+          type: string
+          nullable: true
+        isCurrentUser:
+          type: boolean
+          default: false
+          example: false
+        theme:
+          $ref: '#/components/schemas/Theme'
+        timeFormat:
+          $ref: '#/components/schemas/TimeFormat'
+        language:
+          $ref: '#/components/schemas/Language'
+        considerLateAfter:
+          type: integer
+          description: 'Minutes after scheduled time to consider dose late (default: 180)'
+          default: 180
+          example: 180
+        considerMissedAfter:
+          type: integer
+          description: 'Minutes after scheduled time to consider dose missed (default: 360)'
+          default: 360
+          example: 360
+        snoozeDuration:
+          type: integer
+        allergies:
+          type: string
+          nullable: true
+          example: Penicillin
+        medicalConditions:
+          type: string
+          nullable: true
+          example: Asthma
+        naggingRemindersEnabled:
+          type: boolean
+        naggingIntervalMinutes:
+          type: integer
+        naggingMaxRepeats:
+          type: integer
+          description: Maximum number of nagging reminder repeats (0=continuous/until taken, 1, 2, 3, 5, 10 repeats)
+          default: 3
+          example: 3
+        alarmSound:
+          $ref: '#/components/schemas/AlarmSound'
+        customAlarmSoundPath:
+          type: string
+          nullable: true
+        customAlarmSoundTitle:
+          type: string
+          nullable: true
+        alarmDurationSeconds:
+          type: integer
+          description: Alarm auto-silence duration in seconds (-1=once, 0=continuous, 15, 30, 60, 120, 300)
+        allowDoseSkipping:
+          type: boolean
+        allowCustomDoseTime:
+          type: boolean
+        hideAddMedicineNavButton:
+          type: boolean
+        allowDoseUndo:
+          type: boolean
+        allowDoseNotes:
+          type: boolean
+        promptDoseNotes:
+          type: boolean
+        slideActionsEnabled:
+          type: boolean
+        timelineModeEnabled:
+          type: boolean
+        thickerCalendarDayHighlight:
+          type: boolean
+        intakeSafeguardEnabled:
+          type: boolean
+        intakeCountdownSeconds:
+          type: integer
+        lockscreenDetailsEnabled:
+          type: boolean
+          default: true
+          example: true
+        customSnoozePopupEnabled:
+          type: boolean
+          default: false
+          example: false
+        reminderType:
+          $ref: '#/components/schemas/ReminderType'
+
+    Medicine:
+      type: object
+      required:
+        - medicineId
+        - userId
+        - medicationName
+        - dosage
+        - dosageUnit
+        - timesPerDay
+        - frequency
+        - scheduledTimes
+      properties:
+        medicineId:
+          type: string
+          example: med_1a2b3c
+        userId:
+          type: string
+          example: usr_8f9a2b1c
+        medicationName:
+          type: string
+          example: Amoxicillin
+        dosage:
+          type: number
+          format: double
+          example: 500.0
+        dosageUnit:
+          $ref: '#/components/schemas/DosageUnit'
+        timesPerDay:
+          type: integer
+          example: 2
+        frequency:
+          $ref: '#/components/schemas/Frequency'
+        scheduledTimes:
+          type: array
+          items:
+            type: string
+            example: '08:00'
+        imageUri:
+          type: string
+          nullable: true
+        pillShape:
+          $ref: '#/components/schemas/PillShape'
+        pillColor:
+          type: string
+          description: Hex representation of medicine visual color
+          example: '#1193D4'
+        startDate:
+          type: string
+          format: date
+          nullable: true
+          description: Start date of medication course (YYYY-MM-DD)
+          example: '2026-09-01'
+        endDate:
+          type: string
+          format: date
+          nullable: true
+          description: End date of medication course (YYYY-MM-DD)
+          example: '2026-09-30'
+        durationDays:
+          type: integer
+          nullable: true
+          description: Total duration of prescription in days
+          example: 30
+        isArchived:
+          type: boolean
+          description: Whether medication has been discontinued/archived
+          default: false
+          example: false
+        notes:
+          type: string
+          nullable: true
+          description: Clinical or patient instructions
+          example: Take with food or a full glass of water
+        currentStock:
+          type: number
+          format: double
+          nullable: true
+          description: Current medicine inventory units available (supports fractional quantities, e.g. 29.5 or 0.5)
+          example: 30.0
+        refillThreshold:
+          type: number
+          format: double
+          nullable: true
+          description: Stock count threshold that triggers a low-stock refill alert (supports fractional quantities)
+          example: 5.0
+        autoDeductOnTake:
+          type: boolean
+          description: Automatically decrement currentStock when a scheduled dose is taken
+          default: true
+          example: true
+        customDosages:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+          nullable: true
+          description: Optional variable dosage amounts mapped by scheduled time HH:mm
+          example:
+            "08:00": 20.0
+            "20:00": 40.0
+        reminderType:
+          $ref: '#/components/schemas/ReminderType'
+
+    MedicineInput:
+      type: object
+      required:
+        - medicationName
+        - dosage
+        - dosageUnit
+        - timesPerDay
+        - frequency
+        - scheduledTimes
+      properties:
+        medicationName:
+          type: string
+          example: Amoxicillin
+        dosage:
+          type: number
+          format: double
+          example: 500.0
+        dosageUnit:
+          $ref: '#/components/schemas/DosageUnit'
+        timesPerDay:
+          type: integer
+          example: 2
+        frequency:
+          $ref: '#/components/schemas/Frequency'
+        scheduledTimes:
+          type: array
+          items:
+            type: string
+            example: '08:00'
+        imageUri:
+          type: string
+          nullable: true
+        pillShape:
+          $ref: '#/components/schemas/PillShape'
+        pillColor:
+          type: string
+          example: '#1193D4'
+        startDate:
+          type: string
+          format: date
+          nullable: true
+          example: '2026-09-01'
+        endDate:
+          type: string
+          format: date
+          nullable: true
+          example: '2026-09-30'
+        durationDays:
+          type: integer
+          nullable: true
+          example: 30
+        isArchived:
+          type: boolean
+          default: false
+        notes:
+          type: string
+          nullable: true
+          example: Take with food
+        currentStock:
+          type: number
+          format: double
+          nullable: true
+          example: 30.0
+        refillThreshold:
+          type: number
+          format: double
+          nullable: true
+          example: 5.0
+        autoDeductOnTake:
+          type: boolean
+          default: true
+        customDosages:
+          type: object
+          additionalProperties:
+            type: number
+            format: double
+          nullable: true
+          example:
+            "08:00": 20.0
+            "20:00": 40.0
+        reminderType:
+          $ref: '#/components/schemas/ReminderType'
+
+    ScheduleEntry:
+      type: object
+      required:
+        - entryId
+        - userId
+        - medicineId
+        - scheduledDateTime
+        - status
+      properties:
+        entryId:
+          type: string
+          example: sch_998877
+        userId:
+          type: string
+          example: usr_8f9a2b1c
+        medicineId:
+          type: string
+          example: med_1a2b3c
+        scheduledDateTime:
+          type: string
+          format: date-time
+          example: '2026-09-03T08:00:00Z'
+        status:
+          $ref: '#/components/schemas/MedicationStatus'
+        takenAt:
+          type: string
+          format: date-time
+          nullable: true
+        skipReason:
+          type: string
+          nullable: true
+          description: Reason why dose was marked skipped
+          example: Doctor advised to pause
+        dosage:
+          type: number
+          format: double
+          nullable: true
+          description: Resolved dosage strength for this specific scheduled slot
+          example: 20.0
+        doseNotes:
+          type: string
+          nullable: true
+          description: Clinical or patient note recorded when taking the dose
+          example: Taken after light breakfast, felt fine
+
+    ScheduleEntryInput:
+      type: object
+      required:
+        - medicineId
+        - scheduledDateTime
+        - status
+      properties:
+        medicineId:
+          type: string
+        scheduledDateTime:
+          type: string
+          format: date-time
+        status:
+          $ref: '#/components/schemas/MedicationStatus'
+        takenAt:
+          type: string
+          format: date-time
+          nullable: true
+        skipReason:
+          type: string
+          nullable: true
+          example: Fasting for lab test
+        dosage:
+          type: number
+          format: double
+          nullable: true
+          example: 20.0
+        doseNotes:
+          type: string
+          nullable: true
+          example: Taken after light breakfast
+
+    SyncPushRequest:
+      type: object
+      required:
+        - lastSyncedAt
+      properties:
+        lastSyncedAt:
+          type: string
+          format: date-time
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Medicine'
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleEntry'
+
+    SyncPullResponse:
+      type: object
+      required:
+        - syncTimestamp
+      properties:
+        syncTimestamp:
+          type: string
+          format: date-time
+        users:
+          type: array
+          items:
+            $ref: '#/components/schemas/User'
+        medicines:
+          type: array
+          items:
+            $ref: '#/components/schemas/Medicine'
+        schedules:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScheduleEntry'
+
+    PairingRequest:
+      type: object
+      properties:
+        pairingCode:
+          type: string
+          example: '8F9A2B'
+        role:
+          type: string
+          enum: [PATIENT, CAREGIVER]
+
+    PairingResponse:
+      type: object
+      properties:
+        pairingCode:
+          type: string
+          example: '8F9A2B'
+        expiresAt:
+          type: string
+          format: date-time
+        status:
+          type: string
+          example: PENDING
+
+    CaregiverPatientSummary:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: usr_8f9a2b1c
+        fullName:
+          type: string
+          example: John Doe
+        adherenceRate:
+          type: number
+          format: double
+          example: 94.5
+        activeMedicinesCount:
+          type: integer
+          example: 4
+        missedDosesCount:
+          type: integer
+          example: 1
+        todayPendingCount:
+          type: integer
+          example: 2
+        todayTakenCount:
+          type: integer
+          example: 3
+        todayLateCount:
+          type: integer
+          example: 0
+        allergies:
+          type: string
+          nullable: true
+          example: Penicillin
+        chronicConditions:
+          type: string
+          nullable: true
+          example: Hypertension
+        emergencyContactName:
+          type: string
+          nullable: true
+          example: Jane Doe
+        emergencyContactPhone:
+          type: string
+          nullable: true
+          example: '+1234567890'
+        lastSyncedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2026-11-09T18:00:00Z'
+
+    ErrorResponse:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          example: NOT_FOUND
+        message:
+          type: string
+          example: The requested resource was not found.
+
+    # Semantic Cross-Schema Aliases
+    Medication:
+      allOf:
+        - $ref: '#/components/schemas/Medicine'
+      description: Canonical alias for Medicine schema
+    Schedule:
+      allOf:
+        - $ref: '#/components/schemas/Frequency'
+      description: Canonical alias for Frequency recurrence schema
+    DoseEvent:
+      allOf:
+        - $ref: '#/components/schemas/ScheduleEntry'
+      description: Canonical alias for ScheduleEntry dose event history schema
+    CaregiverConsent:
+      allOf:
+        - $ref: '#/components/schemas/PairingRequest'
+      description: Canonical alias for PairingRequest consent exchange schema
+
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Optional JWT bearer token for cloud-authenticated sync and caregiver access
+
+  responses:
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+
+    BadRequest:
+      description: Invalid request parameters or body validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'

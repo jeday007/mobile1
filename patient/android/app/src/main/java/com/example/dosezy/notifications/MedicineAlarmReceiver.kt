@@ -1,0 +1,856 @@
+// MedicineAlarmReceiver.kt
+package com.example.dosezy.notifications
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.graphics.BitmapFactory
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Snooze
+import androidx.core.app.NotificationCompat
+import com.example.dosezy.MainActivity
+import com.example.dosezy.R
+import com.example.dosezy.data.DosezyDatabase
+import com.example.dosezy.data.repository.ScheduleRepository
+import com.example.dosezy.data.repository.UserRepository
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+class MedicineAlarmReceiver : BroadcastReceiver() {
+
+    private lateinit var database: DosezyDatabase
+
+    companion object {
+        const val TAG = "MedicineAlarmReceiver"
+        const val CHANNEL_ID = "dosezy_medicine_reminders_v4"
+        const val NOTIFICATION_CHANNEL_ID = "dosezy_medicine_notifications_v1"
+        const val REFILL_CHANNEL_ID = "dosezy_refill_alerts"
+        const val EXTRA_ENTRY_ID = "entry_id"
+        const val EXTRA_MEDICINE_NAME = "medicine_name"
+        const val EXTRA_SCHEDULED_TIME = "scheduled_time"
+        const val EXTRA_ENTRY_IDS = "entry_ids"
+        const val EXTRA_MEDICINE_NAMES = "medicine_names"
+        const val EXTRA_NAGGING_COUNT = "nagging_count"
+        const val EXTRA_IS_INTAKE_SAFEGUARD = "is_intake_safeguard"
+        const val ACTION_INTAKE_SAFEGUARD_EXPIRED = "com.example.dosezy.INTAKE_SAFEGUARD_EXPIRED"
+        const val EXTRA_IS_INTAKE_REALERT = "is_intake_realert"
+        const val EXTRA_SNOOZE_MINUTES = "extra_snooze_minutes"
+        const val EXTRA_USER_ID = "user_id"
+
+        fun createNotificationChannels(context: Context) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val notificationManager =
+                    context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+                // Remove legacy channels to avoid system audio caching conflicts and enforce VISIBILITY_NO_OVERRIDE
+                try {
+                    notificationManager.deleteNotificationChannel("dosezy_medicine_reminders_v3")
+                    notificationManager.deleteNotificationChannel("dosezy_medicine_reminders_v2")
+                    notificationManager.deleteNotificationChannel("dosezy_medicine_reminders")
+                } catch (_: Exception) {}
+
+                val channel = NotificationChannel(
+                    CHANNEL_ID,
+                    context.getString(com.example.dosezy.R.string.notif_channel_name),
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = context.getString(com.example.dosezy.R.string.notif_channel_desc)
+                    enableLights(true)
+                    enableVibration(false) // Managed directly by AlarmAudioPlayer
+                    setSound(null, null)  // Silent channel: eliminates duplicate system ringtone
+                    setBypassDnd(true)
+                    setShowBadge(true)
+                    // Guard: Default lockscreenVisibility (-1000 / VISIBILITY_NO_OVERRIDE) allows individual notification visibility (PUBLIC vs PRIVATE) to govern lock screen privacy
+                }
+
+                notificationManager.createNotificationChannel(channel)
+
+                // Guard: Standard notification channel for non-critical/supplement reminders respecting Do Not Disturb (#111)
+                val notifSoundUri = android.media.RingtoneManager.getDefaultUri(android.media.RingtoneManager.TYPE_NOTIFICATION)
+                val notifAudioAttributes = android.media.AudioAttributes.Builder()
+                    .setUsage(android.media.AudioAttributes.USAGE_NOTIFICATION_EVENT)
+                    .setContentType(android.media.AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                    .build()
+                val notifChannel = NotificationChannel(
+                    NOTIFICATION_CHANNEL_ID,
+                    context.getString(com.example.dosezy.R.string.notif_channel_notifications_name),
+                    NotificationManager.IMPORTANCE_HIGH
+                ).apply {
+                    description = context.getString(com.example.dosezy.R.string.notif_channel_notifications_desc)
+                    enableLights(true)
+                    enableVibration(true)
+                    setSound(notifSoundUri, notifAudioAttributes)
+                    setBypassDnd(false) // Guard: Strictly respects Do Not Disturb (#111)
+                    setShowBadge(true)
+                }
+                notificationManager.createNotificationChannel(notifChannel)
+
+                val refillChannel = NotificationChannel(
+                    REFILL_CHANNEL_ID,
+                    context.getString(com.example.dosezy.R.string.notif_channel_refill_name),
+                    NotificationManager.IMPORTANCE_DEFAULT
+                ).apply {
+                    description = context.getString(com.example.dosezy.R.string.notif_channel_refill_desc)
+                    enableLights(true)
+                    enableVibration(true)
+                    setShowBadge(true)
+                }
+                notificationManager.createNotificationChannel(refillChannel)
+            }
+        }
+
+        // Guard: Update active slot notification in shade when individual medications in a cohort are marked taken in-app without re-triggering full-screen activity
+        fun updateCohortNotification(
+            context: Context,
+            entryId: String,
+            entryIds: ArrayList<String>?,
+            medicineName: String,
+            medicineNames: ArrayList<String>?,
+            medicineDetails: List<Pair<String, String>> = emptyList(),
+            scheduledTime: String?,
+            snoozeMinutes: Int = 10,
+            userId: String? = null,
+            userLanguage: com.example.dosezy.data.model.Language? = null,
+            isAlarmMode: Boolean = true
+        ) {
+            val allowLockscreen = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE).getBoolean("lockscreen_details_enabled", true)
+            MedicineAlarmReceiver().showNotification(
+                context = context,
+                entryId = entryId,
+                entryIds = entryIds,
+                medicineName = medicineName,
+                medicineNames = medicineNames,
+                medicineDetails = medicineDetails,
+                scheduledTime = scheduledTime,
+                isNagging = false,
+                naggingCount = 0,
+                maxNagging = 3,
+                snoozeMinutes = snoozeMinutes,
+                isUpdateOnly = true,
+                userId = userId,
+                userLanguage = userLanguage,
+                allowLockscreenDetails = allowLockscreen,
+                isAlarmMode = isAlarmMode
+            )
+        }
+
+        // Guard: Trigger ADHD safeguard re-alert when intake countdown expires without confirmation (#104, #111)
+        fun triggerReAlert(
+            context: Context,
+            entryId: String,
+            medicineName: String,
+            entryIds: ArrayList<String>?,
+            medicineNames: ArrayList<String>?,
+            scheduledTime: String?,
+            user: com.example.dosezy.data.model.User?,
+            isAlarmModeOverride: Boolean? = null
+        ) {
+            val userReminderType = user?.reminderType ?: com.example.dosezy.data.model.ReminderType.ALARM
+            // Guard: Evaluate per-medicine reminderType overrides to prevent silent notifications on critical ALARM medicines or unwanted loud alarms on NOTIFICATION medicines (#111)
+            val isAlarmMode = isAlarmModeOverride ?: run {
+                try {
+                    val db = DosezyDatabase.getInstance(context)
+                    val allIds = entryIds ?: arrayListOf(entryId)
+                    kotlinx.coroutines.runBlocking {
+                        kotlinx.coroutines.withTimeoutOrNull(500L) {
+                            allIds.any { id ->
+                                val entry = db.scheduleDao().getScheduleEntryById(id)
+                                val med = entry?.let { db.medicineDao().getMedicineByIdDirect(it.medicineId) }
+                                (med?.reminderType ?: userReminderType) == com.example.dosezy.data.model.ReminderType.ALARM
+                            }
+                        }
+                    } ?: (userReminderType == com.example.dosezy.data.model.ReminderType.ALARM)
+                } catch (_: Exception) {
+                    userReminderType == com.example.dosezy.data.model.ReminderType.ALARM
+                }
+            }
+
+            if (isAlarmMode) {
+                val sound = user?.alarmSound ?: com.example.dosezy.data.model.AlarmSound.SYSTEM_DEFAULT
+                val customPath = user?.customAlarmSoundPath
+                val duration = user?.alarmDurationSeconds ?: 0
+
+                AlarmAudioPlayer.play(
+                    context = context,
+                    sound = sound,
+                    customPath = customPath,
+                    autoSilenceSeconds = duration
+                )
+            }
+
+            val allowLockscreen = user?.lockscreenDetailsEnabled ?: context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE).getBoolean("lockscreen_details_enabled", true)
+            val receiver = MedicineAlarmReceiver()
+            receiver.showNotification(
+                context = context,
+                entryId = entryId,
+                entryIds = entryIds,
+                medicineName = medicineName,
+                medicineNames = medicineNames,
+                scheduledTime = scheduledTime,
+                isNagging = false,
+                naggingCount = 0,
+                maxNagging = user?.naggingMaxRepeats ?: 3,
+                snoozeMinutes = user?.snoozeDuration ?: 10,
+                isIntakeReAlert = true,
+                userId = user?.userId,
+                userLanguage = user?.language,
+                showCustomSnoozeOptions = user?.customSnoozePopupEnabled ?: false,
+                allowLockscreenDetails = allowLockscreen,
+                isAlarmMode = isAlarmMode
+            )
+        }
+    }
+
+    override fun onReceive(context: Context, intent: Intent?) {
+        database = DosezyDatabase.getInstance(context)
+        val action = intent?.action
+
+        // Guard: Handle ADHD intake countdown safeguard expiration re-alert broadcast (#104, #BUG-SAFEGUARD-USER-ID)
+        if (action == ACTION_INTAKE_SAFEGUARD_EXPIRED) {
+            val entryId = intent.getStringExtra(EXTRA_ENTRY_ID)
+            val medicineName = intent.getStringExtra(EXTRA_MEDICINE_NAME) ?: "Medicine"
+            val entryIds = intent.getStringArrayListExtra(EXTRA_ENTRY_IDS)
+            val medicineNames = intent.getStringArrayListExtra(EXTRA_MEDICINE_NAMES)
+            val scheduledTime = intent.getStringExtra(EXTRA_SCHEDULED_TIME)
+            val userId = intent.getStringExtra(EXTRA_USER_ID)
+            if (entryId != null) {
+                // Guard: Hold goAsync() and WakeLock for intake safeguard expiration to prevent device sleep before re-alert completes
+                val pendingResult = try { goAsync() } catch (_: Exception) { null }
+                val powerManager = context.getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager
+                @Suppress("DEPRECATION")
+                val wakeLock = powerManager?.newWakeLock(
+                    android.os.PowerManager.PARTIAL_WAKE_LOCK or
+                            android.os.PowerManager.ACQUIRE_CAUSES_WAKEUP or
+                            android.os.PowerManager.ON_AFTER_RELEASE,
+                    "Dosezy:IntakeSafeguardWakeLock"
+                )
+                wakeLock?.acquire(30 * 1000L) // 30 seconds
+
+                Log.d(TAG, "Intake safeguard expired broadcast received for entry: $entryId")
+                IntakeSafeguardManager.handleCountdownExpired(
+                    context = context,
+                    entryId = entryId,
+                    medicineName = medicineName,
+                    entryIds = entryIds,
+                    medicineNames = medicineNames,
+                    scheduledTime = scheduledTime,
+                    userId = userId,
+                    onComplete = {
+                        try {
+                            wakeLock?.let { if (it.isHeld) it.release() }
+                        } catch (_: Exception) {}
+                        pendingResult?.finish()
+                    }
+                )
+            }
+            return
+        }
+
+        if (action == Intent.ACTION_BOOT_COMPLETED ||
+            action == "android.intent.action.QUICKBOOT_POWERON" ||
+            action == "android.intent.action.LOCKED_BOOT_COMPLETED" ||
+            action == Intent.ACTION_REBOOT ||
+            action == Intent.ACTION_TIMEZONE_CHANGED ||
+            action == Intent.ACTION_TIME_CHANGED ||
+            action == Intent.ACTION_DATE_CHANGED) {
+            
+            Log.d(TAG, "Received system broadcast action: $action - rescheduling all alarms")
+            // Guard: goAsync() returns null in unit tests and can throw if receiver lifecycle expired; guard against NPE and IllegalStateException
+            val pendingResult = try { goAsync() } catch (_: Exception) { null }
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    rescheduleAllAlarms(context)
+                } finally {
+                    pendingResult?.finish()
+                }
+            }
+            return
+        }
+
+        val entryId = intent?.getStringExtra(EXTRA_ENTRY_ID)
+        val entryIds = intent?.getStringArrayListExtra(EXTRA_ENTRY_IDS)
+        val medicineName = intent?.getStringExtra(EXTRA_MEDICINE_NAME)
+        val medicineNames = intent?.getStringArrayListExtra(EXTRA_MEDICINE_NAMES)
+        val scheduledTime = intent?.getStringExtra(EXTRA_SCHEDULED_TIME)
+        val naggingCount = intent?.getIntExtra(EXTRA_NAGGING_COUNT, 0) ?: 0
+        // Guard: Extract EXTRA_USER_ID so background catch fallback can resolve profile rather than default active user
+        val intentUserId = intent?.getStringExtra(EXTRA_USER_ID)
+
+        if (entryId != null && medicineName != null) {
+            // Guard: goAsync() returns null in unit tests and can throw if receiver lifecycle expired; guard against NPE and IllegalStateException
+            val pendingResult = try { goAsync() } catch (_: Exception) { null }
+            val powerManager = context.getSystemService(Context.POWER_SERVICE) as? android.os.PowerManager
+            // Guard: ACQUIRE_CAUSES_WAKEUP deprecated in API 33+ but required to turn screen on for alarms on API 24-32
+            @Suppress("DEPRECATION")
+            val wakeLock = powerManager?.newWakeLock(
+                android.os.PowerManager.PARTIAL_WAKE_LOCK or
+                        android.os.PowerManager.ACQUIRE_CAUSES_WAKEUP or
+                        android.os.PowerManager.ON_AFTER_RELEASE,
+                "Dosezy:MedicineAlarmWakeLock"
+            )
+            wakeLock?.acquire(30 * 1000L) // 30 seconds
+
+            CoroutineScope(Dispatchers.IO).launch {
+                try {
+                    val allEntryIds = entryIds ?: listOf(entryId)
+                    val validPendingEntries = allEntryIds.mapNotNull { id ->
+                        database.scheduleDao().getScheduleEntryById(id)
+                    }.filter { it.status == com.example.dosezy.data.model.MedicationStatus.PENDING }.toMutableList()
+
+                    if (validPendingEntries.isEmpty()) {
+                        Log.d(TAG, "Ignoring alarm - no pending schedule entries found for entry IDs: $allEntryIds")
+                        return@launch
+                    }
+
+                    // Guard: Reconcile all pending sibling schedule entries in the same time slot to ensure 4+ medication cohorts are fully loaded (#115)
+                    val primary = validPendingEntries.first()
+                    val targetUserId = primary.userId
+                    // Guard: Isolate cohort strictly to primary entry profile to prevent cross-profile notification and alarm contamination (#BUG-RECEIVER-MULTIUSER)
+                    val userPendingEntries = validPendingEntries.filter { it.userId == targetUserId }.toMutableList()
+
+                    val slotMillis = primary.scheduledDateTime.withSecond(0).withNano(0)
+                        .atZone(java.time.ZoneOffset.UTC).toInstant().toEpochMilli()
+                    val slotEntries = database.scheduleDao().getScheduleForDateRangeDirect(
+                        targetUserId,
+                        slotMillis,
+                        slotMillis + 59999L
+                    ).filter { it.status == com.example.dosezy.data.model.MedicationStatus.PENDING && !it.entryId.startsWith("PRN_") }
+                    val existingIds = userPendingEntries.map { it.entryId }.toSet()
+                    for (sibling in slotEntries) {
+                        if (sibling.entryId !in existingIds) {
+                            userPendingEntries.add(sibling)
+                        }
+                    }
+
+                    val primaryEntry = userPendingEntries.first()
+                    val user = database.userDao().getUserByIdDirect(primaryEntry.userId)
+                    val isNagging = naggingCount > 0
+
+                    // Retrieve medicine dosage details for each valid pending entry
+                    val medicineDetails = userPendingEntries.mapNotNull { e ->
+                        val m = database.medicineDao().getMedicineByIdDirect(e.medicineId) ?: return@mapNotNull null
+                        val dose = m.getDosageDisplay(e.scheduledDateTime.toLocalTime(), e.dosage)
+                        Pair(m.medicationName, dose)
+                    }
+
+                    val activeMedicineNames = ArrayList(userPendingEntries.mapNotNull { e ->
+                        database.medicineDao().getMedicineByIdDirect(e.medicineId)?.medicationName
+                    }.distinct())
+                    val effectiveMedicineName = if (activeMedicineNames.isNotEmpty()) activeMedicineNames.joinToString(", ") else medicineName
+                    val activeEntryIds = ArrayList(userPendingEntries.map { it.entryId })
+
+                    // Guard: Check if any medication in the cohort requires full alarm behavior (#111)
+                    val defaultReminderType = user?.reminderType ?: com.example.dosezy.data.model.ReminderType.ALARM
+                    val isAlarmMode = userPendingEntries.any { e ->
+                        val m = database.medicineDao().getMedicineByIdDirect(e.medicineId)
+                        val effectiveType = m?.reminderType ?: defaultReminderType
+                        effectiveType == com.example.dosezy.data.model.ReminderType.ALARM
+                    }
+
+                    if (isAlarmMode) {
+                        // Immediately trigger centralized alarm audio & vibration
+                        val sound = user?.alarmSound ?: com.example.dosezy.data.model.AlarmSound.SYSTEM_DEFAULT
+                        val customPath = user?.customAlarmSoundPath
+                        val duration = user?.alarmDurationSeconds ?: 0
+
+                        AlarmAudioPlayer.play(
+                            context = context,
+                            sound = sound,
+                            customPath = customPath,
+                            autoSilenceSeconds = duration
+                        )
+                    }
+
+                    // Guard: Derive locale from user's explicit profile language so scheduled time matches profile preferences (#BUG-NOTIF-LOCALE)
+                    val targetLanguage = user?.language ?: com.example.dosezy.utils.LocaleHelper.getSavedLanguage(context)
+                    val currentLocale = com.example.dosezy.utils.LocaleHelper.getLocale(targetLanguage)
+
+                    // Guard: Core library desugaring enables java.time on API 24+; format scheduled time with user's preferred 12h/24h mode and locale across all supported OS versions
+                    val formattedScheduledTime = if (user != null) {
+                        try {
+                            com.example.dosezy.utils.TimeFormatUtils.formatTime(primaryEntry.scheduledDateTime, user.timeFormat, currentLocale)
+                        } catch (_: Exception) {
+                            scheduledTime
+                        }
+                    } else {
+                        scheduledTime
+                    }
+
+                    showNotification(
+                        context = context,
+                        entryId = primaryEntry.entryId,
+                        entryIds = activeEntryIds,
+                        medicineName = effectiveMedicineName,
+                        medicineNames = activeMedicineNames,
+                        medicineDetails = medicineDetails,
+                        scheduledTime = formattedScheduledTime,
+                        isNagging = isNagging,
+                        naggingCount = naggingCount,
+                        maxNagging = user?.naggingMaxRepeats ?: 3,
+                        snoozeMinutes = user?.snoozeDuration ?: 10,
+                        userId = primaryEntry.userId,
+                        userLanguage = user?.language,
+                        showCustomSnoozeOptions = user?.customSnoozePopupEnabled ?: false,
+                        allowLockscreenDetails = user?.lockscreenDetailsEnabled ?: true,
+                        isAlarmMode = isAlarmMode
+                    )
+
+                    // Guard: Schedule next follow-up nagging reminder if enabled and below limit (0 = continuous until missed threshold) (#119)
+                    val isContinuous = user != null && user.naggingMaxRepeats <= 0
+                    val isMissed = user != null && com.example.dosezy.utils.TimeCalculationUtils.isMissed(
+                        primaryEntry.scheduledDateTime,
+                        java.time.LocalDateTime.now(),
+                        user.missedAfterMinutes
+                    )
+                    if (user != null && user.naggingRemindersEnabled && !isMissed && (isContinuous || naggingCount < user.naggingMaxRepeats)) {
+                        val alarmScheduler = AlarmScheduler(context)
+                        alarmScheduler.scheduleNaggingReminder(
+                            entryId = primaryEntry.entryId,
+                            minutes = user.naggingIntervalMinutes,
+                            medicineName = effectiveMedicineName,
+                            naggingCount = naggingCount + 1,
+                            entryIds = activeEntryIds,
+                            medicineNames = activeMedicineNames,
+                            scheduledTime = formattedScheduledTime,
+                            userId = primaryEntry.userId
+                        )
+                    }
+                } catch (ex: Exception) {
+                    Log.e(TAG, "Error processing alarm in background", ex)
+                    try {
+                        // Guard: Resolve fallback user via intentUserId before falling back to isCurrentUser to respect target profile settings
+                        val fallbackUser = try {
+                            if (!intentUserId.isNullOrBlank()) {
+                                database.userDao().getUserByIdDirect(intentUserId)
+                            } else null
+                        } catch (_: Exception) { null } ?: try {
+                            database.userDao().getAllUsersDirect().firstOrNull { it.isCurrentUser }
+                        } catch (_: Exception) { null }
+
+                        val isAlarm = fallbackUser?.reminderType != com.example.dosezy.data.model.ReminderType.NOTIFICATION
+                        if (isAlarm) {
+                            AlarmAudioPlayer.play(
+                                context = context,
+                                sound = com.example.dosezy.data.model.AlarmSound.SYSTEM_DEFAULT,
+                                customPath = null,
+                                autoSilenceSeconds = 0
+                            )
+                        }
+                        showNotification(
+                            context = context,
+                            entryId = entryId,
+                            entryIds = entryIds,
+                            medicineName = medicineName,
+                            medicineNames = medicineNames,
+                            medicineDetails = emptyList(),
+                            scheduledTime = scheduledTime,
+                            isNagging = false,
+                            naggingCount = 0,
+                            maxNagging = 3,
+                            userId = fallbackUser?.userId ?: intentUserId,
+                            userLanguage = fallbackUser?.language,
+                            allowLockscreenDetails = fallbackUser?.lockscreenDetailsEnabled ?: true,
+                            isAlarmMode = isAlarm
+                        )
+                    } catch (fallbackEx: Exception) {
+                        Log.e(TAG, "Error in fallback alarm/notification handling", fallbackEx)
+                    }
+                } finally {
+                    try {
+                        if (wakeLock?.isHeld == true) {
+                            wakeLock.release()
+                        }
+                    } catch (_: Exception) {}
+                    pendingResult?.finish()
+                }
+            }
+        }
+    }
+
+    private fun showNotification(
+        context: Context,
+        entryId: String,
+        entryIds: ArrayList<String>?,
+        medicineName: String,
+        medicineNames: ArrayList<String>?,
+        medicineDetails: List<Pair<String, String>> = emptyList(),
+        scheduledTime: String?,
+        isNagging: Boolean = false,
+        naggingCount: Int = 0,
+        maxNagging: Int = 3,
+        snoozeMinutes: Int = 10,
+        isUpdateOnly: Boolean = false,
+        isIntakeReAlert: Boolean = false,
+        userId: String? = null,
+        userLanguage: com.example.dosezy.data.model.Language? = null,
+        showCustomSnoozeOptions: Boolean = false,
+        allowLockscreenDetails: Boolean = true,
+        isAlarmMode: Boolean = true
+    ) {
+        // Guard: Resolve notification strings and actions using user profile language or fallback to globally saved app language (#BUG-NOTIF-LOCALE)
+        val targetLanguage = userLanguage ?: com.example.dosezy.utils.LocaleHelper.getSavedLanguage(context)
+        val localizedContext = com.example.dosezy.utils.LocaleHelper.updateContextLocale(context, targetLanguage)
+
+        createNotificationChannels(localizedContext)
+
+        val targetUser = userId?.let {
+            try {
+                kotlinx.coroutines.runBlocking(kotlinx.coroutines.Dispatchers.IO) {
+                    kotlinx.coroutines.withTimeoutOrNull(500L) {
+                        com.example.dosezy.data.DosezyDatabase.getInstance(context).userDao().getUserByIdDirect(it)
+                    }
+                }
+            } catch (_: Exception) { null }
+        }
+        val patientName = targetUser?.fullName?.takeIf { it.isNotBlank() }
+
+        // Guard: Check scheduledTime.isNotBlank() to prevent rendering empty 'Scheduled: ' label on safeguard re-alerts
+        val scheduledTimeStr = scheduledTime?.takeIf { it.isNotBlank() }?.let {
+            localizedContext.getString(R.string.notif_content_scheduled_format, it)
+        } ?: localizedContext.getString(R.string.notif_content_generic_reminder)
+
+        val effectiveDetails = if (medicineDetails.isNotEmpty()) {
+            medicineDetails
+        } else if (medicineNames != null && medicineNames.isNotEmpty()) {
+            medicineNames.map { Pair(it, "") }
+        } else {
+            listOf(Pair(medicineName, ""))
+        }
+
+        val primaryMedLabel = if (effectiveDetails.isNotEmpty()) {
+            val first = effectiveDetails.first()
+            if (first.second.isNotEmpty()) "${first.first} (${first.second})" else first.first
+        } else {
+            medicineName
+        }
+
+        // Guard: Use SINGLE_TOP/CLEAR_TOP with profile switch and route so clicking notification switches user and displays schedule
+        // Guard: Pass from_alarm flag so tapping notification stops continuous alarm audio and vibration in MainActivity (#BUG-ALARM-TAP-STOP)
+        val mainIntent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra("fragment", "schedule")
+            putExtra("from_alarm", true)
+            userId?.let { putExtra("switch_to_user_id", it) }
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            context,
+            entryId.hashCode(),
+            mainIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Create action intents
+        val takenIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "TAKEN_ACTION"
+            putExtra(EXTRA_ENTRY_ID, entryId)
+            if (entryIds != null) {
+                putStringArrayListExtra(EXTRA_ENTRY_IDS, entryIds)
+            }
+            // Guard: Pass isIntakeReAlert and scheduledTime to prevent re-entering safeguard countdown buffer (#104)
+            putExtra(EXTRA_IS_INTAKE_REALERT, isIntakeReAlert)
+            putExtra(EXTRA_SCHEDULED_TIME, scheduledTime ?: "")
+        }
+
+        val snoozeIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "SNOOZE_ACTION"
+            putExtra(EXTRA_ENTRY_ID, entryId)
+            if (entryIds != null) {
+                putStringArrayListExtra(EXTRA_ENTRY_IDS, entryIds)
+            }
+            putExtra(EXTRA_MEDICINE_NAME, medicineName)
+            if (medicineNames != null) {
+                putStringArrayListExtra(EXTRA_MEDICINE_NAMES, medicineNames)
+            }
+            putExtra(EXTRA_SNOOZE_MINUTES, snoozeMinutes)
+        }
+
+        // Guard: Provide dynamic quick extended snooze option directly in notification shade (#103)
+        val alternateSnoozeMinutes = if (snoozeMinutes == 30) 10 else if (snoozeMinutes > 30) 15 else 30
+        val alternateSnoozeIntent = Intent(context, NotificationActionReceiver::class.java).apply {
+            action = "SNOOZE_ACTION"
+            putExtra(EXTRA_ENTRY_ID, entryId)
+            if (entryIds != null) {
+                putStringArrayListExtra(EXTRA_ENTRY_IDS, entryIds)
+            }
+            putExtra(EXTRA_MEDICINE_NAME, medicineName)
+            if (medicineNames != null) {
+                putStringArrayListExtra(EXTRA_MEDICINE_NAMES, medicineNames)
+            }
+            putExtra(EXTRA_SNOOZE_MINUTES, alternateSnoozeMinutes)
+        }
+
+        val takenPendingIntent = PendingIntent.getBroadcast(
+            context,
+            entryId.hashCode() + 1,
+            takenIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val snoozePendingIntent = PendingIntent.getBroadcast(
+            context,
+            entryId.hashCode() + 2,
+            snoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        // Guard: Distinct requestCode (+3) prevents collision with primary snooze PendingIntent
+        val alternateSnoozePendingIntent = PendingIntent.getBroadcast(
+            context,
+            entryId.hashCode() + 3,
+            alternateSnoozeIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+        val effectiveAllowLockscreen = allowLockscreenDetails && prefs.getBoolean("lockscreen_details_enabled", true)
+
+        // Full screen alarm intent
+        val alarmIntent = Intent(context, AlarmActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or
+                    Intent.FLAG_ACTIVITY_CLEAR_TOP or
+                    Intent.FLAG_ACTIVITY_SINGLE_TOP or
+                    Intent.FLAG_ACTIVITY_REORDER_TO_FRONT or
+                    Intent.FLAG_ACTIVITY_NO_USER_ACTION
+            putExtra(EXTRA_ENTRY_ID, entryId)
+            if (entryIds != null) {
+                putStringArrayListExtra(EXTRA_ENTRY_IDS, entryIds)
+            }
+            putExtra(EXTRA_MEDICINE_NAME, medicineName)
+            if (medicineNames != null) {
+                putStringArrayListExtra(EXTRA_MEDICINE_NAMES, medicineNames)
+            }
+            putExtra(EXTRA_SCHEDULED_TIME, scheduledTime ?: "")
+            putExtra(EXTRA_IS_INTAKE_REALERT, isIntakeReAlert)
+            putExtra("allow_lockscreen_details", effectiveAllowLockscreen)
+            // Guard: Pass user's configured snooze duration to AlarmActivity so UI defaults correctly on first composition frame (#113)
+            putExtra(EXTRA_SNOOZE_MINUTES, snoozeMinutes)
+            // Guard: Pass user ID to AlarmActivity to ensure multi-profile alarms isolate cohorts without cross-patient data leakage (#BUG-MULTIUSER-ALARM-MERGE)
+            userId?.let { putExtra(EXTRA_USER_ID, it) }
+        }
+
+        // Android 14+ background activity start options for PendingIntent creation
+        // Guard: MODE_BACKGROUND_ACTIVITY_START_ALLOWED deprecated in API 35+ but required on Android 14 (API 34)
+        val optionsBundle = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            @Suppress("DEPRECATION")
+            android.app.ActivityOptions.makeBasic().apply {
+                setPendingIntentCreatorBackgroundActivityStartMode(
+                    android.app.ActivityOptions.MODE_BACKGROUND_ACTIVITY_START_ALLOWED
+                )
+            }.toBundle()
+        } else {
+            null
+        }
+
+        val fullScreenPendingIntent = PendingIntent.getActivity(
+            context,
+            entryId.hashCode() + 10,
+            alarmIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            optionsBundle
+        )
+
+        // Guard: Launch AlarmActivity directly only on full alarms, never during silent shade updates or notification-only reminders (#111)
+        if (!isUpdateOnly && isAlarmMode) {
+            try {
+                context.startActivity(alarmIntent)
+            } catch (e: Exception) {
+                Log.e(TAG, "Could not start AlarmActivity directly", e)
+            }
+        }
+
+        val baseTitle = if (isIntakeReAlert) {
+            localizedContext.getString(R.string.notif_intake_realert_title)
+        } else if (isNagging) {
+            localizedContext.getString(R.string.notif_nagging_title, primaryMedLabel)
+        } else if (effectiveDetails.size > 1) {
+            localizedContext.getString(R.string.alarm_medication_reminder_multi, effectiveDetails.size)
+        } else {
+            localizedContext.getString(R.string.alarm_medication_reminder)
+        }
+        // Guard: Include patient name in notification shade title for reminders so multi-profile users immediately recognize who the alarm is for (#BUG-MULTIUSER-NOTIF-TITLE)
+        val notificationTitle = if (patientName != null && !isIntakeReAlert) "$baseTitle \u2022 $patientName" else baseTitle
+
+        val notificationText = if (isIntakeReAlert) {
+            localizedContext.getString(R.string.notif_intake_realert_desc, primaryMedLabel)
+        } else if (isNagging) {
+            // Guard: If maxNagging <= 0 (continuous), format without upper bound; otherwise show current/max (#119)
+            if (maxNagging <= 0) {
+                localizedContext.getString(R.string.notif_nagging_text_continuous, naggingCount, scheduledTime ?: "")
+            } else {
+                localizedContext.getString(R.string.notif_nagging_text, naggingCount, maxNagging, scheduledTime ?: "")
+            }
+        } else if (effectiveDetails.size == 1) {
+            "$primaryMedLabel • $scheduledTimeStr"
+        } else {
+            val summary = effectiveDetails.joinToString(", ") { (name, dose) ->
+                if (dose.isNotEmpty()) "$name ($dose)" else name
+            }
+            "$summary • $scheduledTimeStr"
+        }
+
+        val bigText = if (isIntakeReAlert) {
+            buildString {
+                append(notificationText)
+                append("\n\n")
+                effectiveDetails.forEach { (name, dose) ->
+                    append("• ").append(name)
+                    if (dose.isNotEmpty()) {
+                        append(" (").append(dose).append(")")
+                    }
+                    append("\n")
+                }
+                append(scheduledTimeStr)
+            }.trimEnd()
+        } else if (isNagging) {
+            notificationText
+        } else {
+            buildString {
+                effectiveDetails.forEach { (name, dose) ->
+                    append("• ").append(name)
+                    if (dose.isNotEmpty()) {
+                        append(" (").append(dose).append(")")
+                    }
+                    append("\n")
+                }
+                append(scheduledTimeStr)
+            }.trimEnd()
+        }
+
+        // Guard: Use direct app launcher icon for notification status icon and notification shade large icon
+        val appIconBitmap = runCatching {
+            BitmapFactory.decodeResource(context.resources, R.mipmap.ic_launcher)
+        }.getOrNull()
+
+        val targetChannelId = if (isAlarmMode) CHANNEL_ID else NOTIFICATION_CHANNEL_ID
+        val targetPriority = if (isAlarmMode) NotificationCompat.PRIORITY_MAX else NotificationCompat.PRIORITY_HIGH
+        val targetCategory = if (isAlarmMode) NotificationCompat.CATEGORY_ALARM else NotificationCompat.CATEGORY_REMINDER
+
+        // Create notification: AlarmAudioPlayer handles audio for alarms; channel sound plays for notifications
+        val notificationBuilder = NotificationCompat.Builder(localizedContext, targetChannelId)
+            .setSmallIcon(R.mipmap.ic_launcher)
+            .apply {
+                if (appIconBitmap != null) {
+                    setLargeIcon(appIconBitmap)
+                }
+            }
+            .setContentTitle(notificationTitle)
+            .setContentText(notificationText)
+            .setPriority(targetPriority)
+            .setCategory(targetCategory)
+            .setAutoCancel(true)
+            .setSilent(isAlarmMode)
+
+        // Guard: Mask sensitive medication names/dosages on lock screen by default to prevent PHI leakage (#HIPAA, #GDPR)
+        if (effectiveAllowLockscreen) {
+            notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+        } else {
+            val publicNotification = NotificationCompat.Builder(localizedContext, targetChannelId)
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .apply {
+                    if (appIconBitmap != null) {
+                        setLargeIcon(appIconBitmap)
+                    }
+                }
+                .setContentTitle(localizedContext.getString(R.string.app_name))
+                .setContentText(localizedContext.getString(R.string.notif_generic_lockscreen_reminder))
+                .setContentIntent(pendingIntent)
+                .setPriority(targetPriority)
+                .setCategory(targetCategory)
+                .setAutoCancel(true)
+                .addAction(
+                    getNotificationIcon(Icons.Filled.Snooze),
+                    localizedContext.getString(R.string.notif_action_snooze_format, snoozeMinutes),
+                    snoozePendingIntent
+                )
+                .build()
+            notificationBuilder.setVisibility(NotificationCompat.VISIBILITY_PRIVATE)
+                .setPublicVersion(publicNotification)
+        }
+
+        // Guard: Attach actions and content intent directly to notificationBuilder rather than chaining on if-else expression to avoid syntactic ambiguity
+        notificationBuilder
+            .setContentIntent(pendingIntent)
+            .addAction(
+                getNotificationIcon(Icons.Filled.Check),
+                localizedContext.getString(R.string.home_action_taken),
+                takenPendingIntent
+            )
+            .addAction(
+                getNotificationIcon(Icons.Filled.Snooze),
+                localizedContext.getString(R.string.notif_action_snooze_format, snoozeMinutes),
+                snoozePendingIntent
+            )
+            .apply {
+                // Guard: Only show alternate snooze duration in notification popup if custom snooze option is enabled
+                if (showCustomSnoozeOptions) {
+                    addAction(
+                        getNotificationIcon(Icons.Filled.Snooze),
+                        localizedContext.getString(R.string.notif_action_snooze_format, alternateSnoozeMinutes),
+                        alternateSnoozePendingIntent
+                    )
+                }
+            }
+            .setStyle(NotificationCompat.BigTextStyle().bigText(bigText))
+
+        if (!isUpdateOnly && isAlarmMode) {
+            notificationBuilder.setFullScreenIntent(fullScreenPendingIntent, true)
+        }
+
+        val notification = notificationBuilder.build()
+
+        try {
+            val notificationManager =
+                context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.notify(entryId.hashCode(), notification)
+            Log.d(TAG, "Showing reminder notification (isAlarm=$isAlarmMode) for: $medicineName")
+        } catch (e: Exception) {
+            Log.e(TAG, "Could not post alarm notification", e)
+        }
+    }
+
+
+
+    private suspend fun rescheduleAllAlarms(context: Context) {
+        val userRepository = UserRepository(database)
+        val scheduleRepository = ScheduleRepository(database)
+
+        try {
+            // Get all users
+            val allUsers = userRepository.getAllUsersList()
+
+            // Reschedule alarms for each user
+            allUsers.forEach { user ->
+                Log.d(TAG, "Rescheduling alarms for user: ${user.fullName} (${user.userId})")
+                scheduleRepository.rescheduleAllAlarms(user.userId, context)
+            }
+
+            Log.d(TAG, "Successfully rescheduled alarms for ${allUsers.size} users after boot/timezone change")
+            // Guard: Reconcile in-progress ADHD intake countdown timer state after reboot or timezone change
+            IntakeSafeguardManager.initialize(context)
+            com.example.dosezy.widget.DosezyAppWidgetProvider.updateAppWidgets(context)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error rescheduling alarms after boot/timezone change", e)
+        }
+    }
+
+    // Helper function to convert Compose icons to NotificationCompat.Action
+    private fun getNotificationIcon(icon: androidx.compose.ui.graphics.vector.ImageVector): Int {
+        // Using different built-in system icons for the actions
+        return when (icon) {
+            Icons.Filled.Check -> android.R.drawable.checkbox_on_background
+            Icons.Filled.Snooze -> android.R.drawable.ic_lock_idle_alarm
+            else -> android.R.drawable.ic_dialog_info
+        }
+    }
+}

@@ -1,0 +1,911 @@
+<resources>
+    <string name="app_name">Dosezy</string>
+    <string name="app_tagline">दवा का पालन सरल बनाया गया</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">होम</string>
+    <string name="nav_schedule">शेड्यूल</string>
+    <string name="nav_add">जोड़ें</string>
+    <string name="nav_medicines">दवाएं</string>
+    <string name="nav_menu">मेनू</string>
+
+    <!-- Greetings -->
+    <string name="greeting_morning">सुप्रभात,</string>
+    <string name="greeting_afternoon">शुभ दोपहर,</string>
+    <string name="greeting_evening">शुभ संध्या,</string>
+    <string name="greeting_night">शुभ रात्रि,</string>
+    <string name="health_quote">\"स्वास्थ्य अनमोल धन है।\"</string>
+
+    <!-- Home Screen -->
+    <string name="home_todays_meds">आज की दवाएं</string>
+    <string name="home_todays_adherence">आज का पालन</string>
+    <string name="home_upcoming_doses">आगामी खुराक</string>
+    <string name="home_all_taken">सभी खुराक ले ली गईं!</string>
+    <string name="home_no_doses_today">आज के लिए कोई खुराक निर्धारित नहीं है।</string>
+    <string name="home_medication_progress">दवा की प्रगति</string>
+
+    <!-- Schedule Screen -->
+    <string name="schedule_title">दैनिक शेड्यूल</string>
+    <string name="schedule_no_doses">इस दिन के लिए कोई खुराक निर्धारित नहीं है</string>
+
+    <!-- Medicines Screen -->
+    <string name="medicines_title">आपकी दवाएं</string>
+    <string name="medicines_add_new">नई दवा जोड़ें</string>
+    <string name="medicines_empty">अभी तक कोई दवा नहीं जोड़ी गई है</string>
+    <string name="medicines_empty_sub">आपने कोई दवा नहीं जोड़ी है। शुरू करने के लिए नीचे दिए गए प्लस बटन पर टैप करें।</string>
+
+    <!-- Form Add/Edit Medicine -->
+    <string name="form_add_medicine">दवा जोड़ें</string>
+    <string name="form_edit_medicine">दवा संपादित करें</string>
+    <string name="form_medicine_image">दवा की तस्वीर</string>
+    <string name="form_med_name">दवा का नाम</string>
+    <string name="form_med_name_placeholder">जैसे: अमोक्सिसिलिन</string>
+    <string name="form_dosage">खुराक</string>
+    <string name="form_dosage_unit">खुराक इकाई</string>
+    <string name="form_dosage_placeholder">जैसे: 500mg, 1 गोली</string>
+    <string name="form_frequency">आवृत्ति</string>
+    <string name="form_time">समय</string>
+    <string name="form_save">दवा सहेजें</string>
+    <string name="form_save_changes">बदलाव सहेजें</string>
+    <string name="form_delete">दवा हटाएं</string>
+    <string name="form_delete_medicine">इस दवा को हटाएं</string>
+    <string name="form_upload_img">दवा की तस्वीर अपलोड करें</string>
+    <string name="form_change_img">दवा की तस्वीर बदलें</string>
+    <string name="form_error_med_name_required">दवा का नाम आवश्यक है</string>
+    <string name="form_error_dosage_required">खुराक आवश्यक है</string>
+    <string name="form_error_dosage_invalid">खुराक एक धनात्मक संख्या होनी चाहिए</string>
+    <string name="form_error_select_days">कृपया कम से कम एक दिन चुनें</string>
+    <string name="form_error_course_duration">कोर्स की अवधि कम से कम 1 दिन होनी चाहिए</string>
+    <string name="form_error_fix_fields">कृपया ऊपर हाइलाइट किए गए आवश्यक फ़ील्ड भरें</string>
+    <string name="freq_daily">दैनिक</string>
+    <string name="freq_weekly">साप्ताहिक</string>
+    <string name="freq_monthly">मासिक</string>
+    <string name="freq_custom">हर X सप्ताह में</string>
+    <string name="form_select_days_week">सप्ताह के दिन चुनें</string>
+    <string name="form_select_days_month">महीने के दिन चुनें</string>
+    <string name="day_mon">सोम</string>
+    <string name="day_tue">मंगल</string>
+    <string name="day_wed">बुध</string>
+    <string name="day_thu">गुरु</string>
+    <string name="day_fri">शुक्र</string>
+    <string name="day_sat">शनि</string>
+    <string name="day_sun">रवि</string>
+    <string name="times_per_day_format">दिन में %1$d बार</string>
+    <string name="times_per_week_format">सप्ताह में %1$d बार</string>
+    <string name="times_per_month_format">महीने में %1$d बार</string>
+
+    <!-- Menu Screen -->
+    <string name="menu_title">मेनू</string>
+    <string name="menu_account_profile">खाता और प्रोफ़ाइल</string>
+    <string name="menu_preferences">प्राथमिकताएं</string>
+    <string name="menu_emergency">आपातकालीन संपर्क</string>
+    <string name="menu_help_support">सहायता और सहायता</string>
+    <string name="menu_export_data">डेटा निर्यात करें</string>
+    <string name="menu_switch_profile">प्रोफ़ाइल बदलें</string>
+    <string name="menu_manage_profiles">प्रोफ़ाइल प्रबंधित करें</string>
+    <string name="menu_manage_profile">इस प्रोफ़ाइल को प्रबंधित करें</string>
+
+    <!-- Preferences Screen -->
+    <string name="pref_title">प्राथमिकताएं</string>
+    <string name="pref_theme">थीम</string>
+    <string name="pref_time_format">समय प्रारूप</string>
+    <string name="pref_language">भाषा</string>
+    <string name="pref_late_after">देरी के बाद समझें</string>
+    <string name="pref_missed_after">छूट जाने के बाद समझें</string>
+    <string name="mark_late">देरी के रूप में चिह्नित करें</string>
+
+    <!-- Dialog Titles &amp; Options -->
+    <string name="pref_select_theme">थीम चुनें</string>
+    <string name="theme_light">लाइट</string>
+    <string name="theme_dark">डार्क</string>
+    <string name="theme_system">सिस्टम डिफ़ॉल्ट</string>
+
+    <string name="pref_select_time_format">समय प्रारूप चुनें</string>
+    <string name="time_format_12">12 घंटे</string>
+    <string name="time_format_24">24 घंटे</string>
+
+    <string name="pref_mark_missed_after">इसके बाद छूटा हुआ मानें</string>
+    <string name="hours_format">%1$d घंटे</string>
+
+    <!-- Notification Check Dialog -->
+        <string name="notif_check_title">सूचना विश्वसनीयता</string>
+    <string name="notif_perm_title">सूचना अनुमति</string>
+    <string name="notif_perm_desc">दवा रिमाइंडर और अलार्म भेजने के लिए आवश्यक।</string>
+    <string name="notif_perm_exact_warning">सूचनाएं चालू हैं • समय पर अलार्म बजने के लिए सटीक अलार्म की अनुमति दें (अनुमति देने के लिए टैप करें)</string>
+    <string name="notif_perm_all_granted">सूचनाएं और सटीक अलार्म पूरी तरह सक्षम हैं।</string>
+    <string name="notif_oem_bg_item_desc">समय पर अलार्म बजने के लिए बैकग्राउंड सेटिंग्स ठीक करें।</string>
+
+    <string name="notif_perm_granted">सूचनाएं भेजने की अनुमति दी गई।</string>
+    <string name="notif_battery_title">फ़ोन की बैटरी</string>
+    <string name="notif_battery_status">बैटरी %1$d%% पर है</string>
+    <string name="notif_sound_title">फ़ोन की ध्वनि</string>
+    <string name="notif_sound_normal">फ़ोन साइलेंट नहीं है।</string>
+    <string name="notif_sound_vibrate">फ़ोन वाइब्रेट मोड में है।</string>
+    <string name="notif_sound_silent">फ़ोन साइलेंट है।</string>
+    <string name="notif_sound_unknown">अज्ञात ध्वनि मोड।</string>
+        <string name="notif_bg_title">बैटरी अनुकूलन</string>
+        <string name="notif_bg_desc">बैटरी प्रतिबंध अक्षम करें ताकि बैकग्राउंड में अलार्म बंद न हों।</string>
+        <string name="notif_bg_granted">ऐप बैकग्राउंड बैटरी प्रतिबंधों से मुक्त है।</string>
+    <string name="ok">ठीक है</string>
+    <string name="close">बंद करें</string>
+
+    <!-- Profiles &amp; Gender -->
+    <string name="select_profile">प्रोफ़ाइल चुनें</string>
+    <string name="current_profile">वर्तमान प्रोफ़ाइल</string>
+    <string name="new_profile">नई प्रोफ़ाइल</string>
+    <string name="years_format">%1$d वर्ष</string>
+    <string name="gender_male">पुरुष</string>
+    <string name="gender_female">महिला</string>
+    <string name="gender_other">अन्य</string>
+
+    <!-- Manage Profile Screen -->
+    <string name="profile_change_pic">प्रोफ़ाइल फ़ोटो बदलें</string>
+    <string name="profile_upload_pic">प्रोफ़ाइल फ़ोटो अपलोड करें</string>
+    <string name="profile_full_name">नाम</string>
+    <string name="profile_name_placeholder">पूरा नाम दर्ज करें</string>
+    <string name="profile_age">आयु</string>
+    <string name="profile_gender">लिंग</string>
+    <string name="profile_contact_number">संपर्क नंबर</string>
+    <string name="profile_save_btn">प्रोफ़ाइल सहेजें</string>
+    <string name="profile_delete_btn">प्रोफ़ाइल हटाएं</string>
+    <string name="profile_name_required">नाम आवश्यक है</string>
+    <string name="profile_age_required">आयु आवश्यक है</string>
+    <string name="profile_gender_required">लिंग आवश्यक है</string>
+    <string name="profile_cannot_delete_only">एकमात्र प्रोफ़ाइल को नहीं हटाया जा सकता। पहले नई प्रोफ़ाइल बनाएं।</string>
+    <string name="profile_updated_success">प्रोफ़ाइल सफलतापूर्वक अपडेट की गई!</string>
+    <string name="profile_deleted_success">प्रोफ़ाइल सफलतापूर्वक हटाई गई</string>
+    <string name="profile_delete_confirm_desc">क्या आप निश्चित रूप से इस प्रोफ़ाइल को हटाना चाहते हैं? इस क्रिया को बदला नहीं जा सकता।</string>
+
+    <!-- Dosage Units -->
+    <string name="unit_mg">मिग्रा (mg)</string>
+    <string name="unit_mcg">माइक्रोग्राम (mcg)</string>
+    <string name="unit_ml">मिली (mL)</string>
+    <string name="unit_drop">बूंद</string>
+    <string name="unit_tablet">गोली (tablet)</string>
+    <string name="unit_capsule">कैप्सूल (capsule)</string>
+    <string name="unit_meq">mEq</string>
+    <string name="unit_puff">पफ (puff)</string>
+    <string name="unit_ampule">एम्पुल (ampule)</string>
+    <string name="unit_spray">स्प्रे (Spray)</string>
+
+    <!-- Help &amp; Support -->
+    <string name="help_title">सहायता और सहायता</string>
+    <string name="help_resources">संसाधन</string>
+    <string name="help_faqs_title">सामान्य प्रश्न (FAQs)</string>
+    <string name="help_faqs_desc">आम सवालों के जवाब।</string>
+    <string name="help_user_manual_title">उपयोगकर्ता पुस्तिका</string>
+    <string name="help_user_manual_desc">उपयोगकर्ता मार्गदर्शिका देखें।</string>
+    <string name="help_contact_support">सहायता टीम से संपर्क करें</string>
+    <string name="help_email_support_title">ईमेल सहायता</string>
+    <string name="help_email_support_desc">ईमेल के माध्यम से मदद पाएं।</string>
+    <string name="help_phone_support_title">फ़ोन सहायता</string>
+    <string name="help_phone_support_desc">तुरंत मदद के लिए हमें कॉल करें।</string>
+
+    <!-- Emergency Services -->
+    <string name="emergency_title">आपातकालीन संपर्क</string>
+    <string name="emergency_services">आपातकालीन सेवाएं</string>
+    <string name="emergency_select_country">क्षेत्र / देश चुनें</string>
+    <string name="emergency_universal">सार्वभौमिक आपातकाल</string>
+    <string name="emergency_ambulance">एम्बुलेंस</string>
+    <string name="emergency_fire">फायर ब्रिगेड</string>
+    <string name="emergency_police">पुलिस</string>
+    <string name="manage_profile_title">प्रोफ़ाइल प्रबंधित करें</string>
+
+    <!-- Setup / Onboarding Screens -->
+    <string name="setup_welcome_title">Dosezy में आपका स्वागत है</string>
+    <string name="setup_welcome_sub">आपका व्यक्तिगत दवा सहायक।</string>
+    <string name="setup_features_title">आपका स्वास्थ्य, सरल बनाया गया!</string>
+    <string name="setup_features_sub">Dosezy की मुख्य विशेषताएं</string>
+    <string name="setup_feat1_title">कभी खुराक न भूलें</string>
+    <string name="setup_feat1_desc">हर दवा के लिए समय पर रिमाइंडर प्राप्त करें।</string>
+    <string name="setup_feat2_title">आसान दवा प्रबंधन</string>
+    <string name="setup_feat2_desc">सरल और उपयोग में आसान इंटरफ़ेस के साथ दवाएं प्रबंधित करें।</string>
+    <string name="setup_feat3_title">आपातकालीन सहायता</string>
+    <string name="setup_feat3_desc">आपातकालीन संपर्कों और जानकारी तक तुरंत पहुंच प्राप्त करें।</string>
+    <string name="setup_profile_title">हमें अपने बारे में बताएं!</string>
+    <string name="setup_profile_sub">यह आपके अनुभव को व्यक्तिगत बनाने में मदद करता है।</string>
+    <string name="setup_next">आगे</string>
+    <string name="setup_get_started">शुरू करें</string>
+
+    <!-- Dialogs &amp; Buttons -->
+    <string name="select_language">भाषा चुनें</string>
+    <string name="system_default">सिस्टम डिफ़ॉल्ट</string>
+    <string name="export_data">डेटा निर्यात करें</string>
+    <string name="export_current_profile">केवल वर्तमान प्रोफ़ाइल का निर्यात करें</string>
+    <string name="export_all_profiles">सभी प्रोफ़ाइल का निर्यात करें (ZIP)</string>
+    <string name="export_choose_title">डेटा निर्यात विकल्प</string>
+    <string name="export_choose_desc">चुनें कि आप कौन सा डेटा निर्यात करना चाहते हैं:</string>
+    <string name="export_success_title">निर्यात सफल</string>
+    <string name="export_success_desc">डेटा यहाँ निर्यात किया गया:</string>
+    <string name="export_share_file">फ़ाइल साझा करें</string>
+    <string name="export_done">हो गया</string>
+    <string name="export_progress_title">डेटा निर्यात हो रहा है</string>
+    <string name="export_progress_desc">कृपया प्रतीक्षा करें जब तक हम आपका डेटा तैयार करते हैं…</string>
+    <string name="export_failed_title">निर्यात विफल</string>
+    <string name="cancel">रद्द करें</string>
+    <string name="export">निर्यात</string>
+    <string name="save">सहेजें</string>
+    <!-- Personal Contacts -->
+    <string name="personal_contacts">व्यक्तिगत संपर्क</string>
+    <string name="personal_contacts_add">जोड़ें</string>
+    <string name="personal_contacts_empty">अभी तक कोई व्यक्तिगत संपर्क नहीं जोड़ा गया।\n\"+ जोड़ें\" पर टैप करें।</string>
+    <string name="personal_contacts_add_title">व्यक्तिगत संपर्क जोड़ें</string>
+    <string name="personal_contacts_name">संपर्क का नाम</string>
+    <string name="personal_contacts_phone">फ़ोन नंबर</string>
+    <string name="personal_contacts_save">सहेजें</string>
+    <string name="personal_contacts_cancel">रद्द करें</string>
+    <!-- Alarm Activity -->
+    <string name="alarm_medication_reminder">दवा अनुस्मारक</string>
+    <string name="alarm_reminder_for">अनुस्मारक:</string>
+    <string name="alarm_scheduled">निर्धारित: %s</string>
+    <string name="alarm_take_now">अभी लें</string>
+    <string name="alarm_snooze">स्नूज़ (%1$d मिनट)</string>
+    <string name="alarm_mark_late">देर से चिह्नित करें</string>
+
+    <string name="pref_snooze_duration">स्नूज़ अवधि</string>
+    <string name="pref_select_snooze_duration">स्नूज़ अवधि चुनें</string>
+    <string name="minutes_format">%1$d मिनट</string>
+    <string name="profile">प्रोफ़ाइल</string>
+
+
+    <string name="manage">प्रबंधित करें</string>
+    <string name="profile_switch">बदलें</string>
+    <string name="schedule_no_meds_date">इस तिथि के लिए कोई दवा निर्धारित नहीं है</string>
+
+
+    <string name="home_all_good">सब ठीक है!</string>
+    <string name="home_all_good_desc">आज कोई दवा लेने की आवश्यकता नहीं है।</string>
+    <string name="no_profiles_found">कोई प्रोफ़ाइल नहीं मिली</string>
+    <string name="status_taken">लिया गया</string>
+
+    <string name="image_picker_select_source">छवि स्रोत चुनें</string>
+    <string name="image_picker_choose_method">चुनें कि आप अपनी तस्वीर कैसे जोड़ना चाहते हैं</string>
+    <string name="image_picker_camera_desc">कैमरा: एक नई फोटो लें</string>
+    <string name="image_picker_gallery_desc">गैलरी: अपनी तस्वीरों में से चुनें</string>
+    <string name="image_picker_camera">कैमरा</string>
+    <string name="image_picker_gallery">गैलरी</string>
+    <string name="image_picker_error_title">त्रुटि</string>
+    <string name="camera_permission_required">फ़ोटो लेने के लिए कैमरे की अनुमति आवश्यक है।</string>
+    <string name="image_picker_remove">तस्वीर हटाएं</string>
+    <string name="delete_contact_title">संपर्क हटाएं</string>
+    <string name="delete_contact_desc">क्या आप वाकई इस संपर्क को हटाना चाहते हैं?</string>
+    <string name="delete_contact_confirm">हटाएं</string>
+    <string name="delete_contact_cancel">रद्द करें</string>
+    <string name="personal_contacts_name_label">संपर्क का नाम</string>
+    <string name="personal_contacts_phone_label">फ़ोन नंबर</string>
+
+    <!-- Analytics &amp; Menu Additions -->
+    <string name="menu_analytics">एनालिटिक्स</string>
+    <string name="analytics_title">दवा एनालिटिक्स</string>
+    <string name="analytics_adherence_rate">दवा पालन दर</string>
+    <string name="analytics_adherence_sub">कुल निर्धारित खुराक ली गई</string>
+    <string name="analytics_using_since">%s से डोज़ी का उपयोग कर रहे हैं</string>
+    <string name="analytics_using_today">आज से डोज़ी का उपयोग कर रहे हैं</string>
+    <string name="analytics_taken_on_time">समय पर ली गई</string>
+    <string name="analytics_taken_late">देर से ली गई</string>
+    <string name="analytics_missed_doses">छूटी हुई खुराक</string>
+    <string name="analytics_total_doses">कुल दर्ज खुराक</string>
+    <string name="analytics_weekly_overview">साप्ताहिक दवा पालन रुझান</string>
+    <string name="analytics_insights_title">पालन अंतर्दृष्टि</string>
+    <string name="analytics_insights_excellent">शानदार दवा पालन! आप अपने स्वास्थ्य नियम का लगातार पालन कर रहे हैं।</string>
+    <string name="analytics_insights_good">अच्छी प्रगति! सर्वोत्तम स्वास्थ्य परिणामों के लिए समय पर दवा लेते रहें।</string>
+    <string name="analytics_insights_start">विस्तृत आँकड़े देखने के लिए अपनी दवाएँ दर्ज करना शुरू करें।</string>
+    <string name="menu_backup_restore">बैकअप और रीस्टोर</string>
+    <string name="menu_sharing">देखभालकर्ता साझाकरण</string>
+    <string name="coming_soon">जल्द</string>
+
+    <string name="export_file_format">फ़ाइल प्रारूप</string>
+    <string name="export_format_csv">CSV प्रारूप</string>
+    <string name="export_format_json">JSON प्रारूप</string>
+    <string name="export_format_pdf">PDF प्रारूप</string>
+    <string name="export_save_to">सहेजें</string>
+    <string name="export_device_storage">डिवाइस संग्रहण</string>
+    <string name="export_device_storage_desc">अपने डिवाइस के डाउनलोड फ़ोल्डर में सहेजें</string>
+    <string name="export_share_directly">सीधे साझा करें</string>
+    <string name="export_share_directly_desc">बिना सहेजे ऐप्स के माध्यम से तुरंत साझा करें</string>
+
+    <string name="export_format_pdf_note">(अंग्रेजी में चिकित्सा रिपोर्ट)</string>
+
+    <string name="menu_network_section">नेटवर्क</string>
+    <string name="menu_cloud_config">Dosezy क्लाउड कॉन्फ़िगरेशन</string>
+    <string name="menu_check_updates">अपडेट की जांच करें</string>
+    <string name="menu_data_section">डेटा</string>
+    <string name="optional">वैकल्पिक</string>
+
+    <string name="no_browser_found">अपडेट जांचने के लिए कोई वेब ब्राउज़र या ऐप स्टोर उपलब्ध नहीं है।</string>
+
+    <string name="stock_current">वर्तमान स्टॉक</string>
+    <string name="stock_refill_threshold">स्टॉक कम होने पर अलर्ट</string>
+    <string name="stock_units_left">%s यूनिट शेष</string>
+    <string name="refill_alert_title">रीफिल अलर्ट: %s</string>
+    <string name="preset_1x_daily">दिन में 1 बार (सुबह 8 बजे)</string>
+    <string name="preset_2x_daily">दिन में 2 बार (सुबह 8, रात 8)</string>
+    <string name="preset_3x_daily">दिन में 3 बार (सुबह 8, दोपहर 2, रात 8)</string>
+    <string name="preset_4x_daily">दिन में 4 बार (सुबह 8, 12, 4, रात 8)</string>
+    <string name="take_all_medicines">सभी दवाएं लें (%d)</string>
+
+    <string name="menu_data_sharing_section">डेटा और शेयरिंग</string>
+    <string name="menu_cloud_setup">क्लाउड सेटअप</string>
+    <string name="open_source">OSS</string>
+    <string name="range_7_days">7 दिन</string>
+    <string name="range_30_days">30 दिन</string>
+    <string name="range_6_months">6 महीने</string>
+    <string name="range_12_months">12 महीने</string>
+    <string name="range_total">कुल</string>
+    <string name="adherence_by_period">समय अवधि के अनुसार पालन</string>
+    <string name="menu_data">डेटा और बैकअप</string>
+    <string name="range_all">सभी</string>
+    <string name="backup_header_title">बैकअप और पुनर्स्थापना</string>
+    <string name="backup_header_sub">अपनी दवाओं की सूची, समय सारणी और खुराक के इतिहास को सुरक्षित रखें।</string>
+    <string name="backup_storage_note">बैकअप फाइलें .zip प्रारूप में संपीड़ित होती हैं और सुरक्षित रूप से स्थानांतरित की जा सकती हैं।</string>
+    <string name="backup_offline_badge" formatted="false">100% ऑफ़लाइन और निजी</string>
+    <string name="backup_cloud_title">डोज़ेज़ी क्लाउड सर्वर</string>
+    <string name="backup_cloud_sub">प्रबंधित देखभालकर्ता और सिंक प्लेटफॉर्म</string>
+    <string name="backup_cloud_desc">परिवार के साथ रीयल-टाइम साझाकरण, देखभालकर्ता रिमोट मॉनिटरिंग और पूर्ण गोपनीयता के साथ स्वचालित मल्टी-डिवाइस सिंक के लिए वैकल्पिक क्लाउड प्लेटफॉर्म।</string>
+    <string name="backup_export_title">पूर्ण बैकअप निर्यात करें (.zip)</string>
+    <string name="backup_export_desc">सभी पंजीकृत प्रोफ़ाइल, दवाओं, कस्टम फ़ोटो और खुराक इतिहास को शामिल करते हुए एक पोर्टेबल .zip पैकेज बनाएं।</string>
+    <string name="backup_export_btn">बैकअप निर्यात करें</string>
+    <string name="backup_import_title">फ़ाइल से पुनर्स्थापित करें</string>
+    <string name="backup_import_desc">पहले से निर्यात की गई (.zip) बैकअप फ़ाइल से अपना डेटा पुनर्स्थापित करें।</string>
+    <string name="backup_import_btn">बैकअप फ़ाइल चुनें</string>
+    <string name="backup_privacy_title">गोपनीयता और डेटा संरचना</string>
+    <string name="backup_privacy_point1">• 🔒 स्थानीय भंडारण: आपका डेटा केवल आपके डिवाइस पर सुरक्षित रहता है।</string>
+    <string name="backup_privacy_point2">• 📦 बैकअप पैकेज: इसमें SQLite डेटाबेस, दवाओं की तस्वीरें और प्राथमिकताएं शामिल हैं।</string>
+    <string name="backup_privacy_point3">• 🛡️ सुरक्षित बहाली: डेटा बदलने से पहले फ़ाइल की अखंडता की जांच की जाती है।</string>
+    <string name="backup_restore_confirm_title">डेटा पुनर्स्थापित करें?</string>
+    <string name="backup_restore_confirm_msg">यह वर्तमान डेटा को बैकअप फ़ाइल के डेटा से बदल देगा। इसे पूर्ववत नहीं किया जा सकता।
+
+क्या आप जारी रखना चाहते हैं?</string>
+    <string name="backup_restore_confirm_btn">पुनर्स्थापित करें</string>
+    <string name="backup_restore_in_progress">डेटा पुनर्स्थापित हो रहा है...</string>
+    <string name="backup_export_success_title">निर्यात सफल रहा</string>
+    <string name="backup_export_success_msg">आपका बैकअप सफलतापूर्वक बनाया और सहेजा गया है:</string>
+    <string name="backup_share_btn">शेयर करें</string>
+    <string name="backup_close_btn">बंद करें</string>
+    <string name="import_profile_title">आयात करने के लिए प्रोफ़ाइल चुनें</string>
+    <string name="import_profile_sub">बैकअप में %1$d प्रोफ़ाइल मिलीं। चुनें कि किसे आयात करना है।</string>
+    <string name="import_profile_items_to_import">आयात सामग्री: %1$d दवाएं, %2$d रिकॉर्ड</string>
+    <string name="import_profile_action">कार्रवाई: </string>
+    <string name="import_profile_merge">दवाओं और रिकॉर्ड को मिलाएं</string>
+    <string name="import_profile_replace">मौजूदा प्रोफ़ाइल को बदलें</string>
+    <string name="import_profile_keep_existing">मौजूदा प्रोफ़ाइल रखें (छोड़ें)</string>
+    <string name="import_profile_btn">चयनित आयात करें</string>
+    <string name="import_profile_duplicate_prefix"> (प्रतिलिपि)</string>
+    <string name="med_time_title">खुराक का समय</string>
+    <string name="med_time_remove_cd">समय हटाएं</string>
+    <string name="med_time_add_btn">समय जोड़ें</string>
+    <string name="med_stock_current_placeholder">उदा. 30</string>
+    <string name="med_stock_refill_placeholder">उदा. 5</string>
+    <string name="med_time_label">समय %1$d</string>
+    <string name="med_time_select_title">समय चुनें</string>
+    <string name="med_dose_amount_label">मात्रा: %1$s %2$s</string>
+    <string name="med_frequency_days_pattern">प्रत्येक %1$d दिन</string>
+    <string name="med_frequency_day_singular">प्रतिदिन</string>
+    <string name="backup_export_sub">पोर्टेबल बैकअप पैकेज बनाएं</string>
+    <string name="backup_header_desc">डिवाइसों पर रोगी प्रोफाइल, खुराक कार्यक्रम, अनुपालन इतिहास और कस्टम फ़ोटो प्रबंधित करें।</string>
+    <string name="backup_import_sub">प्रोफ़ाइल और खुराक रिकॉर्ड पुनर्स्थापित करें</string>
+    <string name="backup_privacy_point4">• ⚡ स्वतः अलार्म सिंक: आयात के तुरंत बाद दवा के अलार्म पुनः सक्रिय हो जाते हैं।</string>
+    <string name="backup_saved_success">बैकअप सफलतापूर्वक डाउनलोड फ़ोल्डर में सहेजा गया।</string>
+    <string name="backup_section_automatic">स्वचालित</string>
+    <string name="backup_section_manual">मैन्युअल</string>
+    <string name="backup_tab_automatic">स्वचालित</string>
+    <string name="backup_tab_manual">मैन्युअल</string>
+    <string name="backup_self_hosted_title">सेल्फ-होस्टेड बैकएंड सर्वर</string>
+    <string name="backup_self_hosted_sub" formatted="false">100% ओपन सोर्स और निजी</string>
+    <string name="backup_self_hosted_desc">संपूर्ण डेटा संप्रभुता, परिवार देखभालकर्ता डैशबोर्ड और निजी नियंत्रण के लिए अपने स्वयं के डोज़ेज़ी सर्वर से सीधे जुड़ें।</string>
+    <string name="backup_status_inspecting">बैकअप पैकेज की जांच की जा रही है...</string>
+    <string name="backup_status_no_profiles">बैकअप संग्रह में कोई प्रोफ़ाइल नहीं मिली।</string>
+    <string name="backup_status_packaging">बैकअप संग्रह तैयार किया जा रहा है...</string>
+    <string name="backup_status_restoring">चयनित प्रोफ़ाइल पुनर्स्थापित की जा रही हैं...</string>
+    <string name="import_confirm_btn">आयात की पुष्टि करें</string>
+    <string name="import_dialog_title">प्रोफ़ाइल आयात करें</string>
+    <string name="import_dialog_desc">चुनें कि कौन से प्रोफ़ाइल आयात करने हैं और विरोधों को कैसे हल करना है।</string>
+    <string name="import_existing_profile_badge">प्रोफ़ाइल पहले से मौजूद है</string>
+    <string name="import_no_profiles_found">चयनित फ़ाइल में कोई प्रोफ़ाइल नहीं मिली।</string>
+    <string name="import_profiles_found">संग्रह में मिले मरीज़ों के प्रोफ़ाइल</string>
+    <string name="import_strategy_create_new">नया बनाएं</string>
+    <string name="import_strategy_create_new_desc">एक नए अलग प्रोफ़ाइल के रूप में आयात करें</string>
+    <string name="import_strategy_label">विरोध समाधान कार्रवाई:</string>
+    <string name="import_strategy_merge">विलय करें</string>
+    <string name="import_strategy_merge_desc">मौजूदा प्रोफ़ाइल में दवाएं और रिकॉर्ड जोड़ें</string>
+    <string name="import_strategy_overwrite">बदलें</string>
+    <string name="import_strategy_overwrite_desc">मौजूदा प्रोफ़ाइल को बैकअप डेटा से बदलें</string>
+    <string name="import_strategy_skip">छोड़ें</string>
+    <string name="import_strategy_skip_desc">इस प्रोफ़ाइल को आयात न करें</string>
+    <string name="med_add_time">+ समय जोड़ें</string>
+    <string name="med_hour_12">12 घंटे</string>
+    <string name="med_hour_24">24 घंटे</string>
+    <string name="med_minute">मिनट</string>
+    <string name="med_stock_placeholder">उदा. 30</string>
+    <string name="med_threshold_placeholder">उदा. 5</string>
+    <string name="notif_refill_alert_title">रिफिल चेतावनी: %1$s</string>
+    <string name="notif_refill_alert_text">कम स्टॉक शेष: केवल %1$s इकाइयाँ बची हैं। कृपया जल्द ही रिफिल करें।</string>
+    <string name="notif_channel_name">दवा अनुस्मारक</string>
+    <string name="notif_channel_desc">दवा की खुराक की समय सारिणी के लिए सूचनाएं</string>
+    <string name="import_profile_conflict_warn">प्रोफ़ाइल नाम पहले से मौजूद है</string>
+    <string name="delete">हटाएं</string>
+    <string name="stock_inventory_title">दवा का स्टॉक और इन्वेंटरी (वैकल्पिक)</string>
+    <string name="dialog_delete_med_title">दवा हटाएं</string>
+    <string name="dialog_delete_med_msg">क्या आप वाकई इस दवा को हटाना चाहते हैं? यह क्रिया पूर्ववत नहीं की जा सकती।</string>
+    <string name="backup_coming_soon">जल्द आ रहा है</string>
+    <string name="backup_restore_title">बैकअप से पुनर्स्थापित करें (.zip)</string>
+    <string name="backup_restore_desc">पहले निर्यात किए गए डोज़ेज़ी .zip संग्रह से प्रोफ़ाइल, फ़ोटो, दवा कार्यक्रम और अलार्म पुनर्स्थापित करें।</string>
+    <string name="backup_restore_btn">बैकअप से पुनर्स्थापित करें</string>
+    <string name="import_from_server_or_backup">सर्वर/बैकअप से आयात करें</string>
+    <string name="tab_cloud_server">क्लाउड / सर्वर</string>
+    <string name="tab_local_file">स्थानीय फ़ाइल</string>
+    <string name="cloud_sync_locked_desc">स्वचालित क्लाउड सिंक और सेल्फ-होस्टेड सर्वर कनेक्शन वर्तमान में विकास में हैं और आगामी अपडेट में उपलब्ध होंगे।</string>
+    <string name="local_backup_select_desc">अपने रोगी प्रोफाइल, दवाओं और कार्यक्रमों को पुनर्स्थापित करने के लिए अपने डिवाइस या ड्राइव से एक .zip फ़ाइल चुनें।</string>
+    <string name="local_backup_select_btn">.zip बैकअप फ़ाइल चुनें</string>
+    <string name="import_source_dialog_title">रोगी का डेटा आयात करें</string>
+    <string name="import_source_dialog_sub">प्रोफ़ाइल, दवाएं और कार्यक्रम पुनर्स्थापित करने के लिए अपना बैकअप स्रोत चुनें।</string>
+    <string name="scheduled_dosing_times_title">निर्धारित खुराक समय</string>
+    <string name="frequency_preset_daily">%1$s दैनिक</string>
+    <string name="time_picker_hour_12_label">घंटा (12 पहले):</string>
+    <string name="time_picker_hour_24_label">घंटा (24 घंटे):</string>
+    <string name="time_picker_minute_label">मिनट: %1$02d</string>
+    <string name="err_battery_optimization">कृपया बैटरी सेटिंग्स में \'अनुकूलित न करें\' सक्षम करें</string>
+    <string name="err_open_notification_settings">सूचना सेटिंग्स नहीं खोली जा सकीं</string>
+    <string name="err_open_sound_settings">ध्वनि सेटिंग्स नहीं खोली जा सकीं</string>
+    <string name="err_open_app_settings">ऐप सेटिंग्स नहीं खोली जा सकीं</string>
+    <string name="err_open_exact_alarm_settings">सटीक अलार्म सेटिंग्स नहीं खोली जा सकीं</string>
+    <string name="err_cannot_make_call">कॉल नहीं की जा सकी</string>
+    <string name="err_cannot_open_link">लिंक नहीं खोला जा सका</string>
+    <string name="err_no_email_app">कोई ईमेल ऐप उपलब्ध नहीं है</string>
+    <string name="err_share_failed">साझाकरण त्रुटि: %1$s</string>
+    <string name="med_stock_refill_warning_badge">⚠️ रिफिल: %1$s शेष</string>
+    <string name="med_stock_badge">📦 स्टॉक: %1$s</string>
+    <string name="to_be_taken_in">%1$dघंटे %2$dमिनट में लेनी है</string>
+    <string name="time_diff_ago">%1$dघंटे %2$dमिनट पहले</string>
+    <string name="status_all_medications_taken">सभी दवाएं ले ली गईं</string>
+    <string name="status_slot_completed_with_skipped">पूर्ण (कुछ छोड़ दिए गए)</string>
+    <string name="status_scheduled_for_this_time">इस समय के लिए निर्धारित</string>
+    <string name="daily_frequency_presets_title">दैनिक आवृत्ति प्रीसेट</string>
+    <string name="action_edit_medicine_cd">दवा संपादित करें</string>
+
+    <!-- v2.4.0 New Features (Hindi) -->
+    <string name="profile_allergies">एलर्जी</string>
+    <string name="profile_allergies_placeholder">उदा. पेनिसिलिन, सल्फा, मूंगफली</string>
+    <string name="profile_medical_conditions">चिकित्सा स्थितियां / पुरानी बीमारियां</string>
+    <string name="profile_medical_conditions_placeholder">उदा. उच्च रक्तचाप, टाइप 2 मधुमेह</string>
+    <string name="emergency_medical_profile">मरीज की मेडिकल प्रोफाइल</string>
+    <string name="emergency_no_allergies">कोई एलर्जी दर्ज नहीं है</string>
+    <string name="emergency_no_conditions">कोई स्थिति दर्ज नहीं है</string>
+
+    <string name="med_shape_label">गोली का आकार और प्रकार</string>
+    <string name="med_color_label">दृश्य रंग</string>
+    <string name="pill_shape_round">गोल (Round)</string>
+    <string name="pill_shape_capsule">कैप्सूल (Capsule)</string>
+    <string name="pill_shape_oval">अंडाकार (Oval)</string>
+    <string name="pill_shape_liquid">सिरप / तरल (Liquid)</string>
+    <string name="pill_shape_inhaler">इनहेलर (Inhaler)</string>
+    <string name="pill_shape_injection">इंजेक्शन (Injection)</string>
+    <string name="pill_shape_drops">ड्रॉप्स (Drops)</string>
+    <string name="pill_shape_patch">पैच (Patch)</string>
+    <string name="pill_shape_spray">स्प्रे (Spray)</string>
+
+    <string name="med_notes_label">डॉक्टर नोट्स और विशेष चेतावनी</string>
+    <string name="med_notes_placeholder">उदा. भोजन के साथ लें, चकोतरा से बचें, प्रिस्क्रिप्शन #12345</string>
+
+    <string name="course_duration_title">उपचार की अवधि</string>
+    <string name="course_ongoing">निरंतर</string>
+    <string name="course_finite">सीमित कोर्स (Finite Course)</string>
+    <string name="course_duration_days_label">कोर्स की अवधि (दिन)</string>
+    <string name="course_duration_days_placeholder">उदा. 7, 10, 14, 30</string>
+    <string name="course_start_date_label">प्रारंभ तिथि</string>
+    <string name="course_end_date_label">समाप्ति तिथि: %1$s</string>
+    <string name="course_completed_badge">कोर्स समाप्त</string>
+
+    <string name="freq_as_needed">ज़रूरत पड़ने पर (PRN)</string>
+    <string name="freq_as_needed_desc">कोई निर्धारित अलार्म नहीं। जब भी लें, उसी समय लॉग करें।</string>
+    <string name="freq_every_x_hours">हर X घंटे में</string>
+    <string name="freq_every_x_days">हर X दिनों में</string>
+    <string name="freq_every_hours_format">प्रत्येक %1$d घंटे में</string>
+    <string name="freq_every_days_format">प्रत्येक %1$d दिनों में</string>
+    <string name="interval_hours_label">खुराक के बीच के घंटे</string>
+    <string name="interval_days_label">खुराक के बीच के दिन</string>
+    <string name="freq_every_x_weeks_format">प्रत्येक %1$d सप्ताह में</string>
+    <string name="custom_recurrence_interval_label">दोहराव अंतराल (सप्ताह)</string>
+    <string name="custom_recurrence_summary">प्रत्येक %1$d सप्ताह में %2$s को दोहराया जाएगा</string>
+    <string name="validation_select_custom_days">कस्टम पुनरावृत्ति के लिए कृपया कम से कम एक दिन चुनें</string>
+    <string name="btn_log_prn_dose">खुराक दर्ज करें</string>
+    <string name="prn_doses_taken_today">आज दर्ज खुराकें: %1$d</string>
+    <string name="prn_section_title">ज़रूरत पड़ने पर दवाएं (PRN)</string>
+
+    <string name="btn_quick_refill_action">+ रिफिल</string>
+    <string name="quick_refill_dialog_title">स्टॉक रिफिल: %1$s</string>
+    <string name="quick_refill_amount_label">संख्या जोड़ें</string>
+    <string name="quick_refill_preset_30">+30</string>
+    <string name="quick_refill_preset_60">+60</string>
+    <string name="quick_refill_preset_90">+90</string>
+    <string name="quick_refill_success">%1$s के लिए स्टॉक रिफिल किया गया। नया बैलेंस: %2$s</string>
+
+    <string name="no_scheduled_doses_today">आज के लिए कोई निर्धारित खुराक नहीं है</string>
+    <string name="prn_confirm_log_title">खुराक दर्ज करें</string>
+    <string name="prn_confirm_log_msg">क्या %1$s (%2$s) की 1 खुराक अभी ली गई दर्ज करें?</string>
+    <string name="hours_limit_hint">24 घंटे से अधिक के अंतराल के लिए \'हर X दिन\' चुनें।</string>
+
+    <string name="pref_nagging_title">अनुवर्ती (नैगिंग) रिमाइंडर</string>
+    <string name="pref_nagging_desc">दवा लेने तक बार-बार याद दिलाएं।</string>
+    <string name="pref_nagging_interval">रिमाइंडर अंतराल</string>
+    <string name="pref_nagging_max_repeats">अधिकतम दोहराव</string>
+    <string name="pref_nagging_repeats_format">%1$d बार</string>
+    <string name="pref_nagging_repeats_continuous">लगातार (लेने तक)</string>
+    <string name="notif_nagging_title">अनुवर्ती सूचना: %1$s</string>
+    <string name="notif_nagging_text">रिमाइंडर %1$d/%2$d: %3$s के लिए खुराक अभी भी लंबित है।</string>
+    <string name="notif_nagging_text_continuous">रिमाइंडर #%1$d: %2$s के लिए खुराक अभी भी लंबित है।</string>
+
+    <string name="widget_title">Dosezy आज</string>
+    <string name="widget_no_meds">कोई आगामी खुराक नहीं</string>
+    <string name="widget_all_taken">आज की सभी खुराकें ले ली गईं! 🎉</string>
+    <string name="widget_tap_to_open">ऐप खोलने के लिए टैप करें</string>
+    <string name="widget_no_profile">कोई प्रोफ़ाइल नहीं बनाई गई</string>
+    <string name="widget_open_app">सेटअप के लिए Dosezy खोलें</string>
+    <string name="widget_taken_summary">%1$d / %2$d ली गईं</string>
+    <string name="widget_all_completed">सभी खुराकें पूरी हुईं! 🎉</string>
+    <string name="widget_no_doses_today">आज कोई खुराक निर्धारित नहीं है</string>
+    <string name="widget_next_dose_format">अगली: %1$s • %2$s</string>
+    <string name="widget_configure_title">विजेट प्रोफ़ाइल चुनें</string>
+    <string name="widget_configure_subtitle">चुनें कि यह विजेट आपकी होम स्क्रीन पर किस प्रोफ़ाइल की दवा सूची प्रदर्शित करेगा।</string>
+    <string name="widget_configure_active_profile">सक्रिय ऐप प्रोफ़ाइल</string>
+    <string name="widget_configure_active_profile_desc">ऐप में वर्तमान में सक्रिय प्रोफ़ाइल को स्वचालित रूप से फ़ॉलो करता है</string>
+    <string name="widget_configure_confirm">विजेट सहेजें</string>
+
+    <!-- Custom Alarm Sounds -->
+    <string name="pref_alarm_sound">अलार्म टोन</string>
+    <string name="pref_alarm_sound_desc">दवा अलार्म के लिए रिंगटोन चुनें</string>
+    <string name="alarm_sound_system_default">सिस्टम डिफ़ॉल्ट</string>
+    <string name="alarm_sound_gentle_chime">सौम्य चाइम्स</string>
+    <string name="alarm_sound_medical_marimba">मेडिकल मरिम्बा</string>
+    <string name="alarm_sound_brisk_pulse">तेज़ पल्स</string>
+    <string name="alarm_sound_calm_bell">शांत घंटी</string>
+    <string name="alarm_sound_preview">सुनें</string>
+    <!-- Discontinue & Soft-Delete (#51) -->
+    <string name="dialog_med_action_title">दवा बंद करें या हटाएं?</string>
+    <string name="dialog_med_action_desc">इस दवा के लिए कार्रवाई चुनें:</string>
+    <string name="btn_discontinue_keep_history">बंद करें (इतिहास सुरक्षित रखें)</string>
+    <string name="discontinue_med_explanation">आगामी रिमाइंडर बंद हो जाएंगे और सक्रिय सूची से हट जाएंगे। पिछला सारा इतिहास सुरक्षित रहेगा।</string>
+    <string name="btn_delete_permanently">हमेशा के लिए हटाएं</string>
+    <string name="delete_permanently_explanation">इस दवा और इसके पिछले सारे रिकॉर्ड्स को स्थायी रूप से मिटा दिया जाएगा।</string>
+    <string name="discontinued_medications_section">बंद की गई दवाइयां</string>
+    <string name="btn_reactivate_med">फिर से शुरू करें</string>
+    <string name="dialog_delete_permanent_title">हमेशा के लिए हटाएं?</string>
+    <string name="dialog_delete_permanent_msg">क्या आप वाकई %1$s को हमेशा के लिए हटाना चाहते हैं? इसका सारा इतिहास मिटा दिया जाएगा।</string>
+    <string name="help_github_issues_title">समस्या की रिपोर्ट करें</string>
+    <string name="help_github_issues_desc">GitHub पर बग रिपोर्ट करें या नए सुझाव दें</string>
+    <string name="menu_about_dosezy">Dosezy के बारे में</string>
+    <string name="about_title">Dosezy के बारे में</string>
+    <string name="about_tagline">मरीजों और देखभाल करने वालों के लिए एक सुरक्षित, ऑफ़लाइन दवा साथी।</string>
+    <string name="about_star_github">GitHub पर स्टार दें</string>
+    <string name="about_star_github_desc">GitHub पर स्टार देकर हमारे ओपन-सोर्स प्रोजेक्ट का समर्थन करें</string>
+    <string name="pref_alarm_duration_title">अलार्म बजने की अवधि</string>
+    <string name="pref_alarm_duration_desc">निर्धारित समय के बाद ध्वनि और कंपन को स्वचालित रूप से म्यूट करें</string>
+    <string name="alarm_duration_continuous">लगातार (जब तक बंद न किया जाए)</string>
+    <string name="alarm_duration_once">एक बार बजेगा</string>
+    <string name="alarm_duration_15s">15 सेकंड</string>
+    <string name="alarm_duration_30s">30 सेकंड</string>
+    <string name="alarm_duration_1m">1 मिनट</string>
+    <string name="alarm_duration_2m">2 मिनट</string>
+    <string name="alarm_duration_5m">5 मिनट</string>
+    <string name="alarm_silenced_auto_banner">अलार्म स्वतः म्यूट हो गया - तैयार होने पर अपनी दवाएं दर्ज करें</string>
+
+    <string name="alarm_sound_custom">कस्टम ऑडियो फ़ाइल</string>
+    <string name="alarm_sound_select_file">ऑडियो फ़ाइल चुनें</string>
+    <string name="alarm_sound_no_file_selected">कोई ऑडियो फ़ाइल नहीं चुनी गई</string>
+    <string name="notif_exact_alarm_title">सटीक अलार्म</string>
+    <string name="notif_exact_alarm_granted">अलार्म सटीक समय पर बजेंगे।</string>
+    <string name="notif_exact_alarm_desc">अलार्म को समय पर बजने के लिए आवश्यक है।</string>
+    <string name="notif_overlay_title">अन्य ऐप्स के ऊपर दिखाएं</string>
+    <string name="notif_overlay_granted">अलार्म पॉपअप स्क्रीन किसी भी ऐप के ऊपर दिखाई दे सकती है।</string>
+    <string name="notif_overlay_desc">अन्य ऐप का उपयोग करते समय भी अलार्म पॉपअप स्क्रीन सुनिश्चित करता है।</string>
+    <string name="notif_fullscreen_title">पूर्ण-स्क्रीन अलार्म पॉपअप</string>
+    <string name="notif_fullscreen_granted">फुल-स्क्रीन अलार्म विंडो की अनुमति है।</string>
+    <string name="notif_fullscreen_desc">डिवाइस लॉक होने पर अलार्म स्क्रीन दिखाने के लिए आवश्यक है।</string>
+    <string name="notif_oem_setup_btn">%1$s ऑटोस्टार्ट और पॉपअप सेटिंग्स ठीक करें</string>
+
+    <string name="btn_back">पीछे</string>
+    <string name="alarm_medication_reminder_multi">दवाइयों का रिमाइंडर (%d)</string>
+    <string name="alarm_take_all">सभी लें (%d)</string>
+    <string name="alarm_take_medicine">दवा लें</string>
+    <string name="alarm_snooze_format">स्नूज़ (%d मिनट)</string>
+    <string name="notif_action_snooze_format">स्नूज़ (%d मिनट)</string>
+    <string name="alarm_snoozed_toast">अलार्म %d मिनट के लिए स्नूज़ किया गया</string>
+    <string name="alarm_stock_remaining">स्टॉक: %s दवाएं शेष</string>
+    <string name="home_action_take">लें</string>
+    <string name="home_action_taken">ले ली</string>
+    <string name="home_action_missed">छूट गई</string>
+    <string name="home_action_mark_late">देर से ली</string>
+    <string name="home_dose_recorded">%s की खुराक दर्ज की गई</string>
+    <string name="btn_undo">पूर्ववत करें</string>
+    <string name="analytics_empty_title">अभी तक कोई दवा लॉग नहीं है</string>
+    <string name="analytics_empty_desc">जैसे ही आप दवा लेना दर्ज करेंगे, आपका स्कोर, साप्ताहिक स्ट्रीक और आंकड़े यहाँ दिखाई देंगे।</string>
+    <string name="validation_enter_med_name">कृपया दवा का नाम दर्ज करें</string>
+    <string name="validation_enter_dosage">कृपया खुराक दर्ज करें</string>
+    <string name="validation_select_days_week">कृपया सप्ताह का कम से कम एक दिन चुनें</string>
+    <string name="validation_select_days_month">कृपया महीने का कम से कम एक दिन चुनें</string>
+    <string name="menu_more_section">अधिक</string>
+    <string name="pref_section_general">सामान्य</string>
+    <string name="pref_section_notifications">सूचनाएँ और अलार्म</string>
+    <string name="pref_section_dose_tracking">खुराक ट्रैकिंग</string>
+    <string name="home_dose_reverted">%1$s खुराक को लंबित में वापस बदला गया</string>
+    <string name="search_medicines_hint">दवाइयाँ खोजें...</string>
+    <string name="btn_add_first_medicine">अपनी पहली दवा जोड़ें</string>
+    <string name="search_no_results">\"%1$s\" से मेल खाने वाली कोई दवा नहीं मिली</string>
+    <string name="search_clear">खोज साफ़ करें</string>
+    <string name="backup_export_failed">निर्यात विफल: %1$s</string>
+
+    <string name="pref_allow_skip_title">खुराक छोड़ने की अनुमति दें</string>
+    <string name="pref_allow_skip_desc">कारण बताकर निर्धारित खुराक छोड़ें।</string>
+    <string name="home_action_skip">छोड़ें</string>
+    <string name="home_action_skipped">छोड़ दिया</string>
+    <string name="home_dose_skipped">%s के लिए खुराक छोड़ दी गई</string>
+    <string name="alarm_skip_medicine">खुराक छोड़ें</string>
+    <string name="alarm_skip_all">सभी छोड़ें (%d)</string>
+    <string name="skip_dialog_title">दवा की खुराक छोड़ें</string>
+    <string name="skip_dialog_subtitle">इस खुराक को छोड़ने का चिकित्सीय कारण चुनें:</string>
+    <string name="skip_reason_fasting">चिकित्सीय उपवास / लैब टेस्ट</string>
+    <string name="skip_reason_doctor">डॉक्टर द्वारा सलाह दी गई रोक</string>
+    <string name="skip_reason_side_effects">दुष्प्रभाव / प्रतिकूल प्रतिक्रिया</string>
+    <string name="skip_reason_already_taken">पहले ही ले ली गई है</string>
+    <string name="skip_reason_out_of_stock">दवा उपलब्ध नहीं / स्टॉक खत्म</string>
+    <string name="skip_reason_other">अन्य चिकित्सीय / व्यक्तिगत कारण</string>
+    <string name="skip_dialog_confirm">पुष्टि करें</string>
+    <string name="skip_dialog_cancel">रद्द करें</string>
+
+    <string name="existing_profiles_title">मौजूदा प्रोफ़ाइल</string>
+    <string name="profile_picture_desc">प्रोफ़ाइल फ़ोटो</string>
+    <string name="select_profile_desc">प्रोफ़ाइल चुनें</string>
+    <string name="profile_age_gender_format">%1$d वर्ष • %2$s</string>
+    <string name="notif_content_scheduled_format">%1$s के लिए निर्धारित - दवा लेने का समय हो गया है!</string>
+    <string name="notif_content_generic_reminder">दवा लेने का समय हो गया है!</string>
+    <string name="validation_enter_name">कृपया अपना नाम दर्ज करें</string>
+    <string name="validation_enter_valid_age">कृपया एक मान्य आयु दर्ज करें (1-120)</string>
+    <string name="medication_added_success">दवा सफलतापूर्वक जोड़ी गई</string>
+    <string name="medication_updated_success">दवा सफलतापूर्वक अपडेट की गई</string>
+    <string name="medication_archived_success">दवा सफलतापूर्वक बंद कर दी गई</string>
+    <string name="medication_deleted_success">दवा सफलतापूर्वक हटा दी गई</string>
+    <string name="status_pending">लंबित</string>
+    <string name="pharmacy_order_title">फार्मेसी रीफ़िल ऑर्डर</string>
+    <string name="pharmacy_order_desc">व्हाट्सएप या मेडिकल स्टोर के लिए दवाओं के ऑर्डर की सूची बनाएं</string>
+    <string name="pharmacy_order_scope_low_stock">केवल कम स्टॉक वाली दवाएं</string>
+    <string name="pharmacy_order_scope_all">सभी सक्रिय दवाएं</string>
+    <string name="pharmacy_order_days_format">%1$d दिन</string>
+    <string name="pharmacy_order_share">चैट पर शेयर करें</string>
+    <string name="pharmacy_order_copy">टेक्स्ट कॉपी करें</string>
+    <string name="pharmacy_order_copied">रीफ़िल ऑर्डर क्लिपबोर्ड पर कॉपी हो गया</string>
+    <string name="pharmacy_order_empty">ऑर्डर करने के लिए कोई दवा उपलब्ध नहीं है</string>
+    <string name="pharmacy_order_current_stock">वर्तमान स्टॉक: %1$s %2$s शेष</string>
+    <string name="pharmacy_order_qty_needed">ऑर्डर की मात्रा: %1$d %2$s</string>
+    <string name="pharmacy_order_patient_header">रोगी: %1$s</string>
+    <string name="pharmacy_order_date_header">दिनांक: %1$s</string>
+    <string name="pharmacy_order_supply_header">%1$d दिनों की आपूर्ति हेतु ऑर्डर सूची:</string>
+    <string name="pharmacy_order_footer_confirm">कृपया दवाओं की उपलब्धता और डिलीवरी की पुष्टि करें। धन्यवाद!</string>
+    <string name="pharmacy_order_footer_brand">Dosezy द्वारा तैयार (आपका दवा साथी)</string>
+    <string name="menu_pharmacy_order">फार्मेसी रीफ़िल ऑर्डर</string>
+    <string name="menu_pharmacy_order_desc">व्हाट्सएप के ज़रिये दवा ऑर्डर बनाएं और शेयर करें</string>
+    <string name="pharmacy_order_markdown_preview">मार्कडाउन पूर्वावलोकन</string>
+
+    <string name="about_community_open_source">समुदाय और ओपन सोर्स</string>
+    <string name="about_version_build">संस्करण %1$s (बिल्ड %2$s)</string>
+    <string name="about_build_play">मार्केटप्लेस बिल्ड</string>
+    <string name="about_build_foss">FOSS बिल्ड</string>
+    <string name="about_social_links_title">सोशल मीडिया</string>
+    <string name="country_india">भारत</string>
+    <string name="country_us_ca">संयुक्त राज्य अमेरिका / कनाडा</string>
+    <string name="country_uk">यूनाइटेड किंगडम</string>
+    <string name="country_eu">यूरोपीय संघ</string>
+    <string name="country_china">चीन</string>
+    <string name="country_japan">जापान</string>
+    <string name="country_russia">रूस</string>
+    <string name="country_brazil">ब्राज़ील</string>
+    <string name="country_bangladesh">बांग्लादेश</string>
+    <string name="country_australia">ऑस्ट्रेलिया</string>
+    <string name="pharmacy_order_refill_filter">रीफ़िल फ़िल्टर</string>
+    <string name="pharmacy_order_days_supply">आपूर्ति के दिन</string>
+    <string name="pharmacy_order_days_format_short">%1$d दिन</string>
+    <string name="pharmacy_order_medicines_include">शामिल दवाइयां (%1$d/%2$d)</string>
+    <string name="pharmacy_order_stock_left">%1$s शेष</string>
+    <string name="pharmacy_order_no_stock_tracked">स्टॉक ट्रैक नहीं किया गया</string>
+    <string name="pharmacy_order_header_title">📋 *दवा का ऑर्डर*</string>
+    <string name="pharmacy_order_frequency_format">आवृत्ति: दिन में %1$dx बार</string>
+    <string name="pharmacy_order_notes_format">नोट्स: %1$s</string>
+    <string name="notif_overlay_prompt_title">अलार्म पॉपअप की अनुमति दें</string>
+    <string name="notif_overlay_prompt_desc">व्हाट्सएप जैसे ऐप्स के ऊपर अलार्म पॉपअप तुरंत दिखाने के लिए, कृपया \'अन्य ऐप्स के ऊपर दिखाएं\' सक्षम करें।</string>
+    <string name="dialog_enable">सक्षम करें</string>
+    <string name="dialog_later">बाद में</string>
+
+    <string name="pharmacy_order_include_stock">संदेश में वर्तमान स्टॉक शामिल करें</string>
+    <string name="pharmacy_order_include_dosage">दवा की खुराक / क्षमता शामिल करें</string>
+    <string name="pharmacy_order_quantity_label">मात्रा</string>
+    <string name="pharmacy_order_profile_filter">शामिल करने योग्य प्रोफ़ाइल</string>
+
+    <!-- Manual Dose Recording Strings -->
+    <string name="pref_manually_record_dose_time_title">खुराक का समय मैन्युअल रूप से दर्ज करें</string>
+    <string name="pref_manually_record_dose_time_desc">खुराक लेने का वास्तविक समय दर्ज करें।</string>
+    <string name="record_dose_time_title">खुराक का समय दर्ज करें</string>
+    <string name="record_dose_time_subtitle">आपने %1$s कब ली?</string>
+    <string name="record_dose_time_just_now">अभी-अभी (%1$s)</string>
+    <string name="record_dose_time_scheduled">निर्धारित समय पर (%1$s)</string>
+    <string name="record_dose_time_custom">कस्टम समय (%1$s)</string>
+    <string name="record_dose_time_select">समय बदलें</string>
+    <string name="record_dose_time_confirm">खुराक दर्ज करें</string>
+    <string name="unit_bottle">शीशी</string>
+    <string name="unit_bottles">शीशियां</string>
+    <string name="unit_units">यूनिट</string>
+
+    <!-- Hide Navigation Add Button Preference -->
+    <string name="pref_hide_add_nav_button_title">नेविगेशन जोड़ें बटन छिपाएं</string>
+    <string name="pref_hide_add_nav_button_desc">निचले नेविगेशन बार से \'+\' बटन छिपाएं।</string>
+
+    <!-- About Screen Expansion -->
+    <string name="about_developer_title">डेवलपर के बारे में</string>
+    <string name="about_developer_name">Saad</string>
+    <string name="about_developer_role">निर्माता और मुख्य अनुरक्षक</string>
+    <string name="about_developer_bio" formatted="false">दवा प्रबंधन को सुलभ, पूरी तरह से निजी और स्वतंत्र रखने के लिए समर्पित भाव से निर्मित। कोई विज्ञापन नहीं, कोई ट्रैकर नहीं, 100% ऑफ़लाइन।</string>
+    <string name="about_developer_github">GitHub प्रोफ़ाइल</string>
+    <string name="about_features_title">Dosezy क्यों चुनें?</string>
+    <string name="about_feat_offline_title" formatted="false">100% ऑफ़लाइन और निजी</string>
+    <string name="about_feat_offline_desc">सभी डेटा केवल आपके डिवाइस पर सुरक्षित रहता है, बिना किसी क्लाउड या ट्रैकर के।</string>
+    <string name="about_feat_smart_alarms_title">विश्वसनीय अलार्म और समय क्षेत्र</string>
+    <string name="about_feat_smart_alarms_desc">सटीक अलार्म जो डिवाइस को जगाते हैं और समय क्षेत्र बदलने पर खुद अनुकूलित होते हैं।</string>
+    <string name="about_feat_family_title">मल्टी-प्रोफ़ाइल पारिवारिक देखभाल</string>
+    <string name="about_feat_family_desc">परिवार के सदस्यों की दवाएं संभालें और ड्रॉप्स के लिए बोतल की सही गणना पाएं।</string>
+    <string name="about_feat_accessible_title">सुलभता सर्वोपरि</string>
+    <string name="about_feat_accessible_desc">बुजुर्गों के लिए बड़े स्पष्ट अक्षर और छूने में आसान बड़े बटन।</string>
+    <string name="notif_status_bg_allowed">ऐप बैकग्राउंड में चल सकता है।</string>
+    <string name="notif_status_bg_restricted">बैकग्राउंड प्रतिबंध सूचनाओं को रोक सकते हैं।</string>
+    <string name="notif_status_dnd_enabled">डू नॉट डिस्टर्ब (DND) सक्षम है।</string>
+    <string name="notif_status_dnd_disabled">डू नॉट डिस्टर्ब (DND) अक्षम है।</string>
+    <string name="med_different_dosages_toggle">प्रत्येक समय के लिए अलग खुराक</string>
+    <string name="med_different_dosages_subtitle">सुबह, दोपहर या शाम के लिए अलग मात्रा निर्धारित करें</string>
+    <string name="med_dosage_for_time">%1$s के लिए खुराक</string>
+
+    <string name="analytics_skipped_doses">छोड़ी गई खुराकें</string>
+    <string name="notif_channel_refill_name">रिफिल रिमाइंडर</string>
+    <string name="notif_channel_refill_desc">दवा का स्टॉक आपकी चुनी हुई सीमा से कम होने पर अलर्ट</string>
+    <string name="widget_tomorrow">कल </string>
+    <string name="med_start_date_label">शुरुआती तारीख</string>
+
+    <string name="prn_logged_success">%1$s के लिए आवश्यकतानुसार खुराक दर्ज की गई</string>
+    <string name="btn_jump_to_today">आज</string>
+    <string name="dialog_low_storage_title">स्टोरेज स्पेस बहुत कम है</string>
+    <string name="dialog_low_storage_message">आपके डिवाइस में स्टोरेज स्पेस बहुत कम बचा है। डेटा हानि या दवा अनुस्मारक अलार्म विफल होने से रोकने के लिए कृपया तुरंत स्पेस खाली करें।</string>
+    <string name="dialog_low_storage_action">स्पेस खाली करें</string>
+    <string name="dialog_low_storage_dismiss">खारिज करें</string>
+    <string name="pref_allow_undo_title">खुराक पूर्ववत करने की अनुमति दें</string>
+    <string name="pref_allow_undo_desc">ली गई खुराक को वापस लंबित में बदलें।</string>
+    <string name="pref_prompt_dose_notes_title">खुराक लेने पर नोट के लिए पूछें</string>
+    <string name="pref_prompt_dose_notes_desc">खुराक दर्ज करते समय नोट के लिए पूछें।</string>
+    <string name="dialog_undo_dose_title">खुराक पूर्ववत करें?</string>
+    <string name="dialog_undo_dose_msg">क्या आप वाकई %1$s को वापस लंबित में बदलना चाहते हैं? स्टॉक वापस जुड़ जाएगा।</string>
+    <string name="dialog_dose_note_title">खुराक नोट</string>
+    <string name="dialog_dose_note_subtitle">%1$s के लिए एक वैकल्पिक नोट जोड़ें</string>
+    <string name="dialog_dose_note_hint">उदा. खाने के साथ लिया, चक्कर, सिरदर्द...</string>
+    <string name="btn_skip_note">नोट छोड़ें</string>
+    <string name="home_dose_note_label">नोट: %1$s</string>
+    <string name="btn_edit_note">नोट बदलें</string>
+    <string name="dialog_edit_note_title">खुराक नोट संपादित करें</string>
+    <string name="pref_allow_dose_notes_title">खुराक के नोट</string>
+    <string name="pref_allow_dose_notes_desc">नोट्स, भोजन या लक्षण दर्ज करें।</string>
+    <string name="btn_add_note">+ नोट जोड़ें</string>
+    <string name="timings_and_dosages_title">समय और खुराक</string>
+    <string name="stock_inventory_card_title">दवा स्टॉक और इन्वेंटरी</string>
+    <string name="widget_configure_auto_badge">ऑटो</string>
+    <string name="dialog_validation_title">सूचना</string>
+
+    <!-- Appearance, Sliding Actions, Timeline &amp; Thicker Calendar Highlight -->
+    <string name="pref_section_appearance">रूप-रंग</string>
+    <string name="pref_slide_actions_title">दवा लेने और स्नूज़ के लिए स्लाइड करें</string>
+    <string name="pref_slide_actions_desc">दवा लेने या स्नूज़ करने के लिए टैप करने के बजाय स्लाइड करें।</string>
+    <string name="pref_timeline_mode_title">टाइमलाइन दृश्य</string>
+    <string name="pref_timeline_mode_desc">आज का शेड्यूल एक स्पष्ट लंबवत टाइमलाइन में देखें।</string>
+    <string name="pref_calendar_thicker_highlight_title">पूर्ण फ्रेम दिवस हाइलाइट</string>
+    <string name="pref_calendar_thicker_highlight_desc">कैलेंडर में प्रत्येक निर्धारित दिन को पूरे रंगीन फ्रेम से रेखांकित करें।</string>
+    <string name="alarm_slide_to_take">लेने के लिए स्लाइड करें</string>
+    <string name="alarm_slide_to_take_all">सभी लेने के लिए स्लाइड करें (%1$d)</string>
+    <string name="alarm_slide_to_snooze">स्नूज़ के लिए स्लाइड करें (%1$d मि)</string>
+    <string name="home_view_standard">मानक</string>
+    <string name="home_view_timeline">टाइमलाइन</string>
+
+    <!-- Dynamic Snooze Duration Selector (#103) -->
+    <string name="alarm_snooze_duration_label">स्नूज़ करें:</string>
+    <string name="snooze_duration_chip_format">%1$d मि</string>
+    <string name="pref_custom_snooze_title">कस्टम स्नूज़ विकल्प</string>
+    <string name="pref_custom_snooze_desc">अलार्म बजने पर विभिन्न स्नूज़ अवधि में से चुनें।</string>
+    <!-- Dose Intake Countdown Timer & Re-Alert Safeguard (ADHD Support) -->
+    <string name="pref_intake_safeguard_title">दवा सेवन उलटी गिनती सुरक्षा</string>
+    <string name="pref_intake_safeguard_desc">ADHD सहायता: दवा सेवन पुष्टि से पहले उलटी गिनती बफर और ध्यान भटकने पर पुनः चेतावनी।</string>
+    <string name="pref_intake_duration_title">सुरक्षा अवधि</string>
+    <string name="pref_intake_duration_format">%1$d मिनट</string>
+    <string name="dialog_intake_duration_title">सुरक्षा अवधि चुनें</string>
+    <string name="notif_intake_in_progress_title">दवा सेवन प्रगति पर है</string>
+    <string name="notif_intake_in_progress_desc">%1$s: लेने के बाद पुष्टि करें</string>
+    <string name="notif_intake_action_confirm">पुष्टि करें</string>
+    <string name="notif_intake_action_extend">+1 मिनट</string>
+    <string name="notif_intake_action_cancel">रद्द करें</string>
+    <string name="notif_intake_realert_title">दवा की पुष्टि नहीं हुई</string>
+    <string name="notif_intake_realert_desc">क्या आपने %1$s ली? सेवन की पुष्टि करने या स्नूज़ करने के लिए टैप करें।</string>
+    <string name="home_intake_in_progress">%1$s का सेवन प्रगति पर है</string>
+    <string name="home_intake_time_remaining">%1$s शेष</string>
+    <string name="home_intake_confirm">पुष्टि करें</string>
+    <string name="home_intake_extend">+1 मिनट</string>
+    <string name="home_intake_cancel">रद्द करें</string>
+    <string name="home_intake_confirmed">%1$s का सेवन दर्ज किया गया</string>
+    <string name="home_intake_cancelled">दवा सेवन सुरक्षा रद्द की गई</string>
+    <string name="alarm_realert_badge">ADHD दवा सेवन पुनः चेतावनी</string>
+    <string name="alarm_realert_subtitle">आपने पहले लिया पर टैप किया था, लेकिन सेवन की पुष्टि नहीं हुई। क्या आपने अपनी दवा ली?</string>
+
+    <!-- Mark All Taken / Take All Cohort (#102) -->
+    <string name="take_all">सभी लें</string>
+    <string name="take_all_count">सभी लें (%1$d)</string>
+    <string name="dialog_take_all_title">सभी दवाएं लें?</string>
+    <string name="dialog_take_all_message">%2$s के लिए निर्धारित सभी %1$d दवाओं को लिया गया चिह्नित करें?</string>
+    <string name="take_all_success_toast">सभी %1$d दवाओं को लिया गया चिह्नित किया गया</string>
+
+    <!-- Legal, Privacy & Compliance Safeguards -->
+    <string name="notif_generic_lockscreen_reminder">निर्धारित दवा अनुस्मारक</string>
+    <string name="pref_lockscreen_details_title">लॉक स्क्रीन पर विवरण दिखाएं</string>
+    <string name="pref_lockscreen_details_desc">डिवाइस अनलॉक होने तक दवा का नाम और खुराक छिपाएं।</string>
+    <string name="disclaimer_dialog_title">चिकित्सा एवं कानूनी अस्वीकरण</string>
+    <string name="disclaimer_dialog_summary">डोज़ीज़ी एक स्वचालित डिजिटल रिमाइंडर उपकरण है और यह कोई प्रमाणित मेडिकल डिवाइस नहीं है। यह नैदानिक परामर्श, खुराक गणना या चिकित्सा सलाह प्रदान नहीं करता है। दवा संबंधी निर्देशों के लिए हमेशा अपने चिकित्सक से परामर्श लें।</string>
+    <string name="disclaimer_checkbox_consent">मैं चिकित्सा अस्वीकरण और सेवा की शर्तों को समझता/समझती हूं और स्वीकार करता/करती हूं।</string>
+    <string name="disclaimer_action_agree">स्वीकार करें और जारी रखें</string>
+    <string name="disclaimer_link_medical">चिकित्सा अस्वीकरण</string>
+    <string name="disclaimer_link_privacy">गोपनीयता नीति</string>
+    <string name="disclaimer_link_terms">सेवा की शर्तें</string>
+    <string name="emergency_dispatch_warning_title">आपातकालीन सूचना</string>
+    <string name="emergency_dispatch_warning_desc">डोज़ीज़ी कोई आपातकालीन सेवा प्रदाता नहीं है और 112/911 का विकल्प नहीं है। गंभीर स्थिति में सीधे स्थानीय आपातकालीन सेवाओं को कॉल करें। जांचें कि नंबर आपके क्षेत्र से मेल खाता है।</string>
+    <string name="pdf_report_disclaimer_footer">डोज़ीज़ी दवा ट्रैकर • स्व-रिपोर्टेड सूचनात्मक लॉग (गैर-चिकित्सकीय)</string>
+    <string name="pharmacy_refill_estimation_disclaimer">सूचना: रिफिल मात्रा दर्ज आवृत्ति पर आधारित अनुमान है। अपने फार्मासिस्ट या चिकित्सक से सत्यापित करें।</string>
+    <string name="alarm_unlock_to_view_details">विवरण देखने के लिए अनलॉक करें</string>
+    <string name="alarm_lockscreen_details_hidden">डिवाइस लॉक होने पर दवा का नाम और खुराक छिपी रहती है।</string>
+
+    <!-- Schedule Effective Date Selector (#105) -->
+    <string name="schedule_effective_dialog_title">शेड्यूल परिवर्तन लागू करें</string>
+    <string name="schedule_effective_dialog_message">यह अपडेट किया गया शेड्यूल कब से प्रभावी होना चाहिए?</string>
+    <string name="schedule_effective_today_title">आज से शुरू करें</string>
+    <string name="schedule_effective_today_desc">आज से नए समय लागू करें। आज की पुरानी बिना ली गई खुराकें हटा दी जाएंगी।</string>
+    <string name="schedule_effective_tomorrow_title">कल से शुरू करें</string>
+    <string name="schedule_effective_tomorrow_desc">आज का शेड्यूल वैसा ही रखें। नया शेड्यूल कल से शुरू होगा।</string>
+    <!-- Retrospective Missed Dose Calendar Management (#109) -->
+    <string name="dose_retrospective_tag">[पूर्वव्यापी रूप से दर्ज]</string>
+    <string name="schedule_action_dialog_title">खुराक प्रबंधित करें</string>
+    <string name="schedule_action_dialog_subtitle">%1$s • %2$s</string>
+    <string name="schedule_action_take_dose">ली गई के रूप में चिह्नित करें</string>
+    <string name="schedule_action_skip_dose">छोड़ी गई के रूप में चिह्नित करें</string>
+    <string name="schedule_action_undo_dose">खुराक क्रिया पूर्ववत करें</string>
+    <string name="schedule_action_edit_note">खुराक नोट संपादित करें</string>
+    <string name="schedule_action_add_note">खुराक नोट जोड़ें</string>
+    <string name="schedule_dose_marked_taken">%1$s को ली गई के रूप में चिह्नित किया गया</string>
+    <string name="schedule_dose_marked_skipped">%1$s को छोड़ी गई के रूप में चिह्नित किया गया</string>
+    <string name="schedule_dose_reverted">%1$s को लंबित पर वापस लाया गया</string>
+    <string name="schedule_dose_locked_notice">यह खुराक 48 घंटे से अधिक पुरानी है और मेडिकल रिकॉर्ड की अखंडता बनाए रखने के लिए लॉक है।</string>
+    <string name="schedule_dose_locked_badge">लॉक</string>
+    <string name="schedule_tap_to_manage">प्रबंधित करने के लिए टैप करें</string>
+
+    <!-- Reminder Style: Alarm vs Notification (#111) -->
+    <string name="pref_reminder_type_title">रिमाइंडर शैली</string>
+    <string name="pref_reminder_type_desc">चुनें कि रिमाइंडर अलार्म के रूप में बजें या मानक सूचना के रूप में</string>
+    <string name="reminder_type_alarm">अलार्म</string>
+    <string name="reminder_type_alarm_desc">निरंतर ध्वनि के साथ पूर्ण-स्क्रीन अलर्ट। डू नॉट डिस्टर्ब को बायपास करता है।</string>
+    <string name="reminder_type_notification">सूचना (नोटिफिकेशन)</string>
+    <string name="reminder_type_notification_desc">अलर्ट टोन के साथ मानक सूचना बैनर। डू नॉट डिस्टर्ब का सम्मान करता है।</string>
+    <string name="reminder_type_default">प्रोफ़ाइल डिफ़ॉल्ट का उपयोग करें (%1$s)</string>
+    <string name="reminder_type_default_profile">प्रोफ़ाइल डिफ़ॉल्ट का उपयोग करें</string>
+    <string name="notif_channel_notifications_name">दवा सूचनाएं</string>
+    <string name="notif_channel_notifications_desc">दवा समय-सारणी के लिए मानक सूचनाएं जो डू नॉट डिस्टर्ब का पालन करती हैं</string>
+    <string name="form_reminder_type">रिमाइंडर शैली</string>
+    <string name="form_reminder_type_desc">महत्वपूर्ण दवाओं के लिए अलार्म या सप्लीमेंट्स के लिए सूचना चुनें</string>
+
+    <!-- Medicine Order & Sorting (#120) -->
+    <string name="sort_medicines_title">क्रमबद्ध करें</string>
+    <string name="sort_preset_default">डिफ़ॉल्ट (जोड़ने की तारीख)</string>
+    <string name="sort_preset_name_asc">नाम (अ से ज्ञ)</string>
+    <string name="sort_preset_name_desc">नाम (ज्ञ से अ)</string>
+    <string name="sort_preset_time_asc">निर्धारित समय (पहले का समय पहले)</string>
+    <string name="sort_preset_custom">कस्टम क्रम</string>
+    <string name="sort_custom_reorder_title">दवाओं का क्रम बदलें</string>
+    <string name="sort_custom_reorder_desc">अपनी दवाओं का क्रम बदलने के लिए तीरों का उपयोग करें।</string>
+    <string name="sort_move_up">ऊपर ले जाएं</string>
+    <string name="sort_move_down">नीचे ले जाएं</string>
+</resources>

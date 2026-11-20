@@ -1,0 +1,55 @@
+package com.example.dosezy.data.model
+
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.dosezy.data.converters.Converters
+import java.time.LocalDateTime
+
+@Entity(
+    tableName = "schedule_entries",
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["userId"],
+            childColumns = ["userId"],
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Medicine::class,
+            parentColumns = ["medicineId"],
+            childColumns = ["medicineId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [
+        Index("userId"),
+        Index("medicineId"),
+        Index("scheduledDateTime")
+    ]
+)
+@TypeConverters(Converters::class)
+// Guard: Mark Immutable so Compose skips recomposing unchanged items in LazyColumn on slower devices
+@androidx.compose.runtime.Immutable
+data class ScheduleEntry(
+    @PrimaryKey val entryId: String,
+    val userId: String,
+    val medicineId: String,
+    val scheduledDateTime: LocalDateTime,
+    val status: MedicationStatus,
+    val takenAt: LocalDateTime? = null,
+    val skipReason: String? = null,
+    val dosage: Double? = null,
+    val doseNotes: String? = null
+)
+
+enum class MedicationStatus {
+    PENDING, TAKEN_ON_TIME, TAKEN_LATE, MISSED, SKIPPED
+}
+
+enum class ScheduleEffectiveDate {
+    TODAY,
+    TOMORROW
+}

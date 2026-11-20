@@ -1,0 +1,924 @@
+<resources>
+    <string name="app_name">Dosezy</string>
+    <string name="app_tagline">Medicine Adherence Simplified</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_schedule">Schedule</string>
+    <string name="nav_add">Add</string>
+    <string name="nav_medicines">Medicines</string>
+    <string name="nav_menu">Menu</string>
+
+    <!-- Greetings -->
+    <string name="greeting_morning">Good Morning,</string>
+    <string name="greeting_afternoon">Good Afternoon,</string>
+    <string name="greeting_evening">Good Evening,</string>
+    <string name="greeting_night">Good Night,</string>
+    <string name="health_quote">\"Health is a priceless wealth.\"</string>
+
+    <!-- Home Screen -->
+    <string name="home_todays_meds">Today\'s Meds</string>
+    <string name="home_todays_adherence">Today\'s Adherence</string>
+    <string name="home_upcoming_doses">Upcoming Doses</string>
+    <string name="home_all_taken">All Doses Taken!</string>
+    <string name="home_no_doses_today">No doses scheduled for today.</string>
+    <string name="home_medication_progress">Medication Progress</string>
+
+    <!-- Schedule Screen -->
+    <string name="schedule_title">Daily Schedule</string>
+    <string name="schedule_no_doses">No doses scheduled for this day</string>
+
+    <!-- Medicines Screen -->
+    <string name="medicines_title">Your Medicines</string>
+    <string name="medicines_add_new">Add New Medicine</string>
+    <string name="medicines_empty">No medicines added yet</string>
+    <string name="medicines_empty_sub">It looks like you haven\'t added any medications. Get started by tapping the plus button below.</string>
+
+    <!-- Form Add/Edit Medicine -->
+    <string name="form_add_medicine">Add Medicine</string>
+    <string name="form_edit_medicine">Edit Medicine</string>
+    <string name="form_medicine_image">Medicine Image</string>
+    <string name="form_med_name">Medication Name</string>
+    <string name="form_med_name_placeholder">e.g. Amoxicillin</string>
+    <string name="form_dosage">Dosage</string>
+    <string name="form_dosage_unit">Dosage Unit</string>
+    <string name="form_dosage_placeholder">e.g. 500mg, 1 tablet</string>
+    <string name="form_frequency">Frequency</string>
+    <string name="form_time">Time</string>
+    <string name="form_save">Save Medicine</string>
+    <string name="form_save_changes">Save Changes</string>
+    <string name="form_delete">Delete Medicine</string>
+    <string name="form_delete_medicine">Delete Medication</string>
+    <string name="form_upload_img">Upload Medicine Image</string>
+    <string name="form_change_img">Change Medicine Image</string>
+    <string name="form_error_med_name_required">Medication name is required</string>
+    <string name="form_error_dosage_required">Dosage is required</string>
+    <string name="form_error_dosage_invalid">Dosage must be a positive number</string>
+    <string name="form_error_select_days">Please select at least one day</string>
+    <string name="form_error_course_duration">Course duration must be at least 1 day</string>
+    <string name="form_error_fix_fields">Please fill in the required fields highlighted above</string>
+    <string name="freq_daily">Daily</string>
+    <string name="freq_weekly">Weekly</string>
+    <string name="freq_monthly">Monthly</string>
+    <string name="freq_custom">Every X Weeks</string>
+    <string name="form_select_days_week">Select Days of the Week</string>
+    <string name="form_select_days_month">Select Days of the Month</string>
+    <string name="day_mon">Mon</string>
+    <string name="day_tue">Tue</string>
+    <string name="day_wed">Wed</string>
+    <string name="day_thu">Thu</string>
+    <string name="day_fri">Fri</string>
+    <string name="day_sat">Sat</string>
+    <string name="day_sun">Sun</string>
+    <string name="times_per_day_format">%1$d time(s) a day</string>
+    <string name="times_per_week_format">%1$d time(s) per week</string>
+    <string name="times_per_month_format">%1$d time(s) per month</string>
+
+    <!-- Menu Screen -->
+    <string name="menu_title">Menu</string>
+    <string name="menu_account_profile">Account &amp; Profile</string>
+    <string name="menu_preferences">Preferences</string>
+    <string name="menu_emergency">Emergency Contacts</string>
+    <string name="menu_help_support">Help &amp; Support</string>
+    <string name="menu_data">Data</string>
+    <string name="menu_export_data">Export Activity Report</string>
+    <string name="menu_switch_profile">Switch Profile</string>
+    <string name="menu_manage_profiles">Manage Profiles</string>
+    <string name="menu_manage_profile">Manage this Profile</string>
+
+    <!-- Preferences Screen -->
+    <string name="pref_title">Preferences</string>
+    <string name="pref_theme">Theme</string>
+    <string name="pref_time_format">Time Format</string>
+    <string name="pref_language">Language</string>
+    <string name="pref_late_after">Consider Late After</string>
+    <string name="pref_missed_after">Consider Missed After</string>
+    <string name="pref_snooze_duration">Snooze Duration</string>
+    <string name="pref_select_snooze_duration">Select Snooze Duration</string>
+    <string name="minutes_format">%1$d minutes</string>
+    <string name="profile">Profile</string>
+    <string name="mark_late">Mark Late</string>
+
+    <!-- Dialog Titles &amp; Options -->
+    <string name="pref_select_theme">Select Theme</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="theme_system">System Default</string>
+
+    <string name="pref_select_time_format">Select Time Format</string>
+    <string name="time_format_12">12-hour</string>
+    <string name="time_format_24">24-hour</string>
+
+    <string name="pref_mark_missed_after">Consider Missed After</string>
+    <string name="hours_format">%1$d hour(s)</string>
+
+    <!-- Notification Check Dialog -->
+    <string name="notif_check_title">Notification Reliability</string>
+    <string name="notif_perm_title">Notification Permission</string>
+    <string name="notif_perm_desc">Required to send dose reminders and alarms.</string>
+    <string name="notif_perm_exact_warning">Notifications enabled • Exact alarms needed to ring on time (tap to allow)</string>
+    <string name="notif_perm_all_granted">Notifications and exact alarms are fully enabled.</string>
+    <string name="notif_oem_bg_item_desc">Adjust background settings so alarms ring on time.</string>
+
+    <string name="notif_perm_granted">Permission granted to send notifications.</string>
+    <string name="notif_exact_alarm_title">Exact Alarms</string>
+    <string name="notif_exact_alarm_granted">Alarms will trigger precisely on time.</string>
+    <string name="notif_exact_alarm_desc">Required for alarms to trigger on exact schedule.</string>
+    <string name="notif_overlay_title">Display Over Apps</string>
+    <string name="notif_overlay_granted">Alarm popup can show over any app.</string>
+    <string name="notif_overlay_desc">Ensures full-screen alarm popup appears reliably.</string>
+    <string name="notif_fullscreen_title">Full-Screen Alarm Popups</string>
+    <string name="notif_fullscreen_granted">Full-screen alarm window is permitted.</string>
+    <string name="notif_fullscreen_desc">Required to show alarm screen on lock screen.</string>
+    <string name="notif_battery_title">Phone Battery</string>
+    <string name="notif_battery_status">Battery is at %1$d%%</string>
+    <string name="notif_sound_title">Phone Sound</string>
+    <string name="notif_sound_normal">Phone is not silent.</string>
+    <string name="notif_sound_vibrate">Phone is in vibrate mode.</string>
+    <string name="notif_sound_silent">Phone is silent.</string>
+    <string name="notif_sound_unknown">Unknown sound mode.</string>
+    <string name="notif_bg_title">Battery Optimization</string>
+    <string name="notif_bg_desc">Disable battery optimization so alarms aren\'t killed.</string>
+    <string name="notif_bg_granted">App is exempted from battery restrictions.</string>
+    <string name="notif_oem_setup_btn">Fix %1$s Background &amp; Pop-up Settings</string>
+    <string name="ok">OK</string>
+    <string name="close">Close</string>
+
+    <!-- Profiles &amp; Gender -->
+    <string name="select_profile">Select a Profile</string>
+    <string name="current_profile">Current Profile</string>
+    <string name="new_profile">New Profile</string>
+    <string name="years_format">%1$d years</string>
+    <string name="gender_male">Male</string>
+    <string name="gender_female">Female</string>
+    <string name="gender_other">Other</string>
+
+    <!-- Manage Profile Screen -->
+    <string name="profile_change_pic">Change Profile Picture</string>
+    <string name="profile_upload_pic">Upload Profile Picture</string>
+    <string name="profile_full_name">Name</string>
+    <string name="profile_name_placeholder">Enter full name</string>
+    <string name="profile_age">Age</string>
+    <string name="profile_gender">Gender</string>
+    <string name="profile_contact_number">Contact Number</string>
+    <string name="profile_save_btn">Save Profile</string>
+    <string name="profile_delete_btn">Delete Profile</string>
+    <string name="profile_name_required">Name is required</string>
+    <string name="profile_age_required">Age is required</string>
+    <string name="profile_gender_required">Gender is required</string>
+    <string name="profile_cannot_delete_only">Cannot delete the only profile. Create a new profile first.</string>
+    <string name="profile_updated_success">Profile updated successfully!</string>
+    <string name="profile_deleted_success">Profile deleted successfully</string>
+    <string name="profile_delete_confirm_desc">Are you sure you want to delete this profile? This action cannot be undone.</string>
+
+    <!-- Dosage Units -->
+    <string name="unit_mg">mg</string>
+    <string name="unit_mcg">mcg</string>
+    <string name="unit_ml">mL</string>
+    <string name="unit_drop">drop</string>
+    <string name="unit_tablet">tablet</string>
+    <string name="unit_capsule">capsule</string>
+    <string name="unit_meq">mEq</string>
+    <string name="unit_puff">puff</string>
+    <string name="unit_ampule">ampule</string>
+    <string name="unit_spray">spray</string>
+
+    <!-- Help &amp; Support -->
+    <string name="help_title">Help &amp; Support</string>
+    <string name="help_resources">Resources</string>
+    <string name="help_faqs_title">FAQs</string>
+    <string name="help_faqs_desc">Get common answers.</string>
+    <string name="help_user_manual_title">User Manual</string>
+    <string name="help_user_manual_desc">Browse the user guide.</string>
+    <string name="help_contact_support">Contact Support</string>
+    <string name="help_email_support_title">Email Support</string>
+    <string name="help_email_support_desc">Get help via email.</string>
+    <string name="help_phone_support_title">Phone Support</string>
+    <string name="help_phone_support_desc">Call us for immediate help.</string>
+
+    <!-- Emergency Services -->
+    <string name="emergency_title">Emergency Contacts</string>
+    <string name="emergency_services">Emergency Services</string>
+    <string name="emergency_select_country">Select Region / Country</string>
+    <string name="emergency_universal">Universal Emergency</string>
+    <string name="emergency_ambulance">Ambulance</string>
+    <string name="emergency_fire">Fire</string>
+    <string name="emergency_police">Police</string>
+    <!-- Personal Contacts -->
+    <string name="personal_contacts">Personal Contacts</string>
+    <string name="personal_contacts_add">Add</string>
+    <string name="personal_contacts_empty">No personal contacts added yet.\nTap \"+ Add\" to add a close contact.</string>
+    <string name="personal_contacts_add_title">Add Personal Contact</string>
+    <string name="personal_contacts_name">Contact Name</string>
+    <string name="personal_contacts_phone">Phone Number</string>
+    <string name="personal_contacts_save">Save</string>
+    <string name="personal_contacts_cancel">Cancel</string>
+    <!-- Alarm Activity -->
+    <string name="alarm_medication_reminder">MEDICATION REMINDER</string>
+    <string name="alarm_reminder_for">Reminder for:</string>
+    <string name="alarm_scheduled">Scheduled: %s</string>
+    <string name="alarm_take_now">TAKE NOW</string>
+    <string name="alarm_snooze">SNOOZE (%1$d MINS)</string>
+    <string name="alarm_mark_late">MARK LATE</string>
+    <string name="manage_profile_title">Manage Profile</string>
+
+    <!-- Setup / Onboarding Screens -->
+    <string name="setup_welcome_title">Welcome to Dosezy</string>
+    <string name="setup_welcome_sub">Your personal medication assistant.</string>
+    <string name="setup_features_title">Your Health, Simplified!</string>
+    <string name="setup_features_sub">Key features of Dosezy</string>
+    <string name="setup_feat1_title">Never Miss a Dose</string>
+    <string name="setup_feat1_desc">Receive timely reminders for every medication, ensuring you stay on track.</string>
+    <string name="setup_feat2_title">Easy Medication Management</string>
+    <string name="setup_feat2_desc">Manage your medications with a user-friendly interface, designed for simplicity.</string>
+    <string name="setup_feat3_title">Emergency Support</string>
+    <string name="setup_feat3_desc">Quickly access emergency contacts and information, ensuring peace of mind.</string>
+    <string name="setup_profile_title">Tell us about yourself!</string>
+    <string name="setup_profile_sub">This helps us personalize your experience.</string>
+    <string name="setup_next">Next</string>
+    <string name="setup_get_started">Get Started</string>
+
+    <!-- Dialogs &amp; Buttons -->
+    <string name="select_language">Select Language</string>
+    <string name="system_default">System Default</string>
+    <string name="export_data">Export Activity Report</string>
+    <string name="export_current_profile">Export Current Profile Only</string>
+    <string name="export_all_profiles">Export All Profiles (ZIP)</string>
+    <string name="export_choose_title">Export Activity Report Options</string>
+    <string name="export_choose_desc">Choose which data you would like to export:</string>
+    <string name="export_success_title">Export Successful</string>
+    <string name="export_success_desc">Data exported to:</string>
+    <string name="export_share_file">Share File</string>
+    <string name="export_done">Done</string>
+    <string name="export_progress_title">Exporting Data</string>
+    <string name="export_progress_desc">Please wait while we prepare your data for export…</string>
+    <string name="export_failed_title">Export Failed</string>
+    <string name="cancel">Cancel</string>
+    <string name="export">Export</string>
+    <string name="save">Save</string>
+
+    <string name="manage">Manage</string>
+    <string name="profile_switch">Switch</string>
+    <string name="schedule_no_meds_date">No medications scheduled for this date</string>
+
+
+    <string name="home_all_good">All Good!</string>
+    <string name="home_all_good_desc">No medications need to be taken today</string>
+    <string name="no_profiles_found">No profiles found</string>
+    <string name="status_taken">Taken</string>
+
+    <string name="image_picker_select_source">Select Image Source</string>
+    <string name="image_picker_choose_method">Choose how you want to add your picture</string>
+    <string name="image_picker_camera_desc">Camera: Take a new photo</string>
+    <string name="image_picker_gallery_desc">Gallery: Choose from your photos</string>
+    <string name="image_picker_camera">Camera</string>
+    <string name="image_picker_gallery">Gallery</string>
+    <string name="image_picker_error_title">Error</string>
+    <string name="camera_permission_required">Camera permission is required to take photos.</string>
+    <string name="image_picker_remove">Remove Picture</string>
+    <string name="delete_contact_title">Delete Contact</string>
+    <string name="delete_contact_desc">Are you sure you want to delete this contact?</string>
+    <string name="delete_contact_confirm">Delete</string>
+    <string name="delete_contact_cancel">Cancel</string>
+    <string name="personal_contacts_name_label">Contact Name</string>
+    <string name="personal_contacts_phone_label">Phone Number</string>
+
+    <!-- Analytics &amp; Menu Additions -->
+    <string name="menu_analytics">Analytics</string>
+    <string name="analytics_title">Medication Analytics</string>
+    <string name="analytics_adherence_rate">Adherence Rate</string>
+    <string name="analytics_adherence_sub">Overall scheduled doses taken</string>
+    <string name="analytics_using_since">Using Dosezy since %s</string>
+    <string name="analytics_using_today">Using Dosezy since today</string>
+    <string name="analytics_taken_on_time">Taken on Time</string>
+    <string name="analytics_taken_late">Taken Late</string>
+    <string name="analytics_missed_doses">Missed Doses</string>
+    <string name="analytics_total_doses">Total Doses Logged</string>
+    <string name="analytics_weekly_overview">Weekly Adherence Trend</string>
+    <string name="analytics_insights_title">Adherence Insight</string>
+    <string name="analytics_insights_excellent">Excellent adherence! You are staying consistent with your health routine.</string>
+    <string name="analytics_insights_good">Good progress! Keep taking your medications on time for the best health outcomes.</string>
+    <string name="analytics_insights_start">Start logging doses to view personalized adherence insights.</string>
+    <string name="menu_backup_restore">Backup &amp; Restore</string>
+    <string name="menu_sharing">Caregiver Sharing</string>
+    <string name="coming_soon">Soon</string>
+
+    <string name="export_file_format">File Format</string>
+    <string name="export_format_csv">CSV Format</string>
+    <string name="export_format_json">JSON Format</string>
+    <string name="export_format_pdf">PDF Format</string>
+    <string name="export_save_to">Save To</string>
+    <string name="export_device_storage">Device Storage</string>
+    <string name="export_device_storage_desc">Save to your device\'s Downloads folder</string>
+    <string name="export_share_directly">Share Directly</string>
+    <string name="export_share_directly_desc">Share immediately via apps without saving</string>
+
+    <string name="export_format_pdf_note">(Medical report in English)</string>
+
+    <string name="menu_network_section">Network</string>
+    <string name="menu_cloud_config">Dosezy Cloud Configuration</string>
+    <string name="menu_check_updates">Check for Updates</string>
+    <string name="menu_data_section">Data</string>
+    <string name="optional">Optional</string>
+
+    <string name="no_browser_found">No web browser or app store available to check for updates.</string>
+
+    <string name="stock_current">Current Stock</string>
+    <string name="stock_refill_threshold">Refill Alert Below</string>
+    <string name="stock_units_left">%s units left</string>
+    <string name="refill_alert_title">Refill Alert: %s</string>
+    <string name="preset_1x_daily">1x Daily (8 AM)</string>
+    <string name="preset_2x_daily">2x Daily (8 AM, 8 PM)</string>
+    <string name="preset_3x_daily">3x Daily (8 AM, 2 PM, 8 PM)</string>
+    <string name="preset_4x_daily">4x Daily (8 AM, 12 PM, 4 PM, 8 PM)</string>
+    <string name="take_all_medicines">Take All (%d)</string>
+
+    <string name="menu_data_sharing_section">Data &amp; Sharing</string>
+    <string name="menu_cloud_setup">Cloud Setup</string>
+    <string name="open_source">OSS</string>
+    <string name="range_7_days">7 Days</string>
+    <string name="range_30_days">30 Days</string>
+    <string name="range_6_months">6 Months</string>
+    <string name="range_12_months">12 Months</string>
+    <string name="range_total">Total</string>
+    <string name="range_all">All</string>
+    <string name="adherence_by_period">Adherence by Time Period</string>
+
+    <!-- Backup & Restore Feature -->
+    <string name="backup_header_title">Data Backup &amp; Synchronization</string>
+    <string name="backup_header_desc">Manage your patient profiles, dosage schedules, adherence history logs, and custom photos across devices.</string>
+    <string name="backup_section_automatic">AUTOMATIC</string>
+    <string name="backup_section_manual">MANUAL</string>
+    <string name="backup_tab_automatic">Automatic</string>
+    <string name="backup_tab_manual">Manual</string>
+    <string name="backup_cloud_title">Dosezy Cloud Server</string>
+    <string name="backup_cloud_sub">Managed Caregiver &amp; Sync Platform</string>
+    <string name="backup_cloud_desc">Optional managed cloud platform for real-time family sharing, caregiver remote monitoring, and automated multi-device synchronization without compromising data privacy.</string>
+    <string name="backup_self_hosted_title">Self-Hosted Backend Server</string>
+    <string name="backup_self_hosted_sub" formatted="false">100% Open Source &amp; Private</string>
+    <string name="backup_self_hosted_desc">Connect directly to your own self-hosted Dosezy server instance for complete data sovereignty, family caregiver dashboard, and private infrastructure control.</string>
+    <string name="backup_export_title">Export Full Backup (.zip)</string>
+    <string name="backup_export_sub">Create portable backup archive</string>
+    <string name="backup_export_desc">Create a portable .zip package containing all registered user profiles, active medications, custom photos, and adherence history logs.</string>
+    <string name="backup_export_btn">Export Full Backup</string>
+    <string name="backup_import_title">Import Backup (.zip)</string>
+    <string name="backup_import_sub">Restore profiles &amp; adherence logs</string>
+    <string name="backup_import_desc">Select a Dosezy backup .zip file to restore profiles, custom photos, schedules, and active alarms seamlessly across versions.</string>
+    <string name="backup_import_btn">Select &amp; Import Backup</string>
+    <string name="backup_privacy_title">Privacy &amp; Version Compatibility</string>
+    <string name="backup_privacy_point1">• 🔒 Privacy First: All exported backup archives remain strictly local on your device. Zero external data tracking or hidden analytics telemetries.</string>
+    <string name="backup_privacy_point2">• 🔄 Version Compatibility: Intelligent JSON parsing guarantees seamless backup export and import across past, present, and future Dosezy app versions.</string>
+    <string name="backup_privacy_point3">• 👥 Multi-Profile Support: Preserves and restores all patient profiles, custom avatar photos, and medication definitions intact.</string>
+    <string name="backup_privacy_point4">• ⚡ Auto Alarm Sync: AlarmManager schedules are immediately re-activated post-import so no dose reminder is missed.</string>
+    <string name="backup_status_packaging">Packaging backup archive…</string>
+    <string name="backup_status_inspecting">Inspecting backup package…</string>
+    <string name="backup_status_restoring">Restoring selected profiles…</string>
+    <string name="backup_status_no_profiles">No profiles found in backup archive.</string>
+    <string name="backup_saved_success">Backup Saved Successfully</string>
+
+    <!-- Profile Import Dialog -->
+    <string name="import_dialog_title">Import Profile Packages</string>
+    <string name="import_dialog_desc">Select which patient profiles to restore into your active Dosezy database.</string>
+    <string name="import_profiles_found">Patient Profiles Found in Archive</string>
+    <string name="import_no_profiles_found">No profiles found in this backup archive.</string>
+    <string name="import_existing_profile_badge">EXISTS LOCALLY</string>
+    <string name="import_strategy_label">Import Strategy</string>
+    <string name="import_strategy_create_new">Create New</string>
+    <string name="import_strategy_create_new_desc">Import alongside existing profiles with a new ID</string>
+    <string name="import_strategy_merge">Merge Data</string>
+    <string name="import_strategy_merge_desc">Add new medications and append history logs</string>
+    <string name="import_strategy_overwrite">Overwrite</string>
+    <string name="import_strategy_overwrite_desc">Replace existing profile, medications, and schedules completely</string>
+    <string name="import_strategy_skip">Skip</string>
+    <string name="import_strategy_skip_desc">Do not import this profile</string>
+    <string name="import_confirm_btn">Confirm &amp; Restore</string>
+
+    <!-- Medicine Form Time &amp; Stock Additions -->
+    <string name="med_add_time">+ Add Time</string>
+    <string name="med_hour_12">Hour (12 is First):</string>
+    <string name="med_hour_24">Hour (24h):</string>
+    <string name="med_minute">Minute:</string>
+    <string name="med_stock_placeholder">e.g. 60</string>
+    <string name="med_threshold_placeholder">e.g. 10</string>
+    <string name="backup_close_btn">Close</string>
+    <string name="backup_export_success_msg">Your backup file has been created and saved successfully:</string>
+    <string name="backup_export_success_title">Export Completed</string>
+    <string name="backup_header_sub">Safeguard your medication schedules, patient profiles, and adherence history.</string>
+    <string name="backup_offline_badge" formatted="false">100% Offline &amp; Private</string>
+    <string name="backup_restore_confirm_btn">Restore</string>
+    <string name="backup_restore_confirm_msg">This will replace the current database with the data from the backup file. This action cannot be undone.
+
+Do you want to continue?</string>
+    <string name="backup_restore_confirm_title">Restore Data?</string>
+    <string name="backup_restore_in_progress">Restoring data...</string>
+    <string name="backup_share_btn">Share</string>
+    <string name="backup_storage_note">Backup files are compressed .zip packages and completely portable.</string>
+    <string name="import_profile_action">Conflict Action: </string>
+    <string name="import_profile_btn">Import Selected</string>
+    <string name="import_profile_duplicate_prefix"> (Copy)</string>
+    <string name="import_profile_items_to_import">Items to import: %1$d medications, %2$d records</string>
+    <string name="import_profile_keep_existing">Keep existing profile (Skip)</string>
+    <string name="import_profile_merge">Merge medications and logs</string>
+    <string name="import_profile_replace">Replace existing profile</string>
+    <string name="import_profile_sub">Found %1$d profile(s) in backup package. Select which profiles to import.</string>
+    <string name="import_profile_title">Select Profiles to Import</string>
+    <string name="import_profile_conflict_warn">Profile name already exists locally</string>
+    <string name="med_dose_amount_label">Amount: %1$s %2$s</string>
+    <string name="med_frequency_day_singular">Every day</string>
+    <string name="med_frequency_days_pattern">Every %1$d days</string>
+    <string name="med_stock_current_placeholder">e.g. 30</string>
+    <string name="med_stock_refill_placeholder">e.g. 5</string>
+    <string name="med_time_add_btn">Add Time</string>
+    <string name="med_time_label">Time %1$d</string>
+    <string name="med_time_remove_cd">Remove time</string>
+    <string name="med_time_select_title">Select Dose Time</string>
+    <string name="med_time_title">Dose Time</string>
+    <string name="notif_refill_alert_title">Refill Alert: %1$s</string>
+    <string name="notif_refill_alert_text">Low stock remaining: %1$s units left. Please refill soon.</string>
+    <string name="notif_channel_name">Medicine Reminders</string>
+    <string name="notif_channel_desc">Notifications for medicine reminders</string>
+    <string name="delete">Delete</string>
+    <string name="stock_inventory_title">Medicine Stock &amp; Inventory (Optional)</string>
+    <string name="dialog_delete_med_title">Delete Medication</string>
+    <string name="dialog_delete_med_msg">Are you sure you want to delete this medication? This action cannot be undone.</string>
+    <string name="backup_coming_soon">COMING SOON</string>
+    <string name="backup_restore_title">Restore from Backup (.zip)</string>
+    <string name="backup_restore_desc">Restore patient profiles, custom photos, medication schedules, and active alarms from a previously exported Dosezy .zip archive.</string>
+    <string name="backup_restore_btn">Restore from Backup</string>
+    <string name="import_from_server_or_backup">Import from server/backup</string>
+    <string name="tab_cloud_server">Cloud / Server</string>
+    <string name="tab_local_file">Local File</string>
+    <string name="cloud_sync_locked_desc">Automated caregiver cloud sync and self-hosted server connections are currently in development and will be available in an upcoming update.</string>
+    <string name="local_backup_select_desc">Select a previously exported Dosezy .zip archive from your device or Google Drive to restore your patient profiles, medications, and schedules.</string>
+    <string name="local_backup_select_btn">Select .zip Backup File</string>
+    <string name="import_source_dialog_title">Import Patient Data</string>
+    <string name="import_source_dialog_sub">Choose your backup source to restore patient profiles, medications, and schedules.</string>
+    <string name="scheduled_dosing_times_title">Scheduled Dosing Times</string>
+    <string name="frequency_preset_daily">%1$s Daily</string>
+    <string name="time_picker_hour_12_label">Hour (12 is First):</string>
+    <string name="time_picker_hour_24_label">Hour (24h):</string>
+    <string name="time_picker_minute_label">Minute: %1$02d</string>
+    <string name="err_battery_optimization">Please enable \'Don\'t optimize\' in Battery settings</string>
+    <string name="err_open_notification_settings">Cannot open notification settings</string>
+    <string name="err_open_sound_settings">Cannot open sound settings</string>
+    <string name="err_open_app_settings">Cannot open app settings</string>
+    <string name="err_open_exact_alarm_settings">Cannot open exact alarm settings</string>
+    <string name="err_cannot_make_call">Cannot make call</string>
+    <string name="err_cannot_open_link">Cannot open link</string>
+    <string name="err_no_email_app">No email app available</string>
+    <string name="err_share_failed">Share error: %1$s</string>
+    <string name="med_stock_refill_warning_badge">⚠️ Refill: %1$s left</string>
+    <string name="med_stock_badge">📦 Stock: %1$s</string>
+    <string name="to_be_taken_in">To be taken in %1$dh %2$dm</string>
+    <string name="time_diff_ago">%1$dh %2$dm ago</string>
+    <string name="status_all_medications_taken">All medications taken</string>
+    <string name="status_slot_completed_with_skipped">Completed (some skipped)</string>
+    <string name="status_scheduled_for_this_time">Scheduled for this time</string>
+    <string name="daily_frequency_presets_title">Daily Frequency Presets</string>
+    <string name="action_edit_medicine_cd">Edit medicine</string>
+
+    <!-- v2.4.0 New Features -->
+    <!-- Profile Allergies & Medical Conditions (#50) -->
+    <string name="profile_allergies">Allergies</string>
+    <string name="profile_allergies_placeholder">e.g. Penicillin, Sulfa, Peanuts</string>
+    <string name="profile_medical_conditions">Medical Conditions</string>
+    <string name="profile_medical_conditions_placeholder">e.g. Hypertension, Type 2 Diabetes</string>
+    <string name="emergency_medical_profile">Patient Medical Profile</string>
+    <string name="emergency_no_allergies">No allergies listed</string>
+    <string name="emergency_no_conditions">No medical conditions listed</string>
+
+    <!-- Pill Shapes & Colors (#45) -->
+    <string name="med_shape_label">Pill Shape &amp; Type</string>
+    <string name="med_color_label">Color Visual</string>
+    <string name="pill_shape_round">Round</string>
+    <string name="pill_shape_capsule">Capsule</string>
+    <string name="pill_shape_oval">Oval</string>
+    <string name="pill_shape_liquid">Liquid</string>
+    <string name="pill_shape_inhaler">Inhaler</string>
+    <string name="pill_shape_injection">Injection</string>
+    <string name="pill_shape_drops">Drops</string>
+    <string name="pill_shape_patch">Patch</string>
+    <string name="pill_shape_spray">Spray</string>
+
+    <!-- Doctor Notes (#46) -->
+    <string name="med_notes_label">Doctor Notes &amp; Warnings</string>
+    <string name="med_notes_placeholder">e.g. Take with food, Avoid grapefruit, Rx ref #12345</string>
+
+    <!-- Prescription End Dates & Finite Courses (#43) -->
+    <string name="course_duration_title">Treatment Duration</string>
+    <string name="course_ongoing">Ongoing</string>
+    <string name="course_finite">Finite Course</string>
+    <string name="course_duration_days_label">Course Duration (Days)</string>
+    <string name="course_duration_days_placeholder">e.g. 7, 10, 14, 30</string>
+    <string name="course_start_date_label">Start Date</string>
+    <string name="course_end_date_label">End Date: %1$s</string>
+    <string name="course_completed_badge">Course Finished</string>
+
+    <!-- Interval-Based & As-Needed PRN Scheduling (#44, #42) -->
+    <string name="freq_as_needed">As Needed (PRN)</string>
+    <string name="freq_as_needed_desc">No scheduled reminder alarms. Log on-demand doses whenever taken.</string>
+    <string name="freq_every_x_hours">Every X Hours</string>
+    <string name="freq_every_x_days">Every X Days</string>
+    <string name="freq_every_hours_format">Every %1$d hours</string>
+    <string name="freq_every_days_format">Every %1$d days</string>
+    <string name="interval_hours_label">Hours between doses</string>
+    <string name="interval_days_label">Days between doses</string>
+    <string name="freq_every_x_weeks_format">Every %1$d weeks</string>
+    <string name="custom_recurrence_interval_label">Repeat every (weeks)</string>
+    <string name="custom_recurrence_summary">Repeats every %1$d weeks on %2$s</string>
+    <string name="validation_select_custom_days">Please select at least one day for custom recurrence</string>
+    <string name="btn_log_prn_dose">Log Dose</string>
+    <string name="prn_doses_taken_today">Doses logged today: %1$d</string>
+    <string name="prn_section_title">As Needed (PRN) Medications</string>
+
+    <!-- Quick Stock Refill Button (#47) -->
+    <string name="btn_quick_refill_action">+ Refill</string>
+    <string name="quick_refill_dialog_title">Refill Stock: %1$s</string>
+    <string name="quick_refill_amount_label">Add quantity</string>
+    <string name="quick_refill_preset_30">+30</string>
+    <string name="quick_refill_preset_60">+60</string>
+    <string name="quick_refill_preset_90">+90</string>
+    <string name="quick_refill_success">Refilled stock for %1$s. New balance: %2$s</string>
+
+    <string name="no_scheduled_doses_today">No scheduled doses for today</string>
+    <string name="prn_confirm_log_title">Log Dose</string>
+    <string name="prn_confirm_log_msg">Log 1 dose of %1$s (%2$s) taken now?</string>
+    <string name="hours_limit_hint">For intervals over 24 hours, consider using \'Every X Days\'.</string>
+
+    <!-- Follow-Up / Nagging Reminders (#49) -->
+    <string name="pref_nagging_title">Follow-Up (Nagging) Reminders</string>
+    <string name="pref_nagging_desc">Repeatedly remind until marked as taken.</string>
+    <string name="pref_nagging_interval">Nagging Interval</string>
+    <string name="pref_nagging_max_repeats">Max Repeat Reminders</string>
+    <string name="pref_nagging_repeats_format">%1$d times</string>
+    <string name="pref_nagging_repeats_continuous">Continuous (Until taken)</string>
+    <string name="notif_nagging_title">Follow-up: %1$s</string>
+    <string name="notif_nagging_text">Reminder %1$d/%2$d: Dose scheduled for %3$s is still pending.</string>
+    <string name="notif_nagging_text_continuous">Reminder #%1$d: Dose scheduled for %2$s is still pending.</string>
+
+    <!-- Home Screen Widget (#48) -->
+    <string name="widget_title">Dosezy Today</string>
+    <string name="widget_no_meds">No upcoming doses</string>
+    <string name="widget_all_taken">All doses taken today! 🎉</string>
+    <string name="widget_tap_to_open">Tap to open app</string>
+    <string name="widget_no_profile">No profile created</string>
+    <string name="widget_open_app">Open Dosezy to set up</string>
+    <string name="widget_taken_summary">%1$d / %2$d taken</string>
+    <string name="widget_all_completed">All doses completed! 🎉</string>
+    <string name="widget_no_doses_today">No doses scheduled today</string>
+    <string name="widget_next_dose_format">Next: %1$s • %2$s</string>
+    <string name="widget_configure_title">Select Widget Profile</string>
+    <string name="widget_configure_subtitle">Choose which profile\'s medication schedule this widget displays on your home screen.</string>
+    <string name="widget_configure_active_profile">Active App Profile</string>
+    <string name="widget_configure_active_profile_desc">Dynamically follows whichever profile is currently active in the app</string>
+    <string name="widget_configure_confirm">Save Widget</string>
+
+    <!-- Custom Alarm Sounds -->
+    <string name="pref_alarm_sound">Alarm Sound</string>
+    <string name="pref_alarm_sound_desc">Choose the ringtone melody for medication alarms</string>
+    <string name="alarm_sound_system_default">System Default</string>
+    <string name="alarm_sound_gentle_chime">Gentle Chime</string>
+    <string name="alarm_sound_medical_marimba">Medical Marimba</string>
+    <string name="alarm_sound_brisk_pulse">Brisk Pulse</string>
+    <string name="alarm_sound_calm_bell">Calm Bell</string>
+    <string name="alarm_sound_preview">Preview</string>
+    <!-- Discontinue & Soft-Delete (#51) -->
+    <string name="dialog_med_action_title">Discontinue or Delete?</string>
+    <string name="dialog_med_action_desc">Choose what to do with this medication:</string>
+    <string name="btn_discontinue_keep_history">Discontinue (Keep History)</string>
+    <string name="discontinue_med_explanation">Stops upcoming reminders and removes from active list. All past taken/missed logs and reports will be preserved.</string>
+    <string name="btn_delete_permanently">Delete Permanently</string>
+    <string name="delete_permanently_explanation">Permanently erases this medicine and purges all its past logs and history.</string>
+    <string name="discontinued_medications_section">Discontinued Medications</string>
+    <string name="btn_reactivate_med">Reactivate</string>
+    <string name="dialog_delete_permanent_title">Permanently Delete?</string>
+    <string name="dialog_delete_permanent_msg">Are you sure you want to permanently erase %1$s? All past intake history and reports for this medicine will be deleted.</string>
+    <string name="help_github_issues_title">Report an Issue</string>
+    <string name="help_github_issues_desc">Submit bug reports or suggest new features on GitHub</string>
+    <string name="menu_about_dosezy">About Dosezy</string>
+    <string name="about_title">About Dosezy</string>
+    <string name="about_tagline">Private, offline-first medication companion built for patients and caregivers.</string>
+    <string name="about_star_github">Star on GitHub</string>
+    <string name="about_star_github_desc">Support our open-source project by giving a star on GitHub</string>
+    <string name="pref_alarm_duration_title">Alarm Ring Duration</string>
+    <string name="pref_alarm_duration_desc">Auto-silence audio &amp; vibration after a set duration</string>
+    <string name="alarm_duration_continuous">Continuous (Until Dismissed)</string>
+    <string name="alarm_duration_once">Ring Once</string>
+    <string name="alarm_duration_15s">15 seconds</string>
+    <string name="alarm_duration_30s">30 seconds</string>
+    <string name="alarm_duration_1m">1 minute</string>
+    <string name="alarm_duration_2m">2 minutes</string>
+    <string name="alarm_duration_5m">5 minutes</string>
+    <string name="alarm_silenced_auto_banner">Alarm auto-silenced - record your doses when ready</string>
+
+    <string name="alarm_sound_custom">Custom Audio File</string>
+    <string name="alarm_sound_select_file">Choose Audio File</string>
+    <string name="alarm_sound_no_file_selected">No audio file chosen</string>
+
+    <string name="btn_back">Back</string>
+    <string name="alarm_medication_reminder_multi">Medication Reminder (%d)</string>
+    <string name="alarm_take_all">TAKE ALL (%d)</string>
+    <string name="alarm_take_medicine">TAKE MEDICINE</string>
+    <string name="alarm_snooze_format">SNOOZE (%d MIN)</string>
+    <string name="notif_action_snooze_format">Snooze (%d min)</string>
+    <string name="alarm_snoozed_toast">Alarm snoozed for %d minutes</string>
+    <string name="alarm_stock_remaining">Stock: %s units remaining</string>
+    <string name="home_action_take">Take</string>
+    <string name="home_action_taken">Taken</string>
+    <string name="home_action_missed">Missed</string>
+    <string name="home_action_mark_late">Mark Late</string>
+    <string name="home_dose_recorded">Dose recorded for %s</string>
+    <string name="btn_undo">Undo</string>
+    <string name="analytics_empty_title">No Medication Logs Yet</string>
+    <string name="analytics_empty_desc">As you record your daily medications, your adherence score, weekly streaks, and intake trends will appear here.</string>
+    <string name="validation_enter_med_name">Please enter a medication name</string>
+    <string name="validation_enter_dosage">Please enter dosage</string>
+    <string name="validation_select_days_week">Please select at least one day of the week</string>
+    <string name="validation_select_days_month">Please select at least one day of the month</string>
+    <string name="menu_more_section">More</string>
+    <string name="pref_section_general">General</string>
+    <string name="pref_section_notifications">Notifications &amp; Alarms</string>
+    <string name="pref_section_dose_tracking">Dose Tracking</string>
+    <string name="home_dose_reverted">%1$s dose reverted to pending</string>
+    <string name="search_medicines_hint">Search medications...</string>
+    <string name="btn_add_first_medicine">Add Your First Medication</string>
+    <string name="search_no_results">No medications found matching \"%1$s\"</string>
+    <string name="search_clear">Clear search</string>
+    <string name="backup_export_failed">Export failed: %1$s</string>
+
+    <string name="pref_allow_skip_title">Allow Dose Skipping</string>
+    <string name="pref_allow_skip_desc">Skip scheduled doses with a reason.</string>
+    <string name="home_action_skip">Skip</string>
+    <string name="home_action_skipped">Skipped</string>
+    <string name="home_dose_skipped">Dose skipped for %s</string>
+    <string name="alarm_skip_medicine">SKIP DOSE</string>
+    <string name="alarm_skip_all">SKIP ALL (%d)</string>
+    <string name="skip_dialog_title">Skip Medication Dose</string>
+    <string name="skip_dialog_subtitle">Select a clinical reason for skipping this dose:</string>
+    <string name="skip_reason_fasting">Medical fasting / lab test</string>
+    <string name="skip_reason_doctor">Doctor-advised pause</string>
+    <string name="skip_reason_side_effects">Side effects / adverse reaction</string>
+    <string name="skip_reason_already_taken">Already taken earlier</string>
+    <string name="skip_reason_out_of_stock">Medication unavailable / out of stock</string>
+    <string name="skip_reason_other">Other clinical / personal reason</string>
+    <string name="skip_dialog_confirm">Confirm Skip</string>
+    <string name="skip_dialog_cancel">Cancel</string>
+
+    <string name="existing_profiles_title">Existing Profiles</string>
+    <string name="profile_picture_desc">Profile Picture</string>
+    <string name="select_profile_desc">Select Profile</string>
+    <string name="profile_age_gender_format">%1$d years • %2$s</string>
+    <string name="notif_content_scheduled_format">Scheduled for %1$s - Time to take your medicine!</string>
+    <string name="notif_content_generic_reminder">Time to take your medicine!</string>
+    <string name="validation_enter_name">Please enter your name</string>
+    <string name="validation_enter_valid_age">Please enter a valid age (1-120)</string>
+    <string name="medication_added_success">Medication added successfully</string>
+    <string name="medication_updated_success">Medication updated successfully</string>
+    <string name="medication_archived_success">Medication discontinued successfully</string>
+    <string name="medication_deleted_success">Medication deleted successfully</string>
+    <string name="status_pending">Pending</string>
+    <string name="pharmacy_order_title">Pharmacy Refill Order</string>
+    <string name="pharmacy_order_desc">Generate a medicine order list for WhatsApp or your chemist</string>
+    <string name="pharmacy_order_scope_low_stock">Low Stock Only</string>
+    <string name="pharmacy_order_scope_all">All Active Medicines</string>
+    <string name="pharmacy_order_days_format">%1$d Days</string>
+    <string name="pharmacy_order_share">Share via Chat</string>
+    <string name="pharmacy_order_copy">Copy Text</string>
+    <string name="pharmacy_order_copied">Refill order copied to clipboard</string>
+    <string name="pharmacy_order_empty">No medications available to order</string>
+    <string name="pharmacy_order_current_stock">Current stock: %1$s %2$s left</string>
+    <string name="pharmacy_order_qty_needed">Order Quantity: %1$d %2$s</string>
+    <string name="pharmacy_order_patient_header">Patient: %1$s</string>
+    <string name="pharmacy_order_date_header">Date: %1$s</string>
+    <string name="pharmacy_order_supply_header">Order for %1$d Days Supply:</string>
+    <string name="pharmacy_order_footer_confirm">Please confirm availability and delivery. Thank you!</string>
+    <string name="pharmacy_order_footer_brand">Generated via Dosezy (Your Medication companion)</string>
+    <string name="menu_pharmacy_order">Pharmacy Refill Order</string>
+    <string name="menu_pharmacy_order_desc">Generate and share medication orders via WhatsApp</string>
+    <string name="pharmacy_order_markdown_preview">Markdown Preview</string>
+
+    <string name="about_community_open_source">Community &amp; Open Source</string>
+    <string name="about_version_build">Version %1$s (Build %2$s)</string>
+    <string name="about_build_play">Marketplace Build</string>
+    <string name="about_build_foss">FOSS Build</string>
+    <string name="about_social_links_title">Social Media</string>
+    <string name="country_india">India</string>
+    <string name="country_us_ca">United States / Canada</string>
+    <string name="country_uk">United Kingdom</string>
+    <string name="country_eu">European Union</string>
+    <string name="country_china">China</string>
+    <string name="country_japan">Japan</string>
+    <string name="country_russia">Russia</string>
+    <string name="country_brazil">Brazil</string>
+    <string name="country_bangladesh">Bangladesh</string>
+    <string name="country_australia">Australia</string>
+    <string name="pharmacy_order_refill_filter">Refill Filter</string>
+    <string name="pharmacy_order_days_supply">Days of Supply</string>
+    <string name="pharmacy_order_days_format_short">%1$d d</string>
+    <string name="pharmacy_order_medicines_include">Medicines to Include (%1$d/%2$d)</string>
+    <string name="pharmacy_order_stock_left">%1$s left</string>
+    <string name="pharmacy_order_no_stock_tracked">No stock tracked</string>
+    <string name="pharmacy_order_header_title">📋 *Medicine Order*</string>
+    <string name="pharmacy_order_frequency_format">Frequency: %1$dx daily</string>
+    <string name="pharmacy_order_notes_format">Notes: %1$s</string>
+    <string name="notif_overlay_prompt_title">Allow Alarm Pop-ups</string>
+    <string name="notif_overlay_prompt_desc">To ensure medication reminders pop up immediately over apps like WhatsApp, please enable \'Display over other apps\'.</string>
+    <string name="dialog_enable">Enable</string>
+    <string name="dialog_later">Later</string>
+
+    <string name="pharmacy_order_include_stock">Include current stock in message</string>
+    <string name="pharmacy_order_include_dosage">Include dosage / strength</string>
+    <string name="pharmacy_order_quantity_label">Qty</string>
+    <string name="pharmacy_order_profile_filter">Profiles to Include</string>
+
+    <!-- Manual Dose Recording Strings -->
+    <string name="pref_manually_record_dose_time_title">Manually Record Dose Time</string>
+    <string name="pref_manually_record_dose_time_desc">Log the actual time a dose was taken.</string>
+    <string name="record_dose_time_title">Record Dose Time</string>
+    <string name="record_dose_time_subtitle">When did you take %1$s?</string>
+    <string name="record_dose_time_just_now">Just now (%1$s)</string>
+    <string name="record_dose_time_scheduled">At scheduled time (%1$s)</string>
+    <string name="record_dose_time_custom">Custom time (%1$s)</string>
+    <string name="record_dose_time_select">Change Time</string>
+    <string name="record_dose_time_confirm">Record Dose</string>
+    <string name="unit_bottle">bottle</string>
+    <string name="unit_bottles">bottles</string>
+    <string name="unit_units">units</string>
+
+    <!-- Hide Navigation Add Button Preference -->
+    <string name="pref_hide_add_nav_button_title">Hide Navigation Add Button</string>
+    <string name="pref_hide_add_nav_button_desc">Hide \'+\' button from bottom navigation bar.</string>
+
+    <!-- About Screen Expansion -->
+    <string name="about_developer_title">About the Developer</string>
+    <string name="about_developer_name">Saad</string>
+    <string name="about_developer_role">Creator &amp; Lead Maintainer</string>
+    <string name="about_developer_bio" formatted="false">Built with care to keep medication tracking accessible, completely private, and independent. Zero ads, zero trackers, 100% offline-first.</string>
+    <string name="about_developer_github">GitHub Profile</string>
+    <string name="about_features_title">Why Dosezy?</string>
+    <string name="about_feat_offline_title" formatted="false">100% Offline &amp; Private</string>
+    <string name="about_feat_offline_desc">All data stays strictly on your device with zero cloud dependency and no trackers.</string>
+    <string name="about_feat_smart_alarms_title">Reliable Alarms &amp; Timezones</string>
+    <string name="about_feat_smart_alarms_desc">Exact reminders that wake your device and shift smoothly with you across time zones.</string>
+    <string name="about_feat_family_title">Multi-Profile Family Care</string>
+    <string name="about_feat_family_desc">Manage medications for elderly parents, children, and pets with smart bottle calculations.</string>
+    <string name="about_feat_accessible_title">Accessibility First</string>
+    <string name="about_feat_accessible_desc">Large high-contrast visuals, tremor-friendly touch targets, and clear navigation.</string>
+    <string name="notif_status_bg_allowed">App can run in background.</string>
+    <string name="notif_status_bg_restricted">Background restrictions may prevent notifications.</string>
+    <string name="notif_status_dnd_enabled">Do Not Disturb is enabled.</string>
+    <string name="notif_status_dnd_disabled">Do Not Disturb is disabled.</string>
+    <string name="med_different_dosages_toggle">Different dose for each time</string>
+    <string name="med_different_dosages_subtitle">Set custom amounts for morning, afternoon, or evening</string>
+    <string name="med_dosage_for_time">Dose for %1$s</string>
+
+    <string name="analytics_skipped_doses">Skipped Doses</string>
+    <string name="notif_channel_refill_name">Refill Reminders</string>
+    <string name="notif_channel_refill_desc">Alerts when medicine stock drops below your chosen refill threshold</string>
+    <string name="widget_tomorrow">Tmrw </string>
+    <string name="med_start_date_label">Start Date</string>
+
+    <string name="prn_logged_success">Logged as-needed dose for %1$s</string>
+    <string name="btn_jump_to_today">Today</string>
+    <string name="dialog_low_storage_title">Low Storage Space</string>
+    <string name="dialog_low_storage_message">Your device is critically low on storage space. Please free up space immediately to prevent data loss or failed medication reminder alarms.</string>
+    <string name="dialog_low_storage_action">Free Up Space</string>
+    <string name="dialog_low_storage_dismiss">Dismiss</string>
+    <string name="pref_allow_undo_title">Allow Dose Undo</string>
+    <string name="pref_allow_undo_desc">Revert taken doses back to pending.</string>
+    <string name="pref_prompt_dose_notes_title">Prompt on Dose Taken</string>
+    <string name="pref_prompt_dose_notes_desc">Prompt for notes when recording doses.</string>
+    <string name="dialog_undo_dose_title">Undo Dose?</string>
+    <string name="dialog_undo_dose_msg">Are you sure you want to revert %1$s back to pending? Any deducted inventory stock will be restored.</string>
+    <string name="dialog_dose_note_title">Dose Note</string>
+    <string name="dialog_dose_note_subtitle">Add an optional note for %1$s</string>
+    <string name="dialog_dose_note_hint">e.g. Taken with food, felt dizzy, mild nausea...</string>
+    <string name="btn_skip_note">Skip Note</string>
+    <string name="home_dose_note_label">Note: %1$s</string>
+    <string name="btn_edit_note">Edit Note</string>
+    <string name="dialog_edit_note_title">Edit Dose Note</string>
+    <string name="pref_allow_dose_notes_title">Dose Notes</string>
+    <string name="pref_allow_dose_notes_desc">Record notes, meals, or symptoms.</string>
+    <string name="btn_add_note">+ Add Note</string>
+    <string name="timings_and_dosages_title">Timings &amp; Dosages</string>
+    <string name="stock_inventory_card_title">Medicine Stock &amp; Inventory</string>
+    <string name="widget_configure_auto_badge">Auto</string>
+    <string name="dialog_validation_title">Notice</string>
+
+    <!-- Appearance, Sliding Actions, Timeline &amp; Thicker Calendar Highlight -->
+    <string name="pref_section_appearance">Appearance</string>
+    <string name="pref_slide_actions_title">Slide to Take &amp; Snooze</string>
+    <string name="pref_slide_actions_desc">Slide instead of tapping to take or snooze alarms.</string>
+    <string name="pref_timeline_mode_title">Timeline View</string>
+    <string name="pref_timeline_mode_desc">Display today\'s schedule in an expanded vertical timeline.</string>
+    <string name="pref_calendar_thicker_highlight_title">Full Frame Day Highlights</string>
+    <string name="pref_calendar_thicker_highlight_desc">Outline each scheduled day on the calendar with a full colored frame.</string>
+    <string name="alarm_slide_to_take">Slide to Take</string>
+    <string name="alarm_slide_to_take_all">Slide to Take All (%1$d)</string>
+    <string name="alarm_slide_to_snooze">Slide to Snooze (%1$d min)</string>
+    <string name="home_view_standard">Standard</string>
+    <string name="home_view_timeline">Timeline</string>
+
+    <!-- Dose Intake Countdown Timer & Re-Alert Safeguard (ADHD Support) -->
+    <string name="pref_intake_safeguard_title">Intake Countdown Safeguard</string>
+    <string name="pref_intake_safeguard_desc">ADHD support: countdown buffer before confirming intake with re-alert if distracted.</string>
+    <string name="pref_intake_duration_title">Safeguard Duration</string>
+    <string name="pref_intake_duration_format">%1$d minutes</string>
+    <string name="dialog_intake_duration_title">Select Safeguard Duration</string>
+    <string name="notif_intake_in_progress_title">Intake in Progress</string>
+    <string name="notif_intake_in_progress_desc">%1$s: Confirm once taken</string>
+    <string name="notif_intake_action_confirm">Confirm Taken</string>
+    <string name="notif_intake_action_extend">+1 Min</string>
+    <string name="notif_intake_action_cancel">Cancel</string>
+    <string name="notif_intake_realert_title">Medication Not Confirmed</string>
+    <string name="notif_intake_realert_desc">Did you take %1$s? Tap to confirm intake or snooze.</string>
+    <string name="home_intake_in_progress">Intake in progress for %1$s</string>
+    <string name="home_intake_time_remaining">%1$s remaining</string>
+    <string name="home_intake_confirm">Confirm Taken</string>
+    <string name="home_intake_extend">+1 Min</string>
+    <string name="home_intake_cancel">Cancel</string>
+    <string name="home_intake_confirmed">Intake recorded for %1$s</string>
+    <string name="home_intake_cancelled">Intake safeguard cancelled</string>
+    <string name="alarm_realert_badge">ADHD INTAKE RE-ALERT</string>
+    <string name="alarm_realert_subtitle">You tapped Take earlier, but intake was not confirmed. Did you take your medicine?</string>
+
+    <!-- Mark All Taken / Take All Cohort (#102) -->
+    <string name="take_all">Take All</string>
+    <string name="take_all_count">Take All (%1$d)</string>
+    <string name="dialog_take_all_title">Take All Medications?</string>
+    <string name="dialog_take_all_message">Mark all %1$d medications scheduled for %2$s as taken?</string>
+    <string name="take_all_success_toast">Marked all %1$d medications as taken</string>
+
+    <!-- Dynamic Snooze Duration Selector (#103) -->
+    <string name="alarm_snooze_duration_label">Snooze for:</string>
+    <string name="snooze_duration_chip_format">%1$dm</string>
+    <string name="pref_custom_snooze_title">Custom Snooze Options</string>
+    <string name="pref_custom_snooze_desc">Choose different snooze durations when an alarm rings.</string>
+
+    <!-- Legal, Privacy & Compliance Safeguards -->
+    <string name="notif_generic_lockscreen_reminder">Scheduled medication reminder</string>
+    <string name="pref_lockscreen_details_title">Show Details on Lock Screen</string>
+    <string name="pref_lockscreen_details_desc">Hide medication names and dosages until device is unlocked.</string>
+    <string name="disclaimer_dialog_title">Medical &amp; Legal Disclaimer</string>
+    <string name="disclaimer_dialog_summary">Dosezy is an automated digital reminder utility and is NOT a regulated medical device. It does not provide medical diagnosis, dosage calculations, or clinical advice. Always consult your physician or healthcare provider for prescription instructions.</string>
+    <string name="disclaimer_checkbox_consent">I understand and accept the Medical Disclaimer and Terms of Service.</string>
+    <string name="disclaimer_action_agree">Accept &amp; Continue</string>
+    <string name="disclaimer_link_medical">Medical Disclaimer</string>
+    <string name="disclaimer_link_privacy">Privacy Policy</string>
+    <string name="disclaimer_link_terms">Terms of Service</string>
+    <string name="emergency_dispatch_warning_title">Emergency Notice</string>
+    <string name="emergency_dispatch_warning_desc">Dosezy is not an emergency dispatch provider or substitute for 911/112. In a life-threatening crisis, dial your local emergency services directly. Verify that the displayed emergency number matches your physical location.</string>
+    <string name="pdf_report_disclaimer_footer">Dosezy Medicine Tracker • Self-Reported Informational Log (Non-Clinical)</string>
+    <string name="pharmacy_refill_estimation_disclaimer">Notice: Refill quantities are estimated approximations based on logged frequency. Verify with your pharmacist or physician.</string>
+    <string name="alarm_unlock_to_view_details">Unlock to view details</string>
+    <string name="alarm_lockscreen_details_hidden">Medication names and dosages are hidden while device is locked.</string>
+
+    <!-- Schedule Effective Date Selector (#105) -->
+    <string name="schedule_effective_dialog_title">Apply Schedule Changes</string>
+    <string name="schedule_effective_dialog_message">When should this updated schedule take effect?</string>
+    <string name="schedule_effective_today_title">Starting Today</string>
+    <string name="schedule_effective_today_desc">Apply the new times today. Obsolete untaken doses from earlier today will be removed.</string>
+    <string name="schedule_effective_tomorrow_title">Starting Tomorrow</string>
+    <string name="schedule_effective_tomorrow_desc">Keep today\'s schedule intact. The new schedule will begin tomorrow.</string>
+    <!-- Retrospective Missed Dose Calendar Management (#109) -->
+    <string name="dose_retrospective_tag">[Logged retrospectively]</string>
+    <string name="schedule_action_dialog_title">Manage Dose</string>
+    <string name="schedule_action_dialog_subtitle">%1$s • %2$s</string>
+    <string name="schedule_action_take_dose">Mark as Taken</string>
+    <string name="schedule_action_skip_dose">Mark as Skipped</string>
+    <string name="schedule_action_undo_dose">Undo Dose Action</string>
+    <string name="schedule_action_edit_note">Edit Dose Note</string>
+    <string name="schedule_action_add_note">Add Dose Note</string>
+    <string name="schedule_dose_marked_taken">Marked %1$s as taken</string>
+    <string name="schedule_dose_marked_skipped">Marked %1$s as skipped</string>
+    <string name="schedule_dose_reverted">%1$s reverted to pending</string>
+    <string name="schedule_dose_locked_notice">This dose is older than 48 hours and is locked to preserve historical record integrity.</string>
+    <string name="schedule_dose_locked_badge">Locked</string>
+    <string name="schedule_tap_to_manage">Tap to manage</string>
+
+    <!-- Reminder Style: Alarm vs Notification (#111) -->
+    <string name="pref_reminder_type_title">Reminder Style</string>
+    <string name="pref_reminder_type_desc">Choose whether reminders ring as alarms or standard notifications</string>
+    <string name="reminder_type_alarm">Alarm</string>
+    <string name="reminder_type_alarm_desc">Full-screen alert with continuous sound. Bypasses Do Not Disturb.</string>
+    <string name="reminder_type_notification">Notification</string>
+    <string name="reminder_type_notification_desc">Standard notification banner with alert tone. Respects Do Not Disturb.</string>
+    <string name="reminder_type_default">Use Profile Default (%1$s)</string>
+    <string name="reminder_type_default_profile">Use Profile Default</string>
+    <string name="notif_channel_notifications_name">Medication Notifications</string>
+    <string name="notif_channel_notifications_desc">Standard notification alerts for medication schedules respecting Do Not Disturb</string>
+    <string name="form_reminder_type">Reminder Style</string>
+    <string name="form_reminder_type_desc">Choose Alarm for critical medicines or Notification for supplements</string>
+
+    <!-- Medicine Order & Sorting (#120) -->
+    <string name="sort_medicines_title">Sort and Order</string>
+    <string name="sort_preset_default">Default (Date Added)</string>
+    <string name="sort_preset_name_asc">Name (A to Z)</string>
+    <string name="sort_preset_name_desc">Name (Z to A)</string>
+    <string name="sort_preset_time_asc">Scheduled Time (Earliest First)</string>
+    <string name="sort_preset_custom">Custom Order</string>
+    <string name="sort_custom_reorder_title">Edit Medicine Order</string>
+    <string name="sort_custom_reorder_desc">Use the arrows to adjust the order of your medicines.</string>
+    <string name="sort_move_up">Move up</string>
+    <string name="sort_move_down">Move down</string>
+</resources>

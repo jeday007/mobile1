@@ -1,0 +1,455 @@
+/*
+ * Copyright (c) 2026 Saad <reach.saad@outlook.com> (@saad2134)
+ * Licensed under the MIT License. See LICENSE in the project root for license information.
+ */
+
+package com.example.dosezy
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.compose.foundation.layout.consumeWindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
+import androidx.navigation.compose.rememberNavController
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.LinearEasing
+import com.example.dosezy.ui.components.CustomNavigationBar
+import com.example.dosezy.ui.screens.DebugScreen
+import com.example.dosezy.ui.screens.HomeScreen
+import com.example.dosezy.ui.screens.LoadingScreen
+import com.example.dosezy.ui.screens.MedicinesScreen
+import com.example.dosezy.ui.screens.MenuScreen
+import com.example.dosezy.ui.screens.NewUserScreen
+import com.example.dosezy.ui.screens.ScheduleScreen
+import com.example.dosezy.ui.subscreens.AboutScreen
+import com.example.dosezy.ui.subscreens.AddMedScreen
+import com.example.dosezy.ui.subscreens.EditMedScreen
+import com.example.dosezy.ui.subscreens.AnalyticsScreen
+import com.example.dosezy.ui.subscreens.BackupRestoreScreen
+import com.example.dosezy.ui.subscreens.EmergencyScreen
+import com.example.dosezy.ui.subscreens.HelpSupportScreen
+import com.example.dosezy.ui.subscreens.ManageProfileScreen
+import com.example.dosezy.ui.subscreens.PreferencesScreen
+import com.example.dosezy.ui.subscreens.SwitchProfileScreen
+import com.example.dosezy.ui.components.AppPromptCoordinator
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.example.dosezy.data.model.Theme
+import com.example.dosezy.notifications.AlarmActivity
+import com.example.dosezy.notifications.AlarmAudioPlayer
+import com.example.dosezy.ui.theme.DosezyTheme
+import com.example.dosezy.ui.viewmodels.UserViewModel
+import dagger.hilt.android.AndroidEntryPoint
+
+@AndroidEntryPoint
+class MainActivity : ComponentActivity() {
+
+    private val userViewModel: UserViewModel by viewModels()
+
+
+    override fun applyOverrideConfiguration(overrideConfiguration: android.content.res.Configuration?) {
+        if (overrideConfiguration != null) {
+            val savedLanguage = com.example.dosezy.utils.LocaleHelper.getSavedLanguage(this)
+            val targetLocale = com.example.dosezy.utils.LocaleHelper.getLocale(savedLanguage)
+            overrideConfiguration.setLocale(targetLocale)
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                overrideConfiguration.setLocales(android.os.LocaleList(targetLocale))
+            }
+            overrideConfiguration.setLayoutDirection(targetLocale)
+        }
+        super.applyOverrideConfiguration(overrideConfiguration)
+    }
+
+    private val pendingRouteState = androidx.compose.runtime.mutableStateOf<String?>(null)
+
+    override fun onNewIntent(intent: android.content.Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        // Guard: Stop ringing alarm sound and vibration if brought to foreground from notification tap or while alarm is playing (#BUG-ALARM-TAP-STOP)
+        if (intent.getBooleanExtra("from_alarm", false) || AlarmAudioPlayer.isPlaying()) {
+            AlarmActivity.stopActiveAlarm()
+        }
+        val targetUserId = intent.getStringExtra("switch_to_user_id")
+        if (!targetUserId.isNullOrBlank()) {
+            userViewModel.setCurrentUserById(targetUserId)
+        }
+        // Guard: Route to target screen when tapped notification specifies fragment (schedule or medicines)
+        val targetFragment = intent.getStringExtra("fragment")
+        if (targetFragment in listOf("schedule", "medicines")) {
+            pendingRouteState.value = targetFragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        enableEdgeToEdge()
+        super.onCreate(savedInstanceState)
+        // Guard: Do not programmatically lock portrait orientation so tablets, foldables, and desktop displays resize cleanly (#120)
+
+        // Guard: Stop ringing alarm sound and vibration if cold-started from notification tap or while alarm is playing (#BUG-ALARM-TAP-STOP)
+        if (intent.getBooleanExtra("from_alarm", false) || AlarmAudioPlayer.isPlaying()) {
+            AlarmActivity.stopActiveAlarm()
+        }
+
+        // Guard: Synchronously handle profile switch intent extra on cold start to prevent profile jumpiness and initial state flickering
+        val targetUserId = intent.getStringExtra("switch_to_user_id")
+        if (!targetUserId.isNullOrBlank()) {
+            userViewModel.setCurrentUserById(targetUserId)
+        }
+
+        // Guard: Parse initial launch intent extras to route directly to target screen on cold start
+        val targetFragment = intent.getStringExtra("fragment")
+        if (targetFragment in listOf("schedule", "medicines")) {
+            pendingRouteState.value = targetFragment
+        }
+
+        // Safety fallback: if an uncaught locale/formatting error occurs, reset language to SYSTEM so app opens cleanly on next launch
+        val defaultHandler = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler { thread, throwable ->
+            val isLocaleOrFormatError = throwable is java.util.MissingFormatArgumentException ||
+                    throwable is java.util.UnknownFormatConversionException ||
+                    throwable is android.content.res.Resources.NotFoundException ||
+                    throwable.cause is java.util.MissingFormatArgumentException ||
+                    throwable.cause is java.util.UnknownFormatConversionException
+
+            if (isLocaleOrFormatError) {
+                try {
+                    getSharedPreferences("app_prefs", MODE_PRIVATE)
+                        .edit()
+                        .putString("selected_language", com.example.dosezy.data.model.Language.SYSTEM.name)
+                        .apply()
+                    androidx.appcompat.app.AppCompatDelegate.setApplicationLocales(androidx.core.os.LocaleListCompat.getEmptyLocaleList())
+                } catch (_: Throwable) {}
+            }
+            defaultHandler?.uncaughtException(thread, throwable)
+        }
+
+        setContent {
+            val userViewModel: UserViewModel = com.example.dosezy.utils.sharedUserViewModel()
+            val currentUser by userViewModel.currentUser.collectAsState()
+            val context = androidx.compose.ui.platform.LocalContext.current
+
+            LaunchedEffect(intent) {
+                val launchUserId = intent.getStringExtra("switch_to_user_id")
+                if (!launchUserId.isNullOrBlank()) {
+                    userViewModel.setCurrentUserById(launchUserId)
+                }
+            }
+
+            // Read theme from SharedPreferences synchronously to prevent launch flash
+            val prefs = remember { context.getSharedPreferences("app_prefs", android.content.Context.MODE_PRIVATE) }
+            val systemInDark = isSystemInDarkTheme()
+
+            // Dynamically resolve theme directly from reactive currentUser state
+            val currentTheme = currentUser?.theme ?: when (prefs.getString("theme", "system")) {
+                "dark" -> Theme.DARK
+                "light" -> Theme.LIGHT
+                else -> Theme.SYSTEM
+            }
+
+            val isDark = when (currentTheme) {
+                Theme.DARK -> true
+                Theme.LIGHT -> false
+                Theme.SYSTEM -> systemInDark
+            }
+
+            LaunchedEffect(currentUser?.theme) {
+                currentUser?.theme?.let { theme ->
+                    val themeStr = theme.name.lowercase()
+                    if (prefs.getString("theme", "system") != themeStr) {
+                        prefs.edit().putString("theme", themeStr).apply()
+                    }
+                }
+            }
+
+            LaunchedEffect(currentUser?.language) {
+                currentUser?.language?.let { lang ->
+                    val currentSaved = com.example.dosezy.utils.LocaleHelper.getSavedLanguage(context)
+                    if (currentSaved != lang) {
+                        com.example.dosezy.utils.LocaleHelper.applyLanguage(context, lang, forceRecreate = false)
+                    }
+                }
+            }
+
+            val currentLang = currentUser?.language ?: com.example.dosezy.utils.LocaleHelper.getSavedLanguage(context)
+            val currentLocale = com.example.dosezy.utils.LocaleHelper.getLocale(currentLang)
+            val isRtl = currentLocale.language == "ar"
+            val layoutDirection = if (isRtl) androidx.compose.ui.unit.LayoutDirection.Rtl else androidx.compose.ui.unit.LayoutDirection.Ltr
+
+            val localizedContext = remember(currentLang) {
+                com.example.dosezy.utils.LocaleHelper.updateContextLocale(context, currentLang)
+            }
+
+            val localizedConfig = remember(currentLang) {
+                val config = android.content.res.Configuration(context.resources.configuration)
+                config.setLocale(currentLocale)
+                if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+                    config.setLocales(android.os.LocaleList(currentLocale))
+                }
+                config.setLayoutDirection(currentLocale)
+                config
+            }
+
+            androidx.compose.runtime.key(currentLang) {
+                // Guard: Provide LocalContext with localizedContext so child composables calling LocalContext.current resolve strings in active profile language (#BUG-MAIN-LOCALIZED-CONTEXT)
+                androidx.compose.runtime.CompositionLocalProvider(
+                    androidx.compose.ui.platform.LocalLayoutDirection provides layoutDirection,
+                    androidx.compose.ui.platform.LocalContext provides localizedContext,
+                    androidx.compose.ui.platform.LocalConfiguration provides localizedConfig
+                ) {
+                    DosezyTheme(darkTheme = isDark) {
+                        androidx.compose.material3.Surface(
+                            modifier = androidx.compose.ui.Modifier.fillMaxSize(),
+                            color = MaterialTheme.colorScheme.background
+                        ) {
+                            DosezyApp(
+                                pendingRouteState = pendingRouteState,
+                                onRouteConsumed = { pendingRouteState.value = null }
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@OptIn(androidx.compose.foundation.layout.ExperimentalLayoutApi::class)
+@Composable
+fun DosezyApp(
+    pendingRouteState: androidx.compose.runtime.State<String?> = androidx.compose.runtime.mutableStateOf(null),
+    onRouteConsumed: () -> Unit = {}
+) {
+    val navController = rememberNavController()
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = currentBackStackEntry?.destination
+    val userViewModel: UserViewModel = com.example.dosezy.utils.sharedUserViewModel()
+    val users by userViewModel.users.collectAsState()
+    val currentUser by userViewModel.currentUser.collectAsState()
+    val isViewModelLoading by userViewModel.isLoading.collectAsState()
+
+    AppPromptCoordinator(
+        currentUser = currentUser,
+        preferencesDataStore = userViewModel.preferencesDataStore
+    )
+
+    var isInitialized by remember { mutableStateOf(false) }
+
+    fun navigateToInitialDestination() {
+        if (currentUser == null) {
+            navController.navigate("newuser/1") {
+                popUpTo("loading") { inclusive = true }
+            }
+        } else {
+            val startRoute = when (pendingRouteState.value) {
+                "schedule" -> "schedule"
+                "medicines" -> "medicines"
+                else -> "home"
+            }
+            if (pendingRouteState.value != null) {
+                onRouteConsumed()
+            }
+            navController.navigate(startRoute) {
+                popUpTo("loading") { inclusive = true }
+            }
+        }
+    }
+
+    // Check user data on app start
+    LaunchedEffect(users, currentUser, isViewModelLoading) {
+        if (!isInitialized && !isViewModelLoading) {
+            isInitialized = true
+            navigateToInitialDestination()
+        }
+    }
+
+    // Guard: Navigate to schedule screen dynamically when notification is tapped while MainActivity is in foreground
+    LaunchedEffect(pendingRouteState.value) {
+        val target = pendingRouteState.value
+        if (target != null && isInitialized && currentUser != null) {
+            onRouteConsumed()
+            navController.navigate(target) {
+                launchSingleTop = true
+            }
+        }
+    }
+
+    // Timeout fallback - if loading takes too long and no user, go to onboarding
+    LaunchedEffect(Unit) {
+        if (!isInitialized) {
+            kotlinx.coroutines.delay(2000)
+            if (!isInitialized) {
+                isInitialized = true
+                navigateToInitialDestination()
+            }
+        }
+    }
+
+    // Show navigation bar only for main screens, not for loading or onboarding
+    val showBottomBar = currentDestination?.route in listOf("home", "schedule", "medicines", "menu")
+
+    androidx.compose.material3.Scaffold(
+        contentWindowInsets = androidx.compose.foundation.layout.WindowInsets(0, 0, 0, 0),
+        bottomBar = {
+            if (showBottomBar) {
+                CustomNavigationBar(
+                    navController = navController,
+                    currentDestination = currentDestination,
+                    hideAddButton = currentUser?.hideAddMedicineNavButton == true
+                )
+            }
+        }
+    ) { innerPadding ->
+        NavHost(
+            navController = navController,
+            startDestination = "loading",
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = innerPadding.calculateBottomPadding()),
+            // Guard: 140ms lightweight micro-fade provides buttery-smooth page switches and masks composition measurement hitches on older devices
+            enterTransition = { fadeIn(animationSpec = tween(140, easing = LinearEasing)) },
+            exitTransition = { fadeOut(animationSpec = tween(140, easing = LinearEasing)) },
+            popEnterTransition = { fadeIn(animationSpec = tween(140, easing = LinearEasing)) },
+            popExitTransition = { fadeOut(animationSpec = tween(140, easing = LinearEasing)) }
+        ) {
+            // Main Screens
+            composable("loading") {
+                com.example.dosezy.ui.components.HomeSkeletonView(
+                    modifier = Modifier.statusBarsPadding()
+                )
+            }
+            composable("home") {
+                HomeScreen(
+                    navController = navController,
+                    shouldRefresh = true
+                )
+            }
+            composable("schedule") {
+                ScheduleScreen(navController = navController)
+            }
+            composable("medicines") {
+                MedicinesScreen(navController)
+            }
+            composable("menu") {
+                MenuScreen(navController)
+            }
+
+            // Debug Screen
+            composable("debug") {
+                DebugScreen()
+            }
+
+            // Profile Management Screens
+            composable("manage_profile") {
+                ManageProfileScreen(navController)
+            }
+            composable("switch_profile") {
+                SwitchProfileScreen(navController)
+            }
+
+            // Medicine Management Screens
+            composable("add_med") {
+                AddMedScreen(navController)
+            }
+            composable("edit_med/{medicineId}") { backStackEntry ->
+                val medicineId = backStackEntry.arguments?.getString("medicineId")
+                EditMedScreen(
+                    navController = navController,
+                    medicineId = medicineId
+                )
+            }
+
+            // Analytics Screen
+            composable("analytics") {
+                AnalyticsScreen(navController)
+            }
+
+            // Support Screens
+            composable("emergency") {
+                EmergencyScreen(navController)
+            }
+            composable("help_support") {
+                HelpSupportScreen(navController)
+            }
+            composable("about") {
+                AboutScreen(navController)
+            }
+            composable("preferences") {
+                PreferencesScreen(navController)
+            }
+
+            composable("backup_restore") {
+                BackupRestoreScreen(navController)
+            }
+
+            // New User Onboarding Flow
+            composable("newuser/{frameNumber}") { backStackEntry ->
+                val frame = backStackEntry.arguments?.getString("frameNumber")?.toIntOrNull() ?: 1
+
+                NewUserScreen(
+                    navController = navController,
+                    currentFrame = frame,
+                    onNext = { nextFrame ->
+                        if (nextFrame <= 3) {
+                            navController.navigate("newuser/$nextFrame")
+                        } else {
+                            // Onboarding complete - go to home
+                            navController.navigate("home") {
+                                popUpTo("newuser/1") { inclusive = true }
+                            }
+                        }
+                    },
+                    onSkip = {
+                        // Skip onboarding - go to home
+                        navController.navigate("home") {
+                            popUpTo("newuser/1") { inclusive = true }
+                        }
+                    },
+                    isCreatingNewProfile = false // This is regular onboarding
+                )
+            }
+
+            // Create New Profile Flow (from Switch Profile screen)
+            composable("create_profile/{frameNumber}") { backStackEntry ->
+                val frame = backStackEntry.arguments?.getString("frameNumber")?.toIntOrNull() ?: 1
+
+                NewUserScreen(
+                    navController = navController,
+                    currentFrame = frame,
+                    onNext = { nextFrame ->
+                        if (nextFrame <= 3) {
+                            navController.navigate("create_profile/$nextFrame")
+                        } else {
+                            // Profile creation complete - go back to switch profile
+                            navController.popBackStack("switch_profile", false)
+                        }
+                    },
+                    onSkip = {
+                        // Skip profile creation - go back to switch profile
+                        navController.popBackStack("switch_profile", false)
+                    },
+                    isCreatingNewProfile = true // This is creating from switch screen
+                )
+            }
+        }
+    }
+}

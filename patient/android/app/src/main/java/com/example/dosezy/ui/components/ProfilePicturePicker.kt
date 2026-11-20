@@ -1,0 +1,681 @@
+// ui/components/ProfilePicturePicker.kt
+package com.example.dosezy.ui.components
+
+import android.content.Context
+import android.net.Uri
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CameraAlt
+import androidx.compose.material.icons.filled.PhotoLibrary
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Medication
+import androidx.compose.ui.res.stringResource
+import com.example.dosezy.data.model.PillShape
+
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.example.dosezy.R
+import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+@Composable
+fun ProfilePicturePicker(
+    profilePicPath: String?,
+    onProfilePictureSelected: (String?) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    var showImageSourceDialog by remember { mutableStateOf(false) }
+    var tempUri by remember { mutableStateOf<Uri?>(null) }
+    var tempFile by remember { mutableStateOf<File?>(null) }
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    var uncommittedDraftPath by remember { mutableStateOf<String?>(null) }
+
+    // Gallery launcher
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (uri != null) {
+                try {
+                    // Guard: Save image draft without deleting active saved picture; clean up prior uncommitted draft in same session
+                    val savedPath = saveImageToInternalStorage(context, uri)
+                    uncommittedDraftPath?.let { draft ->
+                        if (draft != profilePicPath) deleteOldImage(context, draft)
+                    }
+                    uncommittedDraftPath = savedPath
+                    onProfilePictureSelected(savedPath)
+                } catch (e: Exception) {
+                    Log.e("ProfilePicturePicker", "Gallery error: ${e.message}", e)
+                    errorMessage = "Failed to load image from gallery"
+                    showError = true
+                }
+            }
+        }
+    )
+
+    // Camera launcher
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success ->
+            if (success) {
+                tempUri?.let { uri ->
+                    try {
+                        // Guard: Save image draft without deleting active saved picture; clean up prior uncommitted draft in same session
+                        val savedPath = saveImageToInternalStorage(context, uri)
+                        uncommittedDraftPath?.let { draft ->
+                            if (draft != profilePicPath) deleteOldImage(context, draft)
+                        }
+                        uncommittedDraftPath = savedPath
+                        onProfilePictureSelected(savedPath)
+                    } catch (e: Exception) {
+                        Log.e("ProfilePicturePicker", "Camera save error: ${e.message}", e)
+                        errorMessage = "Failed to save captured image"
+                        showError = true
+                    }
+                }
+            } else {
+                Log.e("ProfilePicturePicker", "Camera capture failed")
+                errorMessage = "Camera capture failed"
+                showError = true
+            }
+            // Guard: Clean up temporary camera capture file from cache on both success and cancellation to prevent storage leaks
+            try {
+                tempFile?.let { if (it.exists()) it.delete() }
+            } catch (_: Exception) {}
+            tempUri = null
+            tempFile = null
+        }
+    )
+
+    // Camera open action (lambda)
+    val openCamera = {
+        try {
+            // Guard: Clean up any prior unconfirmed camera capture file before launching new capture
+            try { tempFile?.let { if (it.exists()) it.delete() } } catch (_: Exception) {}
+            val fileResult = createImageFile(context)
+            if (fileResult != null) {
+                tempUri = fileResult.first
+                tempFile = fileResult.second
+                cameraLauncher.launch(fileResult.first)
+            } else {
+                errorMessage = "Cannot create temporary file for camera"
+                showError = true
+            }
+        } catch (e: Exception) {
+            Log.e("ProfilePicturePicker", "Camera open error: ${e.message}", e)
+            errorMessage = "Cannot open camera: ${e.message}"
+            showError = true
+        }
+    }
+
+    // Camera permission launcher
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) {
+                // Permission granted, open camera
+                openCamera()
+            } else {
+                // Permission denied
+                errorMessage = context.getString(R.string.camera_permission_required)
+                showError = true
+            }
+        }
+    )
+
+    fun openCameraWithPermissionCheck() {
+        try {
+            val permission = android.Manifest.permission.CAMERA
+            val hasPermission = ContextCompat.checkSelfPermission(
+                context,
+                permission
+            ) == android.content.pm.PackageManager.PERMISSION_GRANTED
+
+            if (hasPermission) {
+                openCamera()
+            } else {
+                // Request camera permission
+                cameraPermissionLauncher.launch(permission)
+            }
+        } catch (e: Exception) {
+            Log.e("ProfilePicturePicker", "Camera permission check error: ${e.message}", e)
+            errorMessage = "Cannot access camera: ${e.message}"
+            showError = true
+        }
+    }
+
+    fun openGallery() {
+        try {
+            galleryLauncher.launch("image/*")
+        } catch (e: Exception) {
+            Log.e("ProfilePicturePicker", "Gallery open error: ${e.message}", e)
+            errorMessage = "Cannot open gallery"
+            showError = true
+        }
+    }
+
+    Box(
+        modifier = modifier
+            .size(128.dp)
+            .clickable { showImageSourceDialog = true },
+        contentAlignment = Alignment.Center
+    ) {
+        // Profile Image or Placeholder
+        if (!profilePicPath.isNullOrEmpty()) {
+            val modelData = remember(profilePicPath) { com.example.dosezy.utils.ImageUtils.resolveImageModel(profilePicPath) }
+            AsyncImage(
+                model = ImageRequest.Builder(context)
+                    .data(modelData)
+                    .crossfade(true)
+                    .build(),
+                contentDescription = "Profile Picture",
+                modifier = Modifier
+                    .size(128.dp)
+                    .clip(androidx.compose.foundation.shape.RoundedCornerShape(16.dp)),
+                placeholder = painterResource(id = R.drawable.default_profile),
+                error = painterResource(id = R.drawable.default_profile),
+                contentScale = ContentScale.Crop
+            )
+            
+            // Remove Picture Button (Squircle badge)
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(36.dp)
+                    .clickable { 
+                        // Guard: Only delete uncommitted draft; defer active saved image deletion until form save to prevent data loss on cancel (#BUG-02)
+                        uncommittedDraftPath?.let { draft ->
+                            deleteOldImage(context, draft)
+                            uncommittedDraftPath = null
+                        }
+                        onProfilePictureSelected(null) 
+                    }
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.image_picker_remove),
+                        tint = Color.White,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+        } else {
+            // Empty placeholder container (Squircle frame)
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline),
+                modifier = Modifier.size(128.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.Add,
+                        contentDescription = "Add Profile Picture",
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+        }
+
+        // Camera Icon Overlay (Squircle badge)
+        Surface(
+            shape = RoundedCornerShape(12.dp),
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .size(40.dp)
+                .clickable { showImageSourceDialog = true }
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.CameraAlt,
+                    contentDescription = "Change Profile Picture",
+                    tint = Color.White,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+        }
+    }
+
+    // Image Source Selection Dialog
+    if (showImageSourceDialog) {
+        ImageSourceDialog(
+            onDismiss = { showImageSourceDialog = false },
+            onCameraSelected = {
+                showImageSourceDialog = false
+                openCameraWithPermissionCheck()
+            },
+            onGallerySelected = {
+                showImageSourceDialog = false
+                openGallery()
+            }
+        )
+    }
+
+    // Error Dialog
+    if (showError) {
+        AlertDialog(
+            onDismissRequest = { showError = false },
+            tonalElevation = 0.dp,
+            containerColor = MaterialTheme.colorScheme.surface,
+            title = { Text(stringResource(R.string.image_picker_error_title)) },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(onClick = { showError = false }) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            }
+        )
+    }
+}
+
+@Composable
+fun ImageSourceDialog(
+    onDismiss: () -> Unit,
+    onCameraSelected: () -> Unit,
+    onGallerySelected: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        tonalElevation = 0.dp,
+        containerColor = MaterialTheme.colorScheme.surface,
+        title = { Text(stringResource(R.string.image_picker_select_source)) },
+        text = {
+            Column {
+                Text(stringResource(R.string.image_picker_choose_method))
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    stringResource(R.string.image_picker_camera_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Text(
+                    stringResource(R.string.image_picker_gallery_desc),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onGallerySelected) {
+                Icon(
+                    imageVector = Icons.Default.PhotoLibrary,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(stringResource(R.string.image_picker_gallery), modifier = Modifier.padding(start = 8.dp))
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onCameraSelected) {
+                Icon(
+                    imageVector = Icons.Default.CameraAlt,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Text(stringResource(R.string.image_picker_camera), modifier = Modifier.padding(start = 8.dp))
+            }
+        }
+    )
+}
+
+// Utility function to create a file URI for camera
+// Utility function to create a file and URI for camera
+internal fun createImageFile(context: Context): Pair<Uri, File>? {
+    return try {
+        val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val storageDir = context.externalCacheDir ?: context.cacheDir
+
+        // Ensure directory exists
+        storageDir?.mkdirs()
+
+        val tempFile = File.createTempFile(
+            "JPEG_${timeStamp}_",
+            ".jpg",
+            storageDir
+        ).apply {
+            createNewFile()
+        }
+
+        val uri = FileProvider.getUriForFile(
+            context,
+            "${context.packageName}.provider",
+            tempFile
+        )
+        Pair(uri, tempFile)
+    } catch (e: Exception) {
+        Log.e("ProfilePicturePicker", "Error creating temp file: ${e.message}", e)
+        null
+    }
+}
+
+// Guard: Backward compatible helper delegating to createImageFile
+fun createImageFileUri(context: Context): Uri? = createImageFile(context)?.first
+
+// Utility function to save image to internal storage with bitmap downsampling
+private fun saveImageToInternalStorage(context: Context, uri: Uri): String {
+    val timeStamp = System.currentTimeMillis()
+    val file = File(context.filesDir, "profile_$timeStamp.jpg")
+    // Guard: Downsample camera and gallery images to max 1024x1024 to prevent memory OOM and reduce storage footprint
+    return com.example.dosezy.utils.ImageUtils.saveDownsampledImage(context, uri, file)
+}
+
+// Guard: Validate canonicalPath against context.filesDir and context.cacheDir to prevent path traversal and arbitrary sandbox file deletion
+fun deleteOldImage(context: Context, path: String?) {
+    if (path.isNullOrBlank()) return
+    try {
+        // Guard: Strip file:// prefix so File() can locate the file on disk without FileNotFoundException
+        val cleanPath = path.removePrefix("file://")
+        val file = File(cleanPath)
+        val filesDir = context.filesDir
+        val cacheDir = context.cacheDir
+        val isWithinFilesDir = file.parentFile?.canonicalPath == filesDir.canonicalPath ||
+                file.canonicalPath.startsWith(filesDir.canonicalPath + File.separator)
+        val isWithinCacheDir = file.parentFile?.canonicalPath == cacheDir.canonicalPath ||
+                file.canonicalPath.startsWith(cacheDir.canonicalPath + File.separator)
+        if (file.exists() && (isWithinFilesDir || isWithinCacheDir)) {
+            val deleted = file.delete()
+            Log.d("ProfilePicturePicker", "Deleted image: $cleanPath, success=$deleted")
+        }
+    } catch (e: Exception) {
+        Log.e("ProfilePicturePicker", "Failed to delete old image: ${e.message}")
+    }
+}
+
+@Composable
+fun MedicinePhotoVisualPicker(
+    imagePath: String?,
+    pillShape: PillShape,
+    pillColor: String,
+    onImageSelected: (String?) -> Unit,
+    onVisualSelected: (PillShape, String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    var showImageSourceDialog by remember { mutableStateOf(false) }
+    var showPillVisualDialog by remember { mutableStateOf(false) }
+    var tempUri by remember { mutableStateOf<Uri?>(null) }
+    var tempFile by remember { mutableStateOf<File?>(null) }
+    var showError by remember { mutableStateOf(false) }
+    var errorMessage by remember { mutableStateOf("") }
+
+    var uncommittedDraftPath by remember { mutableStateOf<String?>(null) }
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent(),
+        onResult = { uri ->
+            if (uri != null) {
+                try {
+                    // Guard: Save image draft without deleting active saved picture; clean up prior uncommitted draft in same session
+                    val savedPath = saveImageToInternalStorage(context, uri)
+                    uncommittedDraftPath?.let { draft ->
+                        if (draft != imagePath) deleteOldImage(context, draft)
+                    }
+                    uncommittedDraftPath = savedPath
+                    onImageSelected(savedPath)
+                } catch (e: Exception) {
+                    Log.e("ProfilePicturePicker", "Gallery error: ${e.message}", e)
+                    errorMessage = "Failed to load image from gallery"
+                    showError = true
+                }
+            }
+        }
+    )
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicture(),
+        onResult = { success ->
+            if (success) {
+                tempUri?.let { uri ->
+                    try {
+                        // Guard: Save image draft without deleting active saved picture; clean up prior uncommitted draft in same session
+                        val savedPath = saveImageToInternalStorage(context, uri)
+                        uncommittedDraftPath?.let { draft ->
+                            if (draft != imagePath) deleteOldImage(context, draft)
+                        }
+                        uncommittedDraftPath = savedPath
+                        onImageSelected(savedPath)
+                    } catch (e: Exception) {
+                        Log.e("ProfilePicturePicker", "Camera save error: ${e.message}", e)
+                        errorMessage = "Failed to save captured image"
+                        showError = true
+                    }
+                }
+            }
+            // Guard: Clean up temporary camera capture file from cache on both success and cancellation to prevent storage leaks
+            try {
+                tempFile?.let { if (it.exists()) it.delete() }
+            } catch (_: Exception) {}
+            tempUri = null
+            tempFile = null
+        }
+    )
+
+    val openCamera = {
+        try {
+            // Guard: Clean up any prior unconfirmed camera capture file before launching new capture
+            try { tempFile?.let { if (it.exists()) it.delete() } } catch (_: Exception) {}
+            val fileResult = createImageFile(context)
+            if (fileResult != null) {
+                tempUri = fileResult.first
+                tempFile = fileResult.second
+                cameraLauncher.launch(fileResult.first)
+            } else {
+                errorMessage = "Cannot create temporary file for camera"
+                showError = true
+            }
+        } catch (e: Exception) {
+            errorMessage = "Cannot open camera: ${e.message}"
+            showError = true
+        }
+    }
+
+    val cameraPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted ->
+            if (isGranted) openCamera()
+            else {
+                errorMessage = context.getString(R.string.camera_permission_required)
+                showError = true
+            }
+        }
+    )
+
+    fun openCameraWithPermissionCheck() {
+        val permission = android.Manifest.permission.CAMERA
+        if (ContextCompat.checkSelfPermission(context, permission) == android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            openCamera()
+        } else {
+            cameraPermissionLauncher.launch(permission)
+        }
+    }
+
+    Box(
+        modifier = modifier.size(128.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        // Main Container (Squircle)
+        Surface(
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+            border = BorderStroke(2.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)),
+            modifier = Modifier
+                .size(128.dp)
+                .clickable { showImageSourceDialog = true }
+        ) {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                if (!imagePath.isNullOrEmpty()) {
+                    val modelData = remember(imagePath) { com.example.dosezy.utils.ImageUtils.resolveImageModel(imagePath) }
+                    AsyncImage(
+                        model = ImageRequest.Builder(context)
+                            .data(modelData)
+                            .crossfade(true)
+                            .build(),
+                        contentDescription = "Medicine Image",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(24.dp)),
+                        contentScale = ContentScale.Crop
+                    )
+                } else {
+                    // Display Selected Pill Shape & Color in the frame!
+                    PillShapeVisual(
+                        shape = pillShape,
+                        colorHex = pillColor,
+                        size = 64.dp
+                    )
+                }
+            }
+        }
+
+        // Top-Right: Remove photo button (if photo exists - Squircle badge)
+        if (!imagePath.isNullOrEmpty()) {
+            Surface(
+                shape = RoundedCornerShape(10.dp),
+                color = MaterialTheme.colorScheme.error,
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .size(32.dp)
+                    .clickable {
+                        // Guard: Only delete uncommitted draft; defer active saved image deletion until form save to prevent data loss on cancel (#BUG-02)
+                        uncommittedDraftPath?.let { draft ->
+                            deleteOldImage(context, draft)
+                            uncommittedDraftPath = null
+                        }
+                        onImageSelected(null)
+                    }
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = stringResource(R.string.image_picker_remove),
+                        tint = Color.White,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
+
+        // Bottom-Right: Camera/Photo Picker Button (Squircle badge)
+        Surface(
+            shape = RoundedCornerShape(10.dp),
+            color = MaterialTheme.colorScheme.primary,
+            shadowElevation = 4.dp,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .size(38.dp)
+                .clickable { showImageSourceDialog = true }
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                Icon(
+                    imageVector = Icons.Default.CameraAlt,
+                    contentDescription = stringResource(R.string.form_medicine_image),
+                    tint = Color.White,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
+        }
+
+        // Bottom-Left: Pill Shape & Visual Dialog Button (Squircle badge)
+        Surface(
+            shape = RoundedCornerShape(10.dp),
+            color = parseHexColor(pillColor),
+            shadowElevation = 4.dp,
+            border = BorderStroke(2.dp, Color.White),
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .size(38.dp)
+                .clickable { showPillVisualDialog = true }
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                PillShapeVisual(
+                    shape = pillShape,
+                    colorHex = "#FFFFFF",
+                    size = 20.dp
+                )
+            }
+        }
+    }
+
+    if (showPillVisualDialog) {
+        PillVisualDialog(
+            selectedShape = pillShape,
+            selectedColorHex = pillColor,
+            onShapeSelected = { shape -> onVisualSelected(shape, pillColor) },
+            onColorSelected = { color -> onVisualSelected(pillShape, color) },
+            onDismiss = { showPillVisualDialog = false }
+        )
+    }
+
+    if (showImageSourceDialog) {
+        ImageSourceDialog(
+            onDismiss = { showImageSourceDialog = false },
+            onCameraSelected = {
+                showImageSourceDialog = false
+                openCameraWithPermissionCheck()
+            },
+            onGallerySelected = {
+                showImageSourceDialog = false
+                galleryLauncher.launch("image/*")
+            }
+        )
+    }
+
+    if (showError) {
+        AlertDialog(
+            onDismissRequest = { showError = false },
+            title = { Text(stringResource(R.string.image_picker_error_title)) },
+            text = { Text(errorMessage) },
+            confirmButton = {
+                TextButton(onClick = { showError = false }) {
+                    Text(stringResource(android.R.string.ok))
+                }
+            }
+        )
+    }
+}

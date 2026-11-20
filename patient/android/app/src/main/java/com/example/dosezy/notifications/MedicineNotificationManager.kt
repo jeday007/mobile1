@@ -1,0 +1,176 @@
+// MedicineNotificationManager.kt
+package com.example.dosezy.notifications
+
+import android.content.Context
+import android.util.Log
+import com.example.dosezy.data.DosezyDatabase
+import com.example.dosezy.data.model.MedicationStatus
+import com.example.dosezy.data.repository.ScheduleRepository
+import com.example.dosezy.data.repository.UserRepository
+import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.time.LocalDateTime
+import javax.inject.Inject
+import javax.inject.Singleton
+
+@Singleton
+class MedicineNotificationManager @Inject constructor(
+    @ApplicationContext private val context: Context,
+    private val database: DosezyDatabase
+) {
+
+    private val alarmScheduler = AlarmScheduler(context)
+    private val userRepository = UserRepository(database)
+    private val scheduleRepository = ScheduleRepository(database)
+
+    companion object {
+        private const val TAG = "MedicineNotificationManager"
+    }
+
+    // Guard: Core library desugaring enables java.time on API 24+; allow alarm scheduling across all supported OS versions
+    fun scheduleAllAlarmsForCurrentUser() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val users = userRepository.getAllUsersList()
+                val currentUser = users.find { it.isCurrentUser }
+
+                currentUser?.let { user ->
+                    scheduleRepository.rescheduleAllAlarms(user.userId, context)
+                    Log.d(TAG, "Scheduled all alarms for current user: ${user.fullName}")
+                } ?: run {
+                    Log.w(TAG, "No current user found to schedule alarms for")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error scheduling alarms for current user", e)
+            }
+        }
+    }
+
+    // Guard: Core library desugaring enables java.time on API 24+; allow alarm scheduling across all supported OS versions
+    fun scheduleAlarmsForUser(userId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                scheduleRepository.rescheduleAllAlarms(userId, context)
+                Log.d(TAG, "Scheduled all alarms for user: $userId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error scheduling alarms for user: $userId", e)
+            }
+        }
+    }
+
+    suspend fun cancelAllAlarmsForUser(userId: String) = withContext(Dispatchers.IO) {
+        try {
+            val allEntries = scheduleRepository.getSchedulesByUserSync(userId)
+            val now = java.time.LocalDateTime.now()
+            val activeWindowStart = now.minusHours(24)
+            val activeWindowEnd = now.plusDays(8)
+            // Guard: Only cancel alarms within the active window; looping over months of past history triggers thousands of redundant Binder IPC calls
+            val entriesToCancel = allEntries.filter { entry ->
+                entry.scheduledDateTime.isAfter(activeWindowStart) &&
+                entry.scheduledDateTime.isBefore(activeWindowEnd)
+            }
+            val nManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as? android.app.NotificationManager
+            entriesToCancel.forEach { entry ->
+                // Guard: Pass entry directly to cancelAlarm to bypass sequential blocking DB lookups
+                alarmScheduler.cancelAlarm(entry)
+                alarmScheduler.cancelSnooze(entry.entryId)
+                alarmScheduler.cancelNagging(entry.entryId)
+                alarmScheduler.cancelSlotAlarm(entry.userId, entry.scheduledDateTime)
+                // Guard: Cancel any active intake safeguard alarms for this entry to prevent orphaned re-alerts
+                alarmScheduler.cancelIntakeSafeguardAlarm(entry.entryId)
+                // Guard: Dismiss active reminder notifications from shade when cancelling user alarms
+                nManager?.cancel(entry.entryId.hashCode())
+            }
+            // Guard: Dismiss any active refill alert notifications for the user's medicines
+            try {
+                val userMeds = database.medicineDao().getMedicinesByUserDirect(userId)
+                userMeds.forEach { med ->
+                    nManager?.cancel((med.medicineId + "_refill").hashCode())
+                }
+            } catch (_: Exception) {}
+
+            // Guard: Dismiss active ADHD intake countdown notification if active countdown references cancelled user or entries
+            try {
+                val activeCountdown = IntakeSafeguardManager.activeCountdown.value
+                if (activeCountdown != null && (activeCountdown.userId == userId || entriesToCancel.any { it.entryId == activeCountdown.entryId || activeCountdown.entryIds.contains(it.entryId) })) {
+                    IntakeSafeguardManager.cancelCountdown(context)
+                }
+            } catch (_: Exception) {}
+            Log.d(TAG, "Cancelled active window alarms for user: $userId (${entriesToCancel.size} active entries)")
+        } catch (e: Exception) {
+            Log.e(TAG, "Error cancelling alarms for user: $userId", e)
+        }
+    }
+
+    // Guard: Core library desugaring enables java.time on API 24+; allow alarm rescheduling on startup across all supported OS versions
+    fun rescheduleAllAlarmsForAllUsers() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val allUsers = userRepository.getAllUsersList()
+
+                allUsers.forEach { user ->
+                    scheduleRepository.rescheduleAllAlarms(user.userId, context)
+                }
+
+                Log.d(TAG, "Rescheduled alarms for all ${allUsers.size} users")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error rescheduling alarms for all users", e)
+            }
+        }
+    }
+
+    // Guard: Dispatch callback on Dispatchers.Main to prevent CalledFromWrongThreadException when mutating UI or Compose state
+    fun checkAlarmStatus(userId: String, callback: (scheduledCount: Int, totalCount: Int) -> Unit) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val allEntries = scheduleRepository.getSchedulesByUserSync(userId)
+                val futureEntries = allEntries.filter {
+                    it.scheduledDateTime.isAfter(LocalDateTime.now()) &&
+                            it.status == MedicationStatus.PENDING
+                }
+
+                withContext(Dispatchers.Main) {
+                    callback(futureEntries.size, allEntries.size)
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error checking alarm status", e)
+                withContext(Dispatchers.Main) {
+                    callback(0, 0)
+                }
+            }
+        }
+    }
+
+
+
+    fun scheduleAlarmsForMedicine(medicineId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                scheduleRepository.scheduleAlarmsForMedicine(medicineId, context)
+                Log.d(TAG, "Scheduled alarms for medicine: $medicineId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error scheduling alarms for medicine: $medicineId", e)
+            }
+        }
+    }
+
+    fun cancelAlarmsForMedicine(medicineId: String) {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                scheduleRepository.cancelAlarmsForMedicine(medicineId, context)
+                Log.d(TAG, "Cancelled alarms for medicine: $medicineId")
+            } catch (e: Exception) {
+                Log.e(TAG, "Error cancelling alarms for medicine: $medicineId", e)
+            }
+        }
+    }
+
+    fun getScheduledAlarmCount(userId: String, callback: (count: Int) -> Unit) {
+        checkAlarmStatus(userId) { scheduled, _ ->
+            callback(scheduled)
+        }
+    }
+}

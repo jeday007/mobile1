@@ -1,0 +1,260 @@
+package com.example.dosezy.widget
+
+import android.app.PendingIntent
+import android.appwidget.AppWidgetManager
+import android.appwidget.AppWidgetProvider
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.res.Configuration
+import android.net.Uri
+import android.os.Build
+import android.view.View
+import android.widget.RemoteViews
+import com.example.dosezy.MainActivity
+import com.example.dosezy.R
+import com.example.dosezy.data.DosezyDatabase
+import com.example.dosezy.data.model.MedicationStatus
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneOffset
+import java.util.Locale
+
+class DosezyAppWidgetProvider : AppWidgetProvider() {
+
+    override fun onReceive(context: Context, intent: Intent) {
+        super.onReceive(context, intent)
+        if (intent.action == Intent.ACTION_CONFIGURATION_CHANGED) {
+            updateAppWidgets(context)
+        }
+    }
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        updateAppWidgets(context)
+    }
+
+    override fun onDeleted(context: Context, appWidgetIds: IntArray) {
+        for (appWidgetId in appWidgetIds) {
+            DosezyWidgetPrefs.deleteWidgetProfile(context, appWidgetId)
+        }
+    }
+
+    companion object {
+        private val widgetScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+        private var debounceJob: Job? = null
+
+        /**
+         * Resolves whether the widget should render in dark mode.
+         * Strictly reads from SharedPreferences without any Room DB queries to ensure 0ms execution
+         * and eliminate SQLite lock contention and ANRs.
+         */
+        fun isWidgetDark(context: Context, targetUserId: String): Boolean {
+            val profileTheme = DosezyWidgetPrefs.getWidgetProfileTheme(context, targetUserId)
+            val prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE)
+            val appTheme = prefs.getString("theme", "system")
+            val effectiveTheme = profileTheme ?: appTheme ?: "system"
+
+            return when (effectiveTheme.lowercase()) {
+                "dark" -> true
+                "light" -> false
+                else -> {
+                    val uiMode = context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK
+                    uiMode == Configuration.UI_MODE_NIGHT_YES
+                }
+            }
+        }
+
+        /**
+         * Requests widget updates across all active widgets.
+         * Debounces calls by 150ms to prevent duplicate IPC storms and SQLite lock exhaustion.
+         */
+        fun updateAppWidgets(context: Context) {
+            val appContext = context.applicationContext
+            synchronized(this) {
+                debounceJob?.cancel()
+                debounceJob = widgetScope.launch {
+                    delay(150L) // Debounce rapid back-to-back updates
+                    performUpdateAllWidgets(appContext)
+                }
+            }
+        }
+
+        // Guard: Execute immediate synchronous widget update for configure activity or targeted widget ID without 150ms debounce delay so widget renders populated layout before launcher binding and Android 12+ background suspension
+        fun updateWidget(
+            context: Context,
+            @Suppress("UNUSED_PARAMETER") appWidgetManager: AppWidgetManager? = null,
+            appWidgetId: Int = AppWidgetManager.INVALID_APPWIDGET_ID
+        ) {
+            val appContext = context.applicationContext
+            if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                try {
+                    kotlinx.coroutines.runBlocking {
+                        kotlinx.coroutines.withTimeoutOrNull(2000L) {
+                            performUpdateAllWidgets(appContext, targetWidgetId = appWidgetId)
+                        }
+                    }
+                } catch (_: Exception) {
+                    updateAppWidgets(appContext)
+                }
+            } else {
+                updateAppWidgets(appContext)
+            }
+        }
+
+        private suspend fun performUpdateAllWidgets(context: Context, targetWidgetId: Int? = null) {
+            try {
+                val appWidgetManager = AppWidgetManager.getInstance(context)
+                val thisWidget = ComponentName(context, DosezyAppWidgetProvider::class.java)
+                val allWidgetIds = appWidgetManager.getAppWidgetIds(thisWidget)
+                val appWidgetIds = if (targetWidgetId != null && targetWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID) {
+                    intArrayOf(targetWidgetId)
+                } else {
+                    allWidgetIds
+                }
+                if (appWidgetIds.isEmpty()) return
+
+                val db = DosezyDatabase.getInstance(context)
+                val allUsers = db.userDao().getAllUsersDirect()
+                val currentUser = allUsers.find { it.isCurrentUser } ?: allUsers.firstOrNull()
+                val userMap = allUsers.associateBy { it.userId }
+
+                val today = LocalDate.now()
+                val zoneUtc = ZoneOffset.UTC
+                val startOfDay = today.atStartOfDay(zoneUtc).toInstant().toEpochMilli()
+                val endOfDay = today.plusDays(1).atStartOfDay(zoneUtc).toInstant().toEpochMilli() - 1
+
+                val appName = context.getString(R.string.app_name)
+
+                for (appWidgetId in appWidgetIds) {
+                    val targetUserId = DosezyWidgetPrefs.getWidgetProfile(context, appWidgetId)
+                    val user = if (targetUserId == DosezyWidgetPrefs.ACTIVE_PROFILE_ID) {
+                        currentUser
+                    } else {
+                        userMap[targetUserId] ?: currentUser
+                    }
+
+                    val isDark = isWidgetDark(context, targetUserId)
+                    val layoutId = if (isDark) R.layout.widget_dosezy_dark else R.layout.widget_dosezy_light
+                    val views = RemoteViews(context.packageName, layoutId)
+
+                    // Header click opens MainActivity (switches to bound profile if specific)
+                    val clickIntent = Intent(context, MainActivity::class.java).apply {
+                        // Guard: Use SINGLE_TOP to bring existing instance to foreground without destroying in-progress UI state
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                        if (targetUserId != DosezyWidgetPrefs.ACTIVE_PROFILE_ID && user != null) {
+                            putExtra("switch_to_user_id", user.userId)
+                        }
+                    }
+                    val pendingIntent = PendingIntent.getActivity(
+                        context,
+                        appWidgetId,
+                        clickIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+                    )
+                    views.setOnClickPendingIntent(R.id.widget_root, pendingIntent)
+
+                    // Connect scrollable ListView to DosezyWidgetService with theme in intent URI
+                    val serviceIntent = Intent(context, DosezyWidgetService::class.java).apply {
+                        putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                        putExtra("is_dark", isDark)
+                        data = Uri.parse("dosezy://widget/service/$appWidgetId?dark=$isDark&ts=${System.currentTimeMillis()}")
+                    }
+                    // Guard: setRemoteAdapter(Intent) is deprecated in API 35+ in favor of RemoteCollectionItems (API 31+); required for API 24-30 backward compatibility
+                    @Suppress("DEPRECATION")
+                    views.setRemoteAdapter(R.id.widget_medicine_list, serviceIntent)
+                    views.setEmptyView(R.id.widget_medicine_list, R.id.widget_status_container)
+
+                    // Template PendingIntent for items in the scrollable ListView
+                    val itemClickIntent = Intent(context, MainActivity::class.java).apply {
+                        // Guard: Use SINGLE_TOP to bring existing instance to foreground and deliver extras to onNewIntent without wiping task state
+                        flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP
+                    }
+                    // Guard: FLAG_MUTABLE is mandatory on API 31+ (Android 12+) for ListView fillInIntent templates but undefined on API 24-30; guard bitmask to prevent OEM ROM incompatibilities
+                    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                        PendingIntent.FLAG_MUTABLE
+                    } else {
+                        0
+                    }
+                    val itemPendingIntent = PendingIntent.getActivity(
+                        context,
+                        appWidgetId + 100000,
+                        itemClickIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag
+                    )
+                    views.setPendingIntentTemplate(R.id.widget_medicine_list, itemPendingIntent)
+
+                    // Set header title and date
+                    val titleText = if (user != null && user.fullName.isNotBlank()) {
+                        "$appName \u2022 ${user.fullName}"
+                    } else {
+                        appName
+                    }
+                    // Guard: Derive target language from user profile or fallback to global saved language so header date and status messages match app locale even if user is null (#BUG-WIDGET-LOCALE)
+                    val targetLang = user?.language ?: com.example.dosezy.utils.LocaleHelper.getSavedLanguage(context)
+                    val widgetLocale = com.example.dosezy.utils.LocaleHelper.getLocale(targetLang)
+                    val dateFormat = SimpleDateFormat("EEE, MMM d", widgetLocale)
+                    val dateString = dateFormat.format(System.currentTimeMillis())
+                    views.setTextViewText(R.id.widget_title_text, titleText)
+                    views.setTextViewText(R.id.widget_date_text, dateString)
+
+                    val defaultMedIcon = if (isDark) R.drawable.ic_widget_medication_dark else R.drawable.ic_widget_medication_light
+                    // Guard: Wrap context in user profile or saved app language so widget status messages match the profile locale (#BUG-WIDGET-LOCALE)
+                    val localizedContext = com.example.dosezy.utils.LocaleHelper.updateContextLocale(context, targetLang)
+
+                    if (user == null) {
+                        views.setViewVisibility(R.id.widget_status_container, View.VISIBLE)
+                        views.setImageViewResource(R.id.widget_status_icon, defaultMedIcon)
+                        views.setTextViewText(R.id.widget_status_message, localizedContext.getString(R.string.widget_no_profile))
+                    } else {
+                        val todayEntries = db.scheduleDao().getScheduleForDateRangeDirect(user.userId, startOfDay, endOfDay)
+                        // Guard: Exclude ad-hoc PRN doses from widget scheduled progress counts to prevent inflating totalToday or falsely reporting all scheduled doses taken
+                        val scheduledToday = todayEntries.filter { !it.entryId.startsWith("PRN_") }
+                        val totalToday = scheduledToday.size
+                        val takenToday = scheduledToday.count { it.status == MedicationStatus.TAKEN_ON_TIME || it.status == MedicationStatus.TAKEN_LATE }
+                        val skippedToday = scheduledToday.count { it.status == MedicationStatus.SKIPPED }
+
+                        if (scheduledToday.isNotEmpty()) {
+                            when {
+                                takenToday == totalToday -> {
+                                    views.setImageViewResource(R.id.widget_status_icon, R.drawable.ic_widget_check_circle)
+                                    views.setTextViewText(R.id.widget_status_message, localizedContext.getString(R.string.widget_all_taken))
+                                }
+                                takenToday + skippedToday == totalToday -> {
+                                    views.setImageViewResource(R.id.widget_status_icon, R.drawable.ic_widget_check_circle)
+                                    views.setTextViewText(R.id.widget_status_message, localizedContext.getString(R.string.widget_all_completed))
+                                }
+                                else -> {
+                                    views.setImageViewResource(R.id.widget_status_icon, defaultMedIcon)
+                                    views.setTextViewText(R.id.widget_status_message, localizedContext.getString(R.string.widget_taken_summary, takenToday, totalToday))
+                                }
+                            }
+                        } else {
+                            views.setImageViewResource(R.id.widget_status_icon, defaultMedIcon)
+                            views.setTextViewText(R.id.widget_status_message, localizedContext.getString(R.string.widget_no_meds))
+                        }
+                    }
+
+                    // Push update ONCE per widget
+                    appWidgetManager.updateAppWidget(appWidgetId, views)
+                }
+
+                // Batch notify ListView data changed ONCE for all widgets
+                // Guard: notifyAppWidgetViewDataChanged(IntArray, Int) is deprecated in API 35+; required for RemoteViewsService adapter updates across API 24-34
+                @Suppress("DEPRECATION")
+                appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds, R.id.widget_medicine_list)
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+    }
+}

@@ -1,0 +1,2 @@
+• Support different medication dosages across scheduled times with accurate stock tracking
+• Fixed navigation bar overlay on Android 15 and improved exact alarm reliability

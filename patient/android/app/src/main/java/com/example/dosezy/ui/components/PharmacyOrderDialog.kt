@@ -1,0 +1,805 @@
+package com.example.dosezy.ui.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.ContentCopy
+import androidx.compose.material.icons.filled.LocalPharmacy
+import androidx.compose.material.icons.filled.ReceiptLong
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
+import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
+import com.example.dosezy.R
+import com.example.dosezy.data.export.DataExporter
+import com.example.dosezy.data.model.Medicine
+import com.example.dosezy.data.model.User
+import com.example.dosezy.data.model.getLocalizedName
+
+@OptIn(androidx.compose.material3.ExperimentalMaterial3Api::class)
+@Composable
+fun PharmacyOrderDialog(
+    user: User,
+    medicines: List<Medicine>,
+    dataExporter: DataExporter,
+    onDismiss: () -> Unit,
+    modifier: Modifier = Modifier,
+    allUsers: List<User> = listOf(user)
+) {
+    val context = LocalContext.current
+    val selectedUserIds = remember { mutableStateListOf(user.userId) }
+
+    // Map of userId -> list of active medicines
+    var allProfilesMedicines by remember {
+        mutableStateOf<Map<String, List<Medicine>>>(mapOf(user.userId to medicines.filter { !it.isArchived }))
+    }
+
+    androidx.compose.runtime.LaunchedEffect(selectedUserIds.toList(), allUsers) {
+        val map = mutableMapOf<String, List<Medicine>>()
+        selectedUserIds.forEach { uid ->
+            if (uid == user.userId) {
+                map[uid] = medicines.filter { !it.isArchived }
+            } else {
+                try {
+                    map[uid] = dataExporter.getActiveMedicinesForUser(uid)
+                } catch (e: Exception) {
+                    map[uid] = emptyList()
+                }
+            }
+        }
+        allProfilesMedicines = map
+    }
+
+    val activeMedicines = remember(allProfilesMedicines) {
+        allProfilesMedicines.values.flatten()
+    }
+
+    val lowStockMedicines = remember(activeMedicines) {
+        activeMedicines.filter { med ->
+            val stock = med.currentStock ?: return@filter false
+            val threshold = med.refillThreshold ?: 0.0
+            stock <= threshold || stock <= 5.0
+        }
+    }
+
+    var onlyLowStock by remember { mutableStateOf(lowStockMedicines.isNotEmpty()) }
+    var supplyDays by remember { mutableIntStateOf(30) }
+    var includeStockInOrder by remember { mutableStateOf(false) }
+    var includeDosageInOrder by remember { mutableStateOf(true) }
+
+    val displayedMedicines = remember(onlyLowStock, activeMedicines, lowStockMedicines) {
+        if (onlyLowStock) lowStockMedicines else activeMedicines
+    }
+
+    // Guard: Retain user selections across filter toggles and profile changes by not reinitializing selectedMedicineIds on displayedMedicines change
+    val selectedMedicineIds = remember {
+        mutableStateListOf<String>().apply {
+            addAll(displayedMedicines.map { it.medicineId })
+        }
+    }
+    val knownMedicineIds = remember { mutableSetOf<String>().apply { addAll(displayedMedicines.map { it.medicineId }) } }
+
+    androidx.compose.runtime.LaunchedEffect(displayedMedicines) {
+        displayedMedicines.forEach { med ->
+            if (knownMedicineIds.add(med.medicineId)) {
+                if (med.medicineId !in selectedMedicineIds) {
+                    selectedMedicineIds.add(med.medicineId)
+                }
+            }
+        }
+    }
+
+    val customQuantities = remember { mutableStateMapOf<String, Int>() }
+    val userEditedMedicineIds = remember { mutableSetOf<String>() }
+
+    // Calculate default quantity for a medicine given supply days
+    fun calculateDefaultQty(med: Medicine, days: Int): Int {
+        return med.calculateRefillQuantity(days)
+    }
+
+    // Guard: Only initialize default quantities for medicines not manually adjusted by the user to preserve stepper edits across filter and profile changes
+    androidx.compose.runtime.LaunchedEffect(displayedMedicines, supplyDays) {
+        displayedMedicines.forEach { med ->
+            if (med.medicineId !in userEditedMedicineIds) {
+                customQuantities[med.medicineId] = calculateDefaultQty(med, supplyDays)
+            }
+        }
+    }
+
+    val selectedMedicinesList = remember(displayedMedicines, selectedMedicineIds.toList()) {
+        displayedMedicines.filter { it.medicineId in selectedMedicineIds }
+    }
+
+    val orderText = remember(allProfilesMedicines, selectedMedicinesList, supplyDays, customQuantities.toMap(), includeStockInOrder, includeDosageInOrder) {
+        if (selectedMedicinesList.isEmpty()) ""
+        else {
+            val selectedUsers = allUsers.filter { it.userId in selectedUserIds }
+            val profilesWithMeds = selectedUsers.map { u ->
+                val userMeds = (allProfilesMedicines[u.userId] ?: emptyList()).filter { med ->
+                    med.medicineId in selectedMedicineIds
+                }
+                u to userMeds
+            }.filter { it.second.isNotEmpty() }
+
+            dataExporter.generateConsolidatedPharmacyOrderText(
+                profilesWithMedicines = profilesWithMeds,
+                supplyDays = supplyDays,
+                customQuantities = customQuantities.toMap(),
+                includeStock = includeStockInOrder,
+                includeDosage = includeDosageInOrder
+            )
+        }
+    }
+
+    Dialog(
+        onDismissRequest = onDismiss,
+        properties = DialogProperties(usePlatformDefaultWidth = false)
+    ) {
+        Surface(
+            modifier = modifier
+                .fillMaxWidth(0.94f)
+                .padding(vertical = 20.dp),
+            shape = RoundedCornerShape(24.dp),
+            color = MaterialTheme.colorScheme.surface,
+            tonalElevation = 6.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(20.dp)
+                    .verticalScroll(rememberScrollState())
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Surface(
+                            shape = RoundedCornerShape(12.dp),
+                            color = MaterialTheme.colorScheme.primaryContainer,
+                            modifier = Modifier.size(40.dp)
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Icon(
+                                    imageVector = Icons.Default.ReceiptLong,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    modifier = Modifier.size(24.dp)
+                                )
+                            }
+                        }
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.pharmacy_order_title),
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                            Text(
+                                text = user.fullName,
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+
+                    IconButton(onClick = onDismiss) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = stringResource(R.string.cancel),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Guard: Non-clinical estimation notice to prevent clinical dosage assumptions (#FDA, #MDR)
+                Surface(
+                    shape = RoundedCornerShape(8.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = stringResource(R.string.pharmacy_refill_estimation_disclaimer),
+                        fontSize = 11.sp,
+                        lineHeight = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                // Multi-Profile Selection (if multiple users exist)
+                if (allUsers.size > 1) {
+                    Text(
+                        text = stringResource(R.string.pharmacy_order_profile_filter),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        allUsers.forEach { profile ->
+                            val isSelected = profile.userId in selectedUserIds
+                            FilterChip(
+                                selected = isSelected,
+                                onClick = {
+                                    if (isSelected) {
+                                        if (selectedUserIds.size > 1) {
+                                            selectedUserIds.remove(profile.userId)
+                                        }
+                                    } else {
+                                        selectedUserIds.add(profile.userId)
+                                    }
+                                },
+                                label = {
+                                    Text(
+                                        text = profile.fullName,
+                                        fontSize = 12.sp,
+                                        maxLines = 1
+                                    )
+                                },
+                                leadingIcon = if (isSelected) {
+                                    {
+                                        Icon(
+                                            imageVector = Icons.Default.Check,
+                                            contentDescription = null,
+                                            modifier = Modifier.size(16.dp)
+                                        )
+                                    }
+                                } else null,
+                                colors = FilterChipDefaults.filterChipColors(
+                                    selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                                    selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                )
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(14.dp))
+                }
+
+                // Scope Filter (Low Stock vs All)
+                Text(
+                    text = stringResource(R.string.pharmacy_order_refill_filter),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    FilterChip(
+                        selected = onlyLowStock,
+                        onClick = { onlyLowStock = true },
+                        label = {
+                            Text(
+                                text = "${stringResource(R.string.pharmacy_order_scope_low_stock)} (${lowStockMedicines.size})",
+                                fontSize = 12.sp,
+                                maxLines = 1
+                            )
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    FilterChip(
+                        selected = !onlyLowStock,
+                        onClick = { onlyLowStock = false },
+                        label = {
+                            Text(
+                                text = "${stringResource(R.string.pharmacy_order_scope_all)} (${activeMedicines.size})",
+                                fontSize = 12.sp,
+                                maxLines = 1
+                            )
+                        },
+                        colors = FilterChipDefaults.filterChipColors(
+                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Days of Supply Selection
+                Text(
+                    text = stringResource(R.string.pharmacy_order_days_supply),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    val daysOptions = listOf(15, 30, 60, 90)
+                    daysOptions.forEach { days ->
+                        val isSelected = supplyDays == days
+                        Surface(
+                            shape = RoundedCornerShape(10.dp),
+                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(36.dp)
+                                .clickable { supplyDays = days }
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    text = stringResource(R.string.pharmacy_order_days_format_short, days),
+                                    fontSize = 12.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // Guard: Single 14dp vertical spacer; duplicate spacer caused layout overflow on smaller viewports
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Options: Dosage & Stock privacy toggles
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { includeDosageInOrder = !includeDosageInOrder }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = includeDosageInOrder,
+                            onCheckedChange = { includeDosageInOrder = it },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.pharmacy_order_include_dosage),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(10.dp))
+                            .clickable { includeStockInOrder = !includeStockInOrder }
+                            .padding(vertical = 4.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Checkbox(
+                            checked = includeStockInOrder,
+                            onCheckedChange = { includeStockInOrder = it },
+                            colors = CheckboxDefaults.colors(
+                                checkedColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(
+                            text = stringResource(R.string.pharmacy_order_include_stock),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+                // Medicine Selection Checklist
+                if (displayedMedicines.isNotEmpty()) {
+                    Text(
+                        text = stringResource(R.string.pharmacy_order_medicines_include, selectedMedicinesList.size, displayedMedicines.size),
+                        style = MaterialTheme.typography.labelMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+
+                    val selectedUsersList = allUsers.filter { it.userId in selectedUserIds }
+                    val isMultiProfileSelected = selectedUsersList.size > 1
+
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp, vertical = 6.dp)
+                        ) {
+                            @Composable
+                            fun MedicineItemRow(med: Medicine) {
+                                val isChecked = med.medicineId in selectedMedicineIds
+                                val isBottle = med.dosageUnit == com.example.dosezy.data.model.DosageUnit.DROP ||
+                                        med.dosageUnit == com.example.dosezy.data.model.DosageUnit.SPRAY ||
+                                        med.pillShape == com.example.dosezy.data.model.PillShape.DROPS ||
+                                        med.pillShape == com.example.dosezy.data.model.PillShape.SPRAY
+                                val currentQty = customQuantities[med.medicineId] ?: calculateDefaultQty(med, supplyDays)
+                                val unitSuffix = if (isBottle) {
+                                    if (currentQty > 1) " ${stringResource(R.string.unit_bottles)}" else " ${stringResource(R.string.unit_bottle)}"
+                                } else ""
+
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .padding(horizontal = 4.dp, vertical = 2.dp),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    Checkbox(
+                                        checked = isChecked,
+                                        onCheckedChange = { checked ->
+                                            if (checked) {
+                                                if (med.medicineId !in selectedMedicineIds) {
+                                                    selectedMedicineIds.add(med.medicineId)
+                                                }
+                                            } else {
+                                                selectedMedicineIds.remove(med.medicineId)
+                                            }
+                                        },
+                                        modifier = Modifier.size(32.dp),
+                                        colors = CheckboxDefaults.colors(
+                                            checkedColor = MaterialTheme.colorScheme.primary
+                                        )
+                                    )
+                                    Spacer(modifier = Modifier.width(6.dp))
+                                    Column(
+                                        modifier = Modifier
+                                            .weight(1f)
+                                            .clickable {
+                                                if (isChecked) {
+                                                    selectedMedicineIds.remove(med.medicineId)
+                                                } else {
+                                                    selectedMedicineIds.add(med.medicineId)
+                                                }
+                                            }
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Text(
+                                                text = med.medicationName,
+                                                style = MaterialTheme.typography.bodyMedium,
+                                                fontWeight = FontWeight.SemiBold,
+                                                color = MaterialTheme.colorScheme.onSurface,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                            if (includeDosageInOrder && med.dosage > 0) {
+                                                val dStr = if (med.dosage % 1.0 == 0.0) "${med.dosage.toInt()}" else "${med.dosage}"
+                                                // Guard: Use localized dosage unit name instead of raw enum name to avoid hardcoded English strings in localized environments
+                                                Text(
+                                                    text = " ($dStr ${med.dosageUnit.getLocalizedName()})",
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                    maxLines = 1,
+                                                    overflow = TextOverflow.Ellipsis
+                                                )
+                                            }
+                                        }
+                                        if (includeStockInOrder && med.currentStock != null) {
+                                            // Guard: Use localized unit strings instead of hardcoded English words to ensure full localization coverage
+                                            val stockUnitStr = if (isBottle) {
+                                                if (med.currentStock > 1.0) stringResource(R.string.unit_bottles) else stringResource(R.string.unit_bottle)
+                                            } else {
+                                                med.dosageUnit.getLocalizedName()
+                                            }
+                                            val stockStr = com.example.dosezy.utils.DosageFormatUtils.formatStockQuantity(med.currentStock)
+                                            Text(
+                                                text = stringResource(R.string.pharmacy_order_current_stock, stockStr, stockUnitStr),
+                                                style = MaterialTheme.typography.labelSmall,
+                                                color = MaterialTheme.colorScheme.outline
+                                            )
+                                        }
+                                    }
+
+                                    // Compact Stepper
+                                    if (isChecked) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(8.dp))
+                                                .background(MaterialTheme.colorScheme.surface)
+                                                .padding(horizontal = 4.dp, vertical = 2.dp)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(26.dp)
+                                                    .clip(RoundedCornerShape(6.dp))
+                                                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                                                    .clickable {
+                                                        if (currentQty > 1) {
+                                                            userEditedMedicineIds.add(med.medicineId)
+                                                            customQuantities[med.medicineId] = currentQty - 1
+                                                        }
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "−",
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 14.sp,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+
+                                            Text(
+                                                text = "$currentQty$unitSuffix",
+                                                style = MaterialTheme.typography.labelMedium,
+                                                fontWeight = FontWeight.Bold,
+                                                modifier = Modifier
+                                                    .widthIn(min = 28.dp)
+                                                    .padding(horizontal = 4.dp),
+                                                textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                                color = MaterialTheme.colorScheme.primary
+                                            )
+
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(26.dp)
+                                                    .clip(RoundedCornerShape(6.dp))
+                                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f))
+                                                    .clickable {
+                                                        userEditedMedicineIds.add(med.medicineId)
+                                                        customQuantities[med.medicineId] = currentQty + 1
+                                                    },
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = "+",
+                                                    fontWeight = FontWeight.Bold,
+                                                    fontSize = 14.sp,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+
+                            if (isMultiProfileSelected) {
+                                selectedUsersList.forEach { profileUser ->
+                                    val profileMeds = (allProfilesMedicines[profileUser.userId] ?: emptyList()).filter { med ->
+                                        if (onlyLowStock) {
+                                            val stock = med.currentStock ?: return@filter false
+                                            val threshold = med.refillThreshold ?: 0.0
+                                            stock <= threshold || stock <= 5.0
+                                        } else true
+                                    }
+                                    if (profileMeds.isNotEmpty()) {
+                                        Surface(
+                                            shape = RoundedCornerShape(8.dp),
+                                            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 4.dp)
+                                        ) {
+                                            Row(
+                                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
+                                                verticalAlignment = Alignment.CenterVertically
+                                            ) {
+                                                Text(
+                                                    text = "👤 ${profileUser.fullName}",
+                                                    style = MaterialTheme.typography.labelMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = MaterialTheme.colorScheme.primary
+                                                )
+                                                Spacer(modifier = Modifier.weight(1f))
+                                                val count = profileMeds.count { it.medicineId in selectedMedicineIds }
+                                                Text(
+                                                    text = "$count/${profileMeds.size}",
+                                                    style = MaterialTheme.typography.labelSmall,
+                                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                                )
+                                            }
+                                        }
+
+                                        profileMeds.forEach { med ->
+                                            MedicineItemRow(med)
+                                        }
+                                    }
+                                }
+                            } else {
+                                displayedMedicines.forEach { med ->
+                                    MedicineItemRow(med)
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    Surface(
+                        shape = RoundedCornerShape(14.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 8.dp)
+                    ) {
+                        Text(
+                            text = stringResource(R.string.pharmacy_order_empty),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(16.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // Live Preview (Fully visible without scroll)
+                Text(
+                    text = stringResource(R.string.pharmacy_order_markdown_preview),
+                    style = MaterialTheme.typography.labelMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+                Spacer(modifier = Modifier.height(6.dp))
+
+                Surface(
+                    shape = RoundedCornerShape(14.dp),
+                    color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.35f),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Box(
+                        modifier = Modifier.padding(12.dp)
+                    ) {
+                        SelectionContainer {
+                            Text(
+                                text = if (orderText.isNotBlank()) orderText else stringResource(R.string.pharmacy_order_empty),
+                                style = MaterialTheme.typography.bodySmall,
+                                fontFamily = FontFamily.Monospace,
+                                fontSize = 11.sp,
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                // Bottom Action Buttons
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(10.dp)
+                ) {
+                    OutlinedButton(
+                        onClick = {
+                            if (orderText.isNotBlank()) {
+                                dataExporter.copyToClipboard(orderText)
+                            }
+                        },
+                        enabled = orderText.isNotBlank(),
+                        shape = RoundedCornerShape(14.dp),
+                        modifier = Modifier
+                            .weight(1f)
+                            .height(48.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.ContentCopy,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.pharmacy_order_copy),
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 13.sp,
+                            maxLines = 1
+                        )
+                    }
+
+                    Button(
+                        onClick = {
+                            if (orderText.isNotBlank()) {
+                                dataExporter.shareText(orderText, context.getString(R.string.pharmacy_order_title))
+                                onDismiss()
+                            }
+                        },
+                        enabled = orderText.isNotBlank(),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.primary
+                        ),
+                        modifier = Modifier
+                            .weight(1.3f)
+                            .height(48.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = stringResource(R.string.pharmacy_order_share),
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

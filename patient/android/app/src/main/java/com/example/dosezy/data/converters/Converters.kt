@@ -1,0 +1,280 @@
+package com.example.dosezy.data.converters
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.room.TypeConverter
+import com.example.dosezy.data.model.DosageUnit
+import com.example.dosezy.data.model.Frequency
+import com.example.dosezy.data.model.FrequencyPattern
+import com.example.dosezy.data.model.Gender
+import com.example.dosezy.data.model.Language
+import com.example.dosezy.data.model.MedicationStatus
+import com.example.dosezy.data.model.Theme
+import com.example.dosezy.data.model.TimeFormat
+import com.example.dosezy.data.model.normalizeArabicDigits
+import org.json.JSONArray
+import org.json.JSONObject
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
+
+class Converters {
+
+    // Gender converters
+    @TypeConverter
+    fun fromGender(gender: Gender): String = gender.name
+
+    // Guard: Prevent IllegalArgumentException crash on legacy, malformed, or lowercased enum strings (#BUG-CONVERTER-ENUM-FALLBACK)
+    @TypeConverter
+    fun toGender(gender: String): Gender = runCatching { enumValueOf<Gender>(gender.uppercase()) }.getOrDefault(Gender.DO_NOT_SPECIFY)
+
+    // DosageUnit converters
+    @TypeConverter
+    fun fromDosageUnit(unit: DosageUnit): String = unit.name
+
+    // Guard: Prevent IllegalArgumentException crash on legacy or malformed enum strings; fallback to TABLET
+    @TypeConverter
+    fun toDosageUnit(unit: String): DosageUnit = runCatching { enumValueOf<DosageUnit>(unit.uppercase()) }.getOrDefault(DosageUnit.TABLET)
+
+    // MedicationStatus converters
+    @TypeConverter
+    fun fromMedicationStatus(status: MedicationStatus): String = status.name
+
+    // Guard: Prevent IllegalArgumentException crash on legacy, malformed, or lowercased enum strings (#BUG-CONVERTER-ENUM-FALLBACK)
+    @TypeConverter
+    fun toMedicationStatus(status: String): MedicationStatus = runCatching { enumValueOf<MedicationStatus>(status.uppercase()) }.getOrDefault(MedicationStatus.PENDING)
+
+    // LocalDateTime converters
+    @RequiresApi(Build.VERSION_CODES.O)
+    @TypeConverter
+    fun fromLocalDateTime(dateTime: LocalDateTime?): Long? = dateTime?.atZone(java.time.ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+
+    // Guard: Wrap Instant conversion in try/catch to prevent DateTimeException crashing Room queries on out-of-range epoch millis (#BUG-CONVERTER-RANGE)
+    @RequiresApi(Build.VERSION_CODES.O)
+    @TypeConverter
+    fun toLocalDateTime(value: Long?): LocalDateTime? = value?.let {
+        try {
+            java.time.Instant.ofEpochMilli(it).atZone(java.time.ZoneOffset.UTC).toLocalDateTime()
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    // LocalDate converters
+    @RequiresApi(Build.VERSION_CODES.O)
+    @TypeConverter
+    fun fromLocalDate(date: LocalDate?): Long? = date?.atStartOfDay(java.time.ZoneOffset.UTC)?.toInstant()?.toEpochMilli()
+
+    // Guard: Wrap Instant conversion in try/catch to prevent DateTimeException crashing Room queries on out-of-range epoch millis (#BUG-CONVERTER-RANGE)
+    @RequiresApi(Build.VERSION_CODES.O)
+    @TypeConverter
+    fun toLocalDate(value: Long?): LocalDate? = value?.let { millis ->
+        try {
+            if (millis % 86400000L == 0L) {
+                java.time.Instant.ofEpochMilli(millis).atZone(java.time.ZoneOffset.UTC).toLocalDate()
+            } else {
+                // Legacy pre-v2.5.2 timestamp stored with ZoneId.systemDefault()
+                java.time.Instant.ofEpochMilli(millis).atZone(java.time.ZoneId.systemDefault()).toLocalDate()
+            }
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    // LocalTime converters
+    @RequiresApi(Build.VERSION_CODES.O)
+    @TypeConverter
+    fun fromLocalTime(time: LocalTime?): String? = time?.format(DateTimeFormatter.ISO_LOCAL_TIME)
+
+    // Guard: Guard against empty strings and parse exceptions to prevent DateTimeParseException crashing Room queries on malformed time strings
+    @RequiresApi(Build.VERSION_CODES.O)
+    @TypeConverter
+    fun toLocalTime(value: String?): LocalTime? = value?.takeIf { it.isNotBlank() }?.let {
+        try {
+            LocalTime.parse(it.trim(), DateTimeFormatter.ISO_LOCAL_TIME)
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    // List<LocalTime> converters
+    @RequiresApi(Build.VERSION_CODES.O)
+    @TypeConverter
+    fun fromLocalTimeList(times: List<LocalTime>?): String? {
+        return times?.let { list ->
+            val jsonArray = JSONArray()
+            list.forEach { time ->
+                jsonArray.put(time.format(DateTimeFormatter.ISO_LOCAL_TIME))
+            }
+            jsonArray.toString()
+        }
+    }
+
+    // Guard: Guard against blank strings, JSONException, and DateTimeParseException to prevent Room crashes on malformed scheduled times
+    @RequiresApi(Build.VERSION_CODES.O)
+    @TypeConverter
+    fun toLocalTimeList(value: String?): List<LocalTime>? {
+        if (value.isNullOrBlank()) return null
+        return try {
+            val jsonArray = JSONArray(value)
+            val list = mutableListOf<LocalTime>()
+            for (i in 0 until jsonArray.length()) {
+                val timeString = jsonArray.optString(i)
+                if (!timeString.isNullOrBlank()) {
+                    try {
+                        list.add(LocalTime.parse(timeString.trim(), DateTimeFormatter.ISO_LOCAL_TIME))
+                    } catch (_: Exception) {
+                        // Skip malformed individual time entries
+                    }
+                }
+            }
+            list
+        } catch (_: Exception) {
+            emptyList()
+        }
+    }
+
+    // PillShape converters
+    @TypeConverter
+    fun fromPillShape(shape: com.example.dosezy.data.model.PillShape?): String = (shape ?: com.example.dosezy.data.model.PillShape.ROUND).name
+
+    // Guard: Prevent IllegalArgumentException fallback to ROUND on legacy, malformed, or lowercased pill shape strings
+    @TypeConverter
+    fun toPillShape(value: String?): com.example.dosezy.data.model.PillShape = try {
+        if (value != null) com.example.dosezy.data.model.PillShape.valueOf(value.trim().uppercase()) else com.example.dosezy.data.model.PillShape.ROUND
+    } catch (_: Exception) {
+        com.example.dosezy.data.model.PillShape.ROUND
+    }
+
+    // Frequency converters
+    @TypeConverter
+    fun fromFrequency(frequency: Frequency?): String? {
+        return frequency?.let { freq ->
+            val jsonObject = JSONObject()
+            jsonObject.put("pattern", freq.pattern.name)
+            freq.daysPerWeek?.let { jsonObject.put("daysPerWeek", it) }
+            freq.daysPerMonth?.let { jsonObject.put("daysPerMonth", it) }
+            freq.intervalHours?.let { jsonObject.put("intervalHours", it) }
+            freq.intervalDays?.let { jsonObject.put("intervalDays", it) }
+            freq.intervalWeeks?.let { jsonObject.put("intervalWeeks", it) }
+            freq.selectedDaysOfWeek?.let { days ->
+                val arr = JSONArray()
+                days.forEach { arr.put(it) }
+                jsonObject.put("selectedDaysOfWeek", arr)
+            }
+            freq.selectedDaysOfMonth?.let { days ->
+                val arr = JSONArray()
+                days.forEach { arr.put(it) }
+                jsonObject.put("selectedDaysOfMonth", arr)
+            }
+            jsonObject.toString()
+        }
+    }
+
+    @TypeConverter
+    fun toFrequency(value: String?): Frequency? {
+        return if (value == null) {
+            null
+        } else {
+            try {
+                val jsonObject = JSONObject(value)
+                // Guard: Trim and uppercase pattern to prevent IllegalArgumentException fallback to DAILY on lowercased pattern strings
+                val pattern = try {
+                    FrequencyPattern.valueOf(jsonObject.getString("pattern").trim().uppercase())
+                } catch (_: Exception) {
+                    FrequencyPattern.DAILY
+                }
+                val daysPerWeek = if (jsonObject.has("daysPerWeek") && !jsonObject.isNull("daysPerWeek")) jsonObject.getInt("daysPerWeek") else null
+                val daysPerMonth = if (jsonObject.has("daysPerMonth") && !jsonObject.isNull("daysPerMonth")) jsonObject.getInt("daysPerMonth") else null
+                val intervalHours = if (jsonObject.has("intervalHours") && !jsonObject.isNull("intervalHours")) jsonObject.getInt("intervalHours") else null
+                val intervalDays = if (jsonObject.has("intervalDays") && !jsonObject.isNull("intervalDays")) jsonObject.getInt("intervalDays") else null
+                val intervalWeeks = if (jsonObject.has("intervalWeeks") && !jsonObject.isNull("intervalWeeks")) jsonObject.getInt("intervalWeeks") else null
+                val selectedDaysOfWeek = if (jsonObject.has("selectedDaysOfWeek") && !jsonObject.isNull("selectedDaysOfWeek")) {
+                    val arr = jsonObject.getJSONArray("selectedDaysOfWeek")
+                    (0 until arr.length()).map { arr.getInt(it) }
+                } else null
+                val selectedDaysOfMonth = if (jsonObject.has("selectedDaysOfMonth") && !jsonObject.isNull("selectedDaysOfMonth")) {
+                    val arr = jsonObject.getJSONArray("selectedDaysOfMonth")
+                    (0 until arr.length()).map { arr.getInt(it) }
+                } else null
+                Frequency(pattern, daysPerWeek, daysPerMonth, selectedDaysOfWeek, selectedDaysOfMonth, intervalHours, intervalDays, intervalWeeks)
+            } catch (_: Exception) {
+                Frequency(FrequencyPattern.DAILY)
+            }
+        }
+    }
+
+
+    @TypeConverter
+    fun fromTheme(theme: Theme): String = theme.name
+
+    // Guard: Prevent IllegalArgumentException crash on legacy, malformed, or lowercased enum strings (#BUG-CONVERTER-ENUM-FALLBACK)
+    @TypeConverter
+    fun toTheme(themeString: String): Theme = runCatching { Theme.valueOf(themeString.uppercase()) }.getOrDefault(Theme.SYSTEM)
+
+    @TypeConverter
+    fun fromTimeFormat(timeFormat: TimeFormat): String = timeFormat.name
+
+    // Guard: Prevent IllegalArgumentException crash on legacy, malformed, or lowercased enum strings (#BUG-CONVERTER-ENUM-FALLBACK)
+    @TypeConverter
+    fun toTimeFormat(timeFormatString: String): TimeFormat = runCatching { TimeFormat.valueOf(timeFormatString.uppercase()) }.getOrDefault(TimeFormat.HOUR_12)
+
+    @TypeConverter
+    fun fromLanguage(language: Language): String = language.name
+
+    @TypeConverter
+    fun toLanguage(languageString: String): Language = try {
+        Language.valueOf(languageString.uppercase())
+    } catch (e: Exception) {
+        Language.SYSTEM
+    }
+
+    @TypeConverter
+    fun fromAlarmSound(alarmSound: com.example.dosezy.data.model.AlarmSound): String = alarmSound.name
+
+    @TypeConverter
+    fun toAlarmSound(alarmSoundString: String): com.example.dosezy.data.model.AlarmSound = try {
+        com.example.dosezy.data.model.AlarmSound.valueOf(alarmSoundString.uppercase())
+    } catch (_: Exception) {
+        com.example.dosezy.data.model.AlarmSound.SYSTEM_DEFAULT
+    }
+
+    // Map<String, Double> converters for per-time custom dosages (e.g. {"08:00": 20.0, "20:00": 10.0})
+    @TypeConverter
+    fun fromCustomDosagesMap(map: Map<String, Double>?): String? {
+        if (map == null) return null
+        val obj = JSONObject()
+        map.forEach { (k, v) -> obj.put(k, v) }
+        return obj.toString()
+    }
+
+    @TypeConverter
+    fun toCustomDosagesMap(value: String?): Map<String, Double>? {
+        if (value.isNullOrEmpty()) return null
+        return try {
+            val map = mutableMapOf<String, Double>()
+            val obj = JSONObject(value)
+            val keys = obj.keys()
+            while (keys.hasNext()) {
+                val rawKey = keys.next()
+                val normalizedKey = rawKey.normalizeArabicDigits()
+                map[normalizedKey] = obj.getDouble(rawKey)
+            }
+            map
+        } catch (_: Exception) {
+            null
+        }
+    }
+
+    // ReminderType converters (#111)
+    @TypeConverter
+    fun fromReminderType(reminderType: com.example.dosezy.data.model.ReminderType?): String? = reminderType?.name
+
+    @TypeConverter
+    fun toReminderType(value: String?): com.example.dosezy.data.model.ReminderType? = try {
+        if (!value.isNullOrBlank()) com.example.dosezy.data.model.ReminderType.valueOf(value.trim().uppercase()) else null
+    } catch (_: Exception) {
+        null
+    }
+}

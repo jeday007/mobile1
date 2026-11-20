@@ -1,0 +1,89 @@
+package com.example.dosezy.utils
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+import com.example.dosezy.data.model.MedicationStatus
+import java.time.Duration
+import java.time.LocalDateTime
+import java.util.concurrent.TimeUnit
+
+@RequiresApi(Build.VERSION_CODES.O)
+object TimeCalculationUtils {
+
+    fun calculateTimeDifference(scheduledTime: LocalDateTime, currentTime: LocalDateTime): TimeDifference {
+        val duration = Duration.between(currentTime, scheduledTime)
+        val totalMinutes = duration.toMinutes()
+
+        return if (totalMinutes >= 0) {
+            // Future time (to be taken)
+            val hours = TimeUnit.MINUTES.toHours(totalMinutes)
+            val minutes = totalMinutes - TimeUnit.HOURS.toMinutes(hours)
+            TimeDifference(hours.toInt(), minutes.toInt(), false)
+        } else {
+            // Past time (late)
+            val absoluteMinutes = -totalMinutes
+            val hours = TimeUnit.MINUTES.toHours(absoluteMinutes)
+            val minutes = absoluteMinutes - TimeUnit.HOURS.toMinutes(hours)
+            TimeDifference(hours.toInt(), minutes.toInt(), true)
+        }
+    }
+
+    // Guard: Thresholds < 15 represent legacy whole-hour values (1-12); normalize to minutes to maintain backward compatibility across old models and unit tests (#119)
+    internal fun normalizeMinutes(value: Int): Long {
+        return if (value in 1..14) value.toLong() * 60L else value.toLong()
+    }
+
+    fun isLate(scheduledTime: LocalDateTime, currentTime: LocalDateTime, lateAfterHours: Int, missedAfterHours: Int): Boolean {
+        val duration = Duration.between(scheduledTime, currentTime)
+        val minutes = duration.toMinutes()
+        val lateMins = normalizeMinutes(lateAfterHours)
+        val missedMins = normalizeMinutes(missedAfterHours)
+        return minutes >= lateMins && minutes < missedMins
+    }
+
+    // Guard: Any dose taken >= lateAfter threshold is late; do not cap with missedAfter to prevent overdue doses paradoxically recording as TAKEN_ON_TIME (#119)
+    fun isTakenLate(scheduledTime: LocalDateTime, currentTime: LocalDateTime, lateAfterHours: Int): Boolean {
+        val duration = Duration.between(scheduledTime, currentTime)
+        return duration.toMinutes() >= normalizeMinutes(lateAfterHours)
+    }
+
+    fun isMissed(scheduledTime: LocalDateTime, currentTime: LocalDateTime, missedAfterHours: Int): Boolean {
+        val duration = Duration.between(scheduledTime, currentTime)
+        return duration.toMinutes() >= normalizeMinutes(missedAfterHours)
+    }
+
+    fun getStatus(
+        scheduledTime: LocalDateTime,
+        currentTime: LocalDateTime,
+        @Suppress("UNUSED_PARAMETER") lateAfterHours: Int,
+        missedAfterHours: Int
+    ): MedicationStatus {
+        return when {
+            currentTime.isBefore(scheduledTime) -> MedicationStatus.PENDING
+            isMissed(scheduledTime, currentTime, missedAfterHours) -> MedicationStatus.MISSED
+            else -> MedicationStatus.PENDING
+        }
+    }
+
+    fun formatTimeDifference(context: android.content.Context, timeDiff: TimeDifference): String {
+        return if (timeDiff.isLate) {
+            context.getString(com.example.dosezy.R.string.time_diff_ago, timeDiff.hours, timeDiff.minutes)
+        } else {
+            context.getString(com.example.dosezy.R.string.to_be_taken_in, timeDiff.hours, timeDiff.minutes)
+        }
+    }
+
+    fun formatTimeDifference(timeDiff: TimeDifference): String {
+        return if (timeDiff.isLate) {
+            "${timeDiff.hours}h ${timeDiff.minutes}m ago"
+        } else {
+            "To be taken in ${timeDiff.hours}h ${timeDiff.minutes}m"
+        }
+    }
+}
+
+data class TimeDifference(
+    val hours: Int,
+    val minutes: Int,
+    val isLate: Boolean
+)

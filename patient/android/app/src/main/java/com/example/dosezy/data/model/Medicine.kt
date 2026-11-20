@@ -1,0 +1,413 @@
+package com.example.dosezy.data.model
+
+import android.os.Build
+import androidx.annotation.RequiresApi
+import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
+import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
+import com.example.dosezy.data.converters.Converters
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.LocalTime
+
+@Entity(
+    tableName = "medicines",
+    foreignKeys = [
+        ForeignKey(
+            entity = User::class,
+            parentColumns = ["userId"],
+            childColumns = ["userId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
+    indices = [Index("userId")]
+)
+@TypeConverters(Converters::class)
+// Guard: Mark Immutable so Compose skips recomposing unchanged items in LazyColumn on slower devices
+@androidx.compose.runtime.Immutable
+data class Medicine(
+    @PrimaryKey val medicineId: String,
+    val userId: String, // Foreign key to User
+    val medicationName: String,
+    val dosage: Double,
+    val dosageUnit: DosageUnit,
+    val timesPerDay: Int,
+    val frequency: Frequency,
+    val scheduledTimes: List<LocalTime>, // Multiple times per day
+    val imageUri: String? = null,
+    val currentStock: Double? = null,
+    val refillThreshold: Double? = null,
+    val autoDeductOnTake: Boolean = true,
+    val notes: String? = null,
+    val pillShape: PillShape = PillShape.ROUND,
+    val pillColor: String = "#1193D4",
+    val startDate: LocalDate? = null,
+    val endDate: LocalDate? = null,
+    val durationDays: Int? = null,
+    val isArchived: Boolean = false,
+    val customDosages: Map<String, Double>? = null,
+    // Guard: Per-medication reminder type override; null inherits user profile default (#111)
+    val reminderType: ReminderType? = null
+) {
+
+    /**
+     * Resolves dosage for a specific scheduled time, falling back to base dosage.
+     * Uses Locale.US to ensure time slot keys ("HH:mm") remain invariant across all system/app locales.
+     */
+    fun getDosageForTime(time: LocalTime?): Double {
+        if (time == null || customDosages.isNullOrEmpty()) return dosage
+        val key = String.format(java.util.Locale.US, "%02d:%02d", time.hour, time.minute)
+        val directMatch = customDosages[key]
+        if (directMatch != null) return directMatch
+
+        // Guard: Support unpadded single-digit hours ("H:mm", e.g. "8:00") to prevent falling back to base dosage on legacy or imported keys
+        val unpaddedKey = String.format(java.util.Locale.US, "%d:%02d", time.hour, time.minute)
+        val unpaddedMatch = customDosages[unpaddedKey]
+        if (unpaddedMatch != null) return unpaddedMatch
+
+        // Backward-compatibility fallback if medicine was saved previously with localized Arabic-Indic numerals
+        val normalizedMap = customDosages.entries.associate { (k, v) ->
+            k.normalizeArabicDigits() to v
+        }
+        return normalizedMap[key] ?: normalizedMap[unpaddedKey] ?: dosage
+    }
+
+    /**
+     * Generates schedule entries for this medicine for a given date range.
+     * Delegated to [com.example.dosezy.domain.ScheduleRecurrenceEngine] for clean domain separation.
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun generateScheduleEntries(startDateRange: LocalDate, days: Int = 30): List<ScheduleEntry> {
+        return com.example.dosezy.domain.ScheduleRecurrenceEngine.generateScheduleEntries(this, startDateRange, days)
+    }
+
+    /**
+     * Determines if the medicine should be taken on the given date based on frequency pattern.
+     * Delegated to [com.example.dosezy.domain.ScheduleRecurrenceEngine].
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    internal fun shouldTakeOnDate(date: LocalDate): Boolean {
+        return com.example.dosezy.domain.ScheduleRecurrenceEngine.shouldTakeOnDate(this, date)
+    }
+
+    /**
+     * Gets a display string for the dosage (e.g., "100 mg", "½ tablet", "1½ tablets"), optionally for a specific scheduled time or override.
+     */
+    fun getDosageDisplay(time: LocalTime? = null, dosageOverride: Double? = null): String {
+        // Guard: Use dosageOverride if provided (e.g. from ScheduleEntry) to reflect actual logged intake (#123)
+        val targetDosage = dosageOverride ?: getDosageForTime(time)
+        return com.example.dosezy.utils.DosageFormatUtils.formatDosageDisplay(targetDosage, dosageUnit)
+    }
+
+    /**
+     * Gets a display string for the frequency (e.g., "Daily", "3 times per week")
+     */
+    fun getFrequencyDisplay(): String {
+        return when (frequency.pattern) {
+            FrequencyPattern.DAILY -> if (timesPerDay > 1) "${timesPerDay}x Daily" else "Daily"
+            FrequencyPattern.AS_NEEDED -> "As Needed (PRN)"
+            FrequencyPattern.EVERY_X_HOURS -> "Every ${frequency.intervalHours ?: 4} Hours"
+            FrequencyPattern.EVERY_X_DAYS -> "Every ${frequency.intervalDays ?: 2} Days"
+            FrequencyPattern.WEEKLY -> {
+                val days = frequency.daysPerWeek ?: 7
+                "$days times per week"
+            }
+            FrequencyPattern.MONTHLY -> {
+                val days = frequency.daysPerMonth ?: 30
+                "$days times per month"
+            }
+            FrequencyPattern.CUSTOM -> {
+                val interval = frequency.intervalWeeks ?: 1
+                val days = frequency.selectedDaysOfWeek
+                val dayNames = listOf("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun")
+                if (interval > 1 && !days.isNullOrEmpty()) {
+                    val formattedDays = days.sorted().mapNotNull { dayVal ->
+                        if (dayVal in 1..7) dayNames[dayVal - 1] else null
+                    }.joinToString(", ")
+                    "Every $interval weeks ($formattedDays)"
+                } else if (interval > 1) {
+                    "Every $interval weeks"
+                } else if (!days.isNullOrEmpty()) {
+                    val formattedDays = days.sorted().mapNotNull { dayVal ->
+                        if (dayVal in 1..7) dayNames[dayVal - 1] else null
+                    }.joinToString(", ")
+                    "Weekly ($formattedDays)"
+                } else {
+                    "Custom"
+                }
+            }
+        }
+    }
+
+    /**
+     * Gets the scheduled times as formatted strings (e.g., ["8:00 AM", "2:00 PM"])
+     */
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getFormattedScheduledTimes(): List<String> {
+        return scheduledTimes.map { time ->
+            val hour = time.hour
+            val minute = time.minute
+            val amPm = if (hour < 12) "AM" else "PM"
+            val displayHour = if (hour % 12 == 0) 12 else hour % 12
+            String.format(java.util.Locale.US, "%d:%02d %s", displayHour, minute, amPm)
+        }
+    }
+
+    /**
+     * Calculates the number of inventory stock units to deduct when this medication is taken,
+     * optionally taking into account a slot-specific custom dosage.
+     *
+     * - For solid medications measured by chemical strength (MG, MCG): physical stock is tracked
+     *   in count of units/pills (e.g. 150 pills in a bottle). Taking a dose consumes 1 unit (not 150/500 units).
+     * - For TABLET / CAPSULE / AMPULE: deducts the exact tablet/capsule quantity (supporting half doses e.g. 0.5, 1.5;
+     *   defaulting to 1.0 if dosage is outside 0.1..10.0 or if an unusually large number like 500 was entered representing mg strength).
+     * - For liquid / drops (ML, DROP, PUFF, SPRAY): deducts the specified dose quantity (at least 0.1).
+     */
+    fun getStockDeductionAmount(time: LocalTime? = null, dosageOverride: Double? = null): Double {
+        // Guard: Use dosageOverride if provided to prevent stock deduction and restoration drift when a schedule entry has custom dosage (#123)
+        val targetDosage = dosageOverride ?: getDosageForTime(time)
+        return when (dosageUnit) {
+            // Chemical strength units (MG, MCG, MEQ): stock is counted in physical dosage units (1 per intake)
+            DosageUnit.MG, DosageUnit.MCG, DosageUnit.MEQ -> 1.0
+            // Unit containers/discrete items: deduct exact dose count if in reasonable single intake range (supporting fractional half doses e.g. 0.5, 1.5)
+            DosageUnit.TABLET, DosageUnit.CAPSULE, DosageUnit.AMPULE -> {
+                if (targetDosage in 0.1..10.0) targetDosage else 1.0
+            }
+            // Continuous/metered quantities (drops, liquid mL, inhaler puffs, spray): deduct specified dose count
+            DosageUnit.DROP, DosageUnit.ML, DosageUnit.PUFF, DosageUnit.SPRAY -> {
+                targetDosage.coerceAtLeast(0.1)
+            }
+        }
+    }
+
+    /**
+     * Calculates the estimated refill quantity needed for a given number of supply days.
+     * Accurately accounts for frequency pattern, interval, dose amount, and dosage unit.
+     */
+    fun calculateRefillQuantity(supplyDays: Int): Int {
+        val days = supplyDays.coerceAtLeast(1)
+        val isDrop = dosageUnit == DosageUnit.DROP || pillShape == PillShape.DROPS
+
+        val totalIntakes: Double = when (frequency.pattern) {
+            FrequencyPattern.DAILY -> {
+                (timesPerDay.coerceAtLeast(1) * days).toDouble()
+            }
+            FrequencyPattern.WEEKLY -> {
+                val daysPerWk = frequency.selectedDaysOfWeek?.size ?: frequency.daysPerWeek ?: 1
+                val totalDoseDays = kotlin.math.ceil((daysPerWk.toDouble() / 7.0) * days)
+                totalDoseDays * timesPerDay.coerceAtLeast(1)
+            }
+            FrequencyPattern.MONTHLY -> {
+                val daysPerMo = frequency.selectedDaysOfMonth?.size ?: frequency.daysPerMonth ?: 1
+                val totalDoseDays = kotlin.math.ceil((daysPerMo.toDouble() / 30.0) * days)
+                totalDoseDays * timesPerDay.coerceAtLeast(1)
+            }
+            FrequencyPattern.EVERY_X_DAYS -> {
+                val interval = (frequency.intervalDays ?: 2).coerceAtLeast(1)
+                val totalDoseDays = kotlin.math.ceil(days.toDouble() / interval.toDouble())
+                totalDoseDays * timesPerDay.coerceAtLeast(1)
+            }
+            FrequencyPattern.EVERY_X_HOURS -> {
+                val interval = (frequency.intervalHours ?: 4).coerceIn(1, 23)
+                val dosesPerDay = (24 / interval).coerceAtLeast(1)
+                (dosesPerDay * days).toDouble()
+            }
+            FrequencyPattern.AS_NEEDED -> {
+                // PRN estimate: safe non-overdose estimate (~1 dose per 3 days)
+                val estimatedDays = kotlin.math.ceil(days.toDouble() / 3.0)
+                estimatedDays.coerceAtLeast(1.0)
+            }
+            FrequencyPattern.CUSTOM -> {
+                val interval = (frequency.intervalWeeks ?: 1).coerceAtLeast(1)
+                val selectedDays = frequency.selectedDaysOfWeek
+                if (!selectedDays.isNullOrEmpty()) {
+                    val totalDoseDays = kotlin.math.ceil((selectedDays.size.toDouble() / (7.0 * interval)) * days)
+                    totalDoseDays * timesPerDay.coerceAtLeast(1)
+                } else if (frequency.intervalWeeks != null && frequency.intervalWeeks > 1) {
+                    val totalDoseDays = kotlin.math.ceil((1.0 / (7.0 * interval)) * days)
+                    totalDoseDays * timesPerDay.coerceAtLeast(1)
+                } else {
+                    (timesPerDay.coerceAtLeast(1) * days).toDouble()
+                }
+            }
+        }
+
+        // Guard: Calculate unit consumption respecting customDosages for countable units while anchoring chemical strength (MG, MCG, MEQ) to 1.0 unit per intake
+        val dosesPerIntake: Double = when (dosageUnit) {
+            DosageUnit.MG, DosageUnit.MCG, DosageUnit.MEQ -> 1.0
+            DosageUnit.DROP -> 1.0
+            // Guard: Clamp countable units (TABLET, CAPSULE, AMPULE) to 0.1..10.0 range to preserve decimal doses (e.g. 0.5, 1.5, 2.5) while preventing 500x inflation when milligram strength is entered (#BUG-REFILL-STRENGTH-INFLATION)
+            DosageUnit.TABLET, DosageUnit.CAPSULE, DosageUnit.AMPULE -> {
+                if (!customDosages.isNullOrEmpty() && scheduledTimes.isNotEmpty()) {
+                    val totalCustom = scheduledTimes.sumOf {
+                        val d = getDosageForTime(it)
+                        if (d in 0.1..10.0) d else 1.0
+                    }
+                    totalCustom / scheduledTimes.size.toDouble()
+                } else {
+                    if (dosage in 0.1..10.0) dosage else 1.0
+                }
+            }
+            DosageUnit.ML, DosageUnit.PUFF, DosageUnit.SPRAY -> {
+                if (!customDosages.isNullOrEmpty() && scheduledTimes.isNotEmpty()) {
+                    val totalCustom = scheduledTimes.sumOf { getDosageForTime(it) }
+                    totalCustom / scheduledTimes.size.toDouble()
+                } else {
+                    if (dosage > 0) dosage else 1.0
+                }
+            }
+        }
+
+        if (isDrop) {
+            val dropsPerIntake = if (dosage > 0) dosage else 1.0
+            val effectiveDropsPerIntake = if (!customDosages.isNullOrEmpty() && scheduledTimes.isNotEmpty()) {
+                val totalCustom = scheduledTimes.sumOf { getDosageForTime(it) }
+                totalCustom / scheduledTimes.size.toDouble()
+            } else dropsPerIntake
+            val totalDrops = totalIntakes * effectiveDropsPerIntake
+            return kotlin.math.ceil(totalDrops / 100.0).toInt().coerceAtLeast(1)
+        }
+
+        return kotlin.math.ceil(totalIntakes * dosesPerIntake).toInt().coerceAtLeast(1)
+    }
+}
+
+enum class DosageUnit {
+    MG, MCG, ML, DROP, TABLET, CAPSULE, MEQ, PUFF, AMPULE, SPRAY
+}
+
+@androidx.compose.runtime.Composable
+fun DosageUnit.getLocalizedName(): String {
+    return when (this) {
+        DosageUnit.MG -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_mg)
+        DosageUnit.MCG -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_mcg)
+        DosageUnit.ML -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_ml)
+        DosageUnit.DROP -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_drop)
+        DosageUnit.TABLET -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_tablet)
+        DosageUnit.CAPSULE -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_capsule)
+        DosageUnit.MEQ -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_meq)
+        DosageUnit.PUFF -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_puff)
+        DosageUnit.AMPULE -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_ampule)
+        DosageUnit.SPRAY -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.unit_spray)
+    }
+}
+
+fun DosageUnit.getLocalizedName(context: android.content.Context): String {
+    return when (this) {
+        DosageUnit.MG -> context.getString(com.example.dosezy.R.string.unit_mg)
+        DosageUnit.MCG -> context.getString(com.example.dosezy.R.string.unit_mcg)
+        DosageUnit.ML -> context.getString(com.example.dosezy.R.string.unit_ml)
+        DosageUnit.DROP -> context.getString(com.example.dosezy.R.string.unit_drop)
+        DosageUnit.TABLET -> context.getString(com.example.dosezy.R.string.unit_tablet)
+        DosageUnit.CAPSULE -> context.getString(com.example.dosezy.R.string.unit_capsule)
+        DosageUnit.MEQ -> context.getString(com.example.dosezy.R.string.unit_meq)
+        DosageUnit.PUFF -> context.getString(com.example.dosezy.R.string.unit_puff)
+        DosageUnit.AMPULE -> context.getString(com.example.dosezy.R.string.unit_ampule)
+        DosageUnit.SPRAY -> context.getString(com.example.dosezy.R.string.unit_spray)
+    }
+}
+
+enum class PillShape {
+    ROUND, CAPSULE, OVAL, LIQUID, INHALER, INJECTION, DROPS, PATCH, SPRAY
+}
+
+@androidx.compose.runtime.Composable
+fun PillShape.getLocalizedName(): String {
+    return when (this) {
+        PillShape.ROUND -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_round)
+        PillShape.CAPSULE -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_capsule)
+        PillShape.OVAL -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_oval)
+        PillShape.LIQUID -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_liquid)
+        PillShape.INHALER -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_inhaler)
+        PillShape.INJECTION -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_injection)
+        PillShape.DROPS -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_drops)
+        PillShape.PATCH -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_patch)
+        PillShape.SPRAY -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.pill_shape_spray)
+    }
+}
+
+data class Frequency(
+    val pattern: FrequencyPattern,
+    val daysPerWeek: Int? = null,
+    val daysPerMonth: Int? = null,
+    val selectedDaysOfWeek: List<Int>? = null,  // 1=Mon, 2=Tue, ..., 7=Sun (ISO)
+    val selectedDaysOfMonth: List<Int>? = null,  // 1-31
+    val intervalHours: Int? = null,              // for EVERY_X_HOURS (e.g. 4, 6, 8, 12)
+    val intervalDays: Int? = null,               // for EVERY_X_DAYS (e.g. 2, 3, 5)
+    val intervalWeeks: Int? = null               // for CUSTOM (e.g. 2 for every 2 weeks)
+)
+
+enum class FrequencyPattern {
+    DAILY, WEEKLY, MONTHLY, EVERY_X_HOURS, EVERY_X_DAYS, CUSTOM, AS_NEEDED
+}
+
+@androidx.compose.runtime.Composable
+fun FrequencyPattern.getLocalizedName(): String {
+    return when (this) {
+        FrequencyPattern.DAILY -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_daily)
+        FrequencyPattern.WEEKLY -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_weekly)
+        FrequencyPattern.MONTHLY -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_monthly)
+        FrequencyPattern.CUSTOM -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_custom)
+        FrequencyPattern.AS_NEEDED -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_as_needed)
+        FrequencyPattern.EVERY_X_HOURS -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_every_x_hours)
+        FrequencyPattern.EVERY_X_DAYS -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_every_x_days)
+    }
+}
+
+@androidx.compose.runtime.Composable
+fun Medicine.getLocalizedDosageDisplay(time: LocalTime? = null, dosageOverride: Double? = null): String {
+    val targetDosage = dosageOverride ?: getDosageForTime(time)
+    return com.example.dosezy.utils.DosageFormatUtils.formatLocalizedDosageDisplay(targetDosage, dosageUnit)
+}
+
+@androidx.compose.runtime.Composable
+fun Medicine.getLocalizedFrequencyDisplay(): String {
+    return when (frequency.pattern) {
+        FrequencyPattern.DAILY -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_daily)
+        FrequencyPattern.AS_NEEDED -> androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_as_needed)
+        FrequencyPattern.EVERY_X_HOURS -> {
+            val hours = frequency.intervalHours ?: 4
+            androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_every_hours_format, hours)
+        }
+        FrequencyPattern.EVERY_X_DAYS -> {
+            val days = frequency.intervalDays ?: 2
+            androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_every_days_format, days)
+        }
+        FrequencyPattern.WEEKLY -> {
+            val days = frequency.daysPerWeek ?: 7
+            androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.times_per_week_format, days)
+        }
+        FrequencyPattern.MONTHLY -> {
+            val days = frequency.daysPerMonth ?: 30
+            androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.times_per_month_format, days)
+        }
+        FrequencyPattern.CUSTOM -> {
+            val interval = frequency.intervalWeeks ?: 1
+            if (interval > 1) {
+                androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_every_x_weeks_format, interval)
+            } else {
+                androidx.compose.ui.res.stringResource(com.example.dosezy.R.string.freq_custom)
+            }
+        }
+    }
+}
+
+/**
+ * Normalizes Eastern Arabic-Indic numerals (\u0660-\u0669), Persian/Urdu numerals (\u06F0-\u06F9),
+ * Devanagari numerals (\u0966-\u096F), Bengali numerals (\u09E6-\u09EF),
+ * and localized decimal separators (\u066B, comma) into standard ASCII numbers and periods.
+ */
+fun String.normalizeArabicDigits(): String {
+    return this.map { c ->
+        when (c) {
+            in '\u0660'..'\u0669' -> '0' + (c - '\u0660')
+            in '\u06F0'..'\u06F9' -> '0' + (c - '\u06F0')
+            in '\u0966'..'\u096F' -> '0' + (c - '\u0966')
+            in '\u09E6'..'\u09EF' -> '0' + (c - '\u09E6')
+            '\u066B', ',' -> '.'
+            else -> c
+        }
+    }.joinToString("")
+}

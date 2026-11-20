@@ -1,0 +1,911 @@
+package com.example.dosezy.ui.subscreens
+
+import com.example.dosezy.data.export.ZipInspectionResult
+import com.example.dosezy.ui.components.ProfileImportDialog
+
+
+import android.content.Intent
+import android.net.Uri
+import android.os.Build
+import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Cloud
+import androidx.compose.material.icons.filled.Dns
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Loop
+import androidx.compose.material.icons.filled.Security
+import androidx.compose.material.icons.filled.Share
+import androidx.compose.material.icons.filled.Upload
+import androidx.compose.animation.Crossfade
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.core.content.FileProvider
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.dosezy.ui.viewmodels.BackupRestoreViewModel
+import androidx.navigation.NavController
+import com.example.dosezy.R
+import com.example.dosezy.data.DosezyDatabase
+import com.example.dosezy.data.export.BackupRestoreManager
+import com.example.dosezy.data.repository.ScheduleRepository
+import com.example.dosezy.ui.components.TopBar
+import com.example.dosezy.utils.sharedUserViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
+// Guard: Keep available on API 24+; BackupRestoreManager uses canonicalPath for full Android 7.0+ compatibility
+@Composable
+fun BackupRestoreScreen(
+    navController: NavController,
+    viewModel: BackupRestoreViewModel = hiltViewModel()
+) {
+    val context = LocalContext.current
+    
+    // Detect dark theme directly from current MaterialTheme color scheme background luminance
+    val isDark = MaterialTheme.colorScheme.background.luminance() < 0.5f
+
+    val userViewModel = sharedUserViewModel()
+    val currentUser by userViewModel.currentUser.collectAsState()
+
+    val uiState by viewModel.uiState.collectAsState()
+    val isLoading = uiState.isLoading
+    val loadingMessage = uiState.loadingMessage
+    val statusMessage = uiState.statusMessage
+    val isStatusSuccess = uiState.isStatusSuccess
+    val inspectionResult = uiState.inspectionResult
+    val exportedBackupFile = uiState.exportedBackupFile
+    val showBackupSuccessDialog = uiState.showBackupSuccessDialog
+
+    var selectedTabIndex by rememberSaveable { mutableStateOf(0) }
+
+    val importLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument()
+    ) { uri: Uri? ->
+        if (uri != null) {
+            viewModel.inspectBackupZip(uri)
+        }
+    }
+
+    // Color definitions linked dynamically to current MaterialTheme
+    val subCardBg = if (isDark) Color(0xFF15181E) else Color(0xFFF8FAFC)
+    val bannerBg = if (isDark) Color(0xFF1193D4).copy(alpha = 0.18f) else Color(0xFF1193D4).copy(alpha = 0.10f)
+    val textPrimary = MaterialTheme.colorScheme.onSurface
+    val textSecondary = MaterialTheme.colorScheme.onSurfaceVariant
+    val borderStroke = if (isDark) Color(0xFF2D3748) else Color(0xFFE5E7EB)
+
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        Column(
+            modifier = Modifier.fillMaxSize()
+        ) {
+            TopBar(
+                navController = navController,
+                currentUser = currentUser,
+                title = stringResource(R.string.menu_backup_restore),
+                showBackButton = true,
+                actions = {}
+            )
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .verticalScroll(rememberScrollState())
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp)
+            ) {
+                // Header Intro Banner Card
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = bannerBg),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, Color(0xFF1193D4).copy(alpha = 0.2f))
+                ) {
+                    Row(
+                        modifier = Modifier.padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(RoundedCornerShape(14.dp))
+                                .background(Color(0xFF1193D4).copy(alpha = 0.25f)),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Loop,
+                                contentDescription = null,
+                                tint = Color(0xFF1193D4),
+                                modifier = Modifier.size(26.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(16.dp))
+                        Column {
+                            Text(
+                                text = stringResource(R.string.backup_header_title),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.Bold,
+                                color = textPrimary
+                            )
+                            Spacer(modifier = Modifier.height(2.dp))
+                            Text(
+                                text = stringResource(R.string.backup_header_sub),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = textSecondary,
+                                lineHeight = 18.sp
+                            )
+                        }
+                    }
+                }
+
+                // ==========================================
+                // TAB GROUP: AUTOMATIC & MANUAL
+                // ==========================================
+                TabRow(
+                    selectedTabIndex = selectedTabIndex,
+                    containerColor = subCardBg,
+                    contentColor = textPrimary,
+                    indicator = { tabPositions ->
+                        if (selectedTabIndex < tabPositions.size) {
+                            TabRowDefaults.Indicator(
+                                Modifier.tabIndicatorOffset(tabPositions[selectedTabIndex]),
+                                color = if (selectedTabIndex == 0) Color(0xFF1193D4) else Color(0xFF10B981),
+                                height = 3.dp
+                            )
+                        }
+                    },
+                    divider = {},
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(16.dp))
+                        .border(1.dp, borderStroke, RoundedCornerShape(16.dp))
+                ) {
+                    Tab(
+                        selected = selectedTabIndex == 0,
+                        onClick = { selectedTabIndex = 0 },
+                        modifier = Modifier.height(52.dp),
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Cloud,
+                                    contentDescription = null,
+                                    tint = if (selectedTabIndex == 0) Color(0xFF1193D4) else textSecondary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.backup_tab_automatic),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = if (selectedTabIndex == 0) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (selectedTabIndex == 0) textPrimary else textSecondary
+                                )
+                            }
+                        }
+                    )
+                    Tab(
+                        selected = selectedTabIndex == 1,
+                        onClick = { selectedTabIndex = 1 },
+                        modifier = Modifier.height(52.dp),
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Upload,
+                                    contentDescription = null,
+                                    tint = if (selectedTabIndex == 1) Color(0xFF10B981) else textSecondary,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Text(
+                                    text = stringResource(R.string.backup_tab_manual),
+                                    style = MaterialTheme.typography.titleSmall,
+                                    fontWeight = if (selectedTabIndex == 1) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (selectedTabIndex == 1) textPrimary else textSecondary
+                                )
+                            }
+                        }
+                    )
+                }
+
+                Crossfade(
+                    targetState = selectedTabIndex,
+                    label = "backup_tab_crossfade"
+                ) { tabIndex ->
+                    Column(
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
+                    ) {
+                        if (tabIndex == 0) {
+                            // Card 1: Cloud Server Backup
+                            Surface(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surface,
+                                tonalElevation = 0.dp,
+                                shadowElevation = 4.dp
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(20.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(44.dp)
+                                                    .clip(RoundedCornerShape(12.dp))
+                                                    .background(Color(0xFF8B5CF6).copy(alpha = 0.15f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Cloud,
+                                                    contentDescription = null,
+                                                    tint = Color(0xFF8B5CF6),
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(14.dp))
+                                            Column {
+                                                Text(
+                                                    text = stringResource(R.string.backup_cloud_title),
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = textPrimary
+                                                )
+                                                Text(
+                                                    text = stringResource(R.string.backup_cloud_sub),
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = textSecondary
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        // Coming Soon Pill Badge
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(20.dp))
+                                                .background(Color(0xFF8B5CF6).copy(alpha = 0.15f))
+                                                .border(1.dp, Color(0xFF8B5CF6).copy(alpha = 0.35f), RoundedCornerShape(20.dp))
+                                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.backup_coming_soon),
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                                color = if (isDark) Color(0xFFA78BFA) else Color(0xFF7C3AED),
+                                                maxLines = 1,
+                                                softWrap = false
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = stringResource(R.string.backup_cloud_desc),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = textSecondary,
+                                        lineHeight = 20.sp
+                                    )
+                                }
+                            }
+
+                            // Card 2: Self-Hosted Server Backup
+                            Surface(
+                                modifier = Modifier.fillMaxWidth(),
+                                shape = RoundedCornerShape(12.dp),
+                                color = MaterialTheme.colorScheme.surface,
+                                tonalElevation = 0.dp,
+                                shadowElevation = 4.dp
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(20.dp)
+                                ) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.weight(1f)
+                                        ) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(44.dp)
+                                                    .clip(RoundedCornerShape(12.dp))
+                                                    .background(Color(0xFF06B6D4).copy(alpha = 0.15f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Dns,
+                                                    contentDescription = null,
+                                                    tint = Color(0xFF06B6D4),
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(14.dp))
+                                            Column {
+                                                Text(
+                                                    text = stringResource(R.string.backup_self_hosted_title),
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = textPrimary
+                                                )
+                                                Text(
+                                                    text = stringResource(R.string.backup_self_hosted_sub),
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = textSecondary
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.width(8.dp))
+
+                                        // Coming Soon Pill Badge
+                                        Box(
+                                            modifier = Modifier
+                                                .clip(RoundedCornerShape(20.dp))
+                                                .background(Color(0xFF06B6D4).copy(alpha = 0.15f))
+                                                .border(1.dp, Color(0xFF06B6D4).copy(alpha = 0.35f), RoundedCornerShape(20.dp))
+                                                .padding(horizontal = 10.dp, vertical = 5.dp)
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.backup_coming_soon),
+                                                fontSize = 10.sp,
+                                                fontWeight = FontWeight.ExtraBold,
+                                                color = if (isDark) Color(0xFF67E8F9) else Color(0xFF0891B2),
+                                                maxLines = 1,
+                                                softWrap = false
+                                            )
+                                        }
+                                    }
+
+                                    Spacer(modifier = Modifier.height(12.dp))
+                                    Text(
+                                        text = stringResource(R.string.backup_self_hosted_desc),
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = textSecondary,
+                                        lineHeight = 20.sp
+                                    )
+                                }
+                            }
+                        } else {
+                            if (isLoading) {
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.surface,
+                                    tonalElevation = 0.dp,
+                                    shadowElevation = 4.dp
+                                ) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(32.dp),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = Color(0xFF1193D4),
+                                            modifier = Modifier.size(40.dp)
+                                        )
+                                        Spacer(modifier = Modifier.height(16.dp))
+                                        Text(
+                                            text = loadingMessage ?: stringResource(R.string.backup_restore_in_progress),
+                                            style = MaterialTheme.typography.titleMedium,
+                                            fontWeight = FontWeight.Bold,
+                                            color = textPrimary
+                                        )
+                                    }
+                                }
+                            } else {
+                                // Export Card
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.surface,
+                                    tonalElevation = 0.dp,
+                                    shadowElevation = 4.dp
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(20.dp)
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(44.dp)
+                                                    .clip(RoundedCornerShape(12.dp))
+                                                    .background(Color(0xFF10B981).copy(alpha = 0.15f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Upload,
+                                                    contentDescription = null,
+                                                    tint = Color(0xFF10B981),
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(14.dp))
+                                            Column {
+                                                Text(
+                                                    text = stringResource(R.string.backup_export_title),
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = textPrimary
+                                                )
+                                                Text(
+                                                    text = stringResource(R.string.backup_storage_note),
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = textSecondary
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(14.dp))
+                                        Text(
+                                            text = stringResource(R.string.backup_export_desc),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = textSecondary,
+                                            lineHeight = 20.sp
+                                        )
+                                        Spacer(modifier = Modifier.height(18.dp))
+
+                                        Button(
+                                            onClick = {
+                                                viewModel.createFullBackup()
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(48.dp),
+                                            shape = RoundedCornerShape(14.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFF10B981),
+                                                contentColor = Color.White
+                                            )
+                                        ) {
+                                            Icon(imageVector = Icons.Default.Upload, contentDescription = null, modifier = Modifier.size(20.dp))
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(text = stringResource(R.string.backup_export_btn), fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                }
+
+                                // Restore Card
+                                Surface(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(12.dp),
+                                    color = MaterialTheme.colorScheme.surface,
+                                    tonalElevation = 0.dp,
+                                    shadowElevation = 4.dp
+                                ) {
+                                    Column(
+                                        modifier = Modifier.padding(20.dp)
+                                    ) {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .size(44.dp)
+                                                    .clip(RoundedCornerShape(12.dp))
+                                                    .background(Color(0xFFF59E0B).copy(alpha = 0.15f)),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Icon(
+                                                    imageVector = Icons.Default.Download,
+                                                    contentDescription = null,
+                                                    tint = Color(0xFFF59E0B),
+                                                    modifier = Modifier.size(24.dp)
+                                                )
+                                            }
+                                            Spacer(modifier = Modifier.width(14.dp))
+                                            Column {
+                                                Text(
+                                                    text = stringResource(R.string.backup_restore_title),
+                                                    style = MaterialTheme.typography.titleMedium,
+                                                    fontWeight = FontWeight.Bold,
+                                                    color = textPrimary
+                                                )
+                                                Text(
+                                                    text = stringResource(R.string.backup_storage_note),
+                                                    style = MaterialTheme.typography.bodySmall,
+                                                    color = textSecondary
+                                                )
+                                            }
+                                        }
+
+                                        Spacer(modifier = Modifier.height(14.dp))
+                                        Text(
+                                            text = stringResource(R.string.backup_restore_desc),
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = textSecondary,
+                                            lineHeight = 20.sp
+                                        )
+                                        Spacer(modifier = Modifier.height(18.dp))
+
+                                        Button(
+                                            onClick = {
+                                                importLauncher.launch(
+                                                    arrayOf(
+                                                        "application/zip",
+                                                        "application/x-zip-compressed",
+                                                        "application/octet-stream",
+                                                        "*/*"
+                                                    )
+                                                )
+                                            },
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(48.dp),
+                                            shape = RoundedCornerShape(14.dp),
+                                            colors = ButtonDefaults.buttonColors(
+                                                containerColor = Color(0xFFF59E0B),
+                                                contentColor = Color.White
+                                            )
+                                        ) {
+                                            Icon(imageVector = Icons.Default.Download, contentDescription = null, modifier = Modifier.size(20.dp))
+                                            Spacer(modifier = Modifier.width(8.dp))
+                                            Text(text = stringResource(R.string.backup_restore_btn), fontWeight = FontWeight.Bold)
+                                        }
+                                    }
+                                }
+                            }
+
+                            statusMessage?.let { msg ->
+                                Card(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    shape = RoundedCornerShape(16.dp),
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = if (isStatusSuccess) Color(0xFF10B981).copy(alpha = 0.15f) else Color(0xFFEF4444).copy(alpha = 0.15f)
+                                    )
+                                ) {
+                                    Row(
+                                        modifier = Modifier.padding(16.dp),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Icon(
+                                            imageVector = if (isStatusSuccess) Icons.Default.CheckCircle else Icons.Default.Info,
+                                            contentDescription = null,
+                                            tint = if (isStatusSuccess) Color(0xFF10B981) else Color(0xFFEF4444)
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        Text(
+                                            text = msg,
+                                            style = MaterialTheme.typography.bodySmall,
+                                            fontWeight = FontWeight.SemiBold,
+                                            color = textPrimary
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // ==========================================
+                // PRIVACY & VERSION COMPATIBILITY CARD
+                // ==========================================
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(20.dp),
+                    colors = CardDefaults.cardColors(containerColor = subCardBg),
+                    border = androidx.compose.foundation.BorderStroke(1.dp, borderStroke)
+                ) {
+                    Column(modifier = Modifier.padding(18.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = Icons.Default.Security,
+                                contentDescription = null,
+                                tint = Color(0xFF1193D4),
+                                modifier = Modifier.size(22.dp)
+                            )
+                            Spacer(modifier = Modifier.width(10.dp))
+                            Text(
+                                text = stringResource(R.string.backup_privacy_title),
+                                style = MaterialTheme.typography.titleSmall,
+                                fontWeight = FontWeight.Bold,
+                                color = textPrimary
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Text(
+                            text = "${stringResource(R.string.backup_privacy_point1)}\n${stringResource(R.string.backup_privacy_point2)}\n${stringResource(R.string.backup_privacy_point3)}",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = textSecondary,
+                            lineHeight = 20.sp
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+                Spacer(modifier = Modifier.height(32.dp))
+
+            if (inspectionResult != null) {
+                ProfileImportDialog(
+                    inspectionResult = inspectionResult,
+                    onDismiss = {
+                        viewModel.dismissInspection()
+                    },
+                    onConfirmImport = { decisions ->
+                        val tempDir = inspectionResult.tempDir!!
+                        viewModel.executeSelectiveRestore(tempDir, decisions) { result ->
+                            Toast.makeText(context, result.message, Toast.LENGTH_LONG).show()
+                            // Guard: Synchronize active UserViewModel profile and widgets after restore to prevent stale in-memory state
+                            withContext(Dispatchers.IO) {
+                                val database = DosezyDatabase.getInstance(context)
+                                val updatedUsers = database.userDao().getAllUsersDirect()
+                                if (updatedUsers.isNotEmpty()) {
+                                    val targetUser = updatedUsers.find { it.isCurrentUser } ?: updatedUsers.first()
+                                    withContext(Dispatchers.Main) {
+                                        userViewModel.setCurrentUser(targetUser)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                )
+            }
+        }
+    }
+
+    // In-Front Modal Loading Dialog to eliminate awkward freeze
+    if (isLoading) {
+        androidx.compose.ui.window.Dialog(
+            onDismissRequest = {},
+            properties = androidx.compose.ui.window.DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false
+            )
+        ) {
+            Surface(
+                shape = RoundedCornerShape(16.dp),
+                color = MaterialTheme.colorScheme.surface,
+                tonalElevation = 8.dp
+            ) {
+                Row(
+                    modifier = Modifier.padding(24.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(16.dp)
+                ) {
+                    CircularProgressIndicator(
+                        color = Color(0xFF1193D4),
+                        modifier = Modifier.size(36.dp),
+                        strokeWidth = 3.dp
+                    )
+                    Text(
+                        text = loadingMessage ?: stringResource(R.string.backup_status_inspecting),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+    }
+}
+
+    if (showBackupSuccessDialog && exportedBackupFile != null) {
+        val file = exportedBackupFile
+        androidx.compose.ui.window.Dialog(onDismissRequest = { viewModel.dismissBackupSuccessDialog() }) {
+            Surface(
+                shape = RoundedCornerShape(24.dp),
+                color = MaterialTheme.colorScheme.surface
+            ) {
+                Column(
+                    modifier = Modifier
+                        .padding(24.dp)
+                        .verticalScroll(rememberScrollState()),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    // Success Icon
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(32.dp))
+                            .background(Color(0xFFDBEAFE)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Download,
+                            contentDescription = "Success",
+                            modifier = Modifier.size(32.dp),
+                            tint = Color(0xFF2084E4)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    // Title
+                    Text(
+                        text = stringResource(R.string.export_success_title),
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Description
+                    Text(
+                        text = stringResource(R.string.export_success_desc),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(10.dp))
+
+                    // Guard: Display exported backup filename and absolute path so users can locate the zip package on storage
+                    Surface(
+                        shape = RoundedCornerShape(12.dp),
+                        color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                        border = androidx.compose.foundation.BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f)),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        SelectionContainer {
+                            Column(
+                                modifier = Modifier.padding(12.dp),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                Text(
+                                    text = file.name,
+                                    style = MaterialTheme.typography.labelLarge,
+                                    fontWeight = FontWeight.Bold,
+                                    color = MaterialTheme.colorScheme.onSurface,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = file.absolutePath,
+                                    style = MaterialTheme.typography.bodySmall,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                                    lineHeight = 16.sp
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    // Share Button
+                    Button(
+                        onClick = {
+                            try {
+                                val contentUri = FileProvider.getUriForFile(
+                                    context,
+                                    "${context.packageName}.provider",
+                                    file
+                                )
+                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
+                                    type = "application/zip"
+                                    putExtra(Intent.EXTRA_STREAM, contentUri)
+                                    clipData = android.content.ClipData.newRawUri(null, contentUri)
+                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                val chooserIntent = Intent.createChooser(shareIntent, context.getString(R.string.export_share_file)).apply {
+                                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                                }
+                                context.startActivity(chooserIntent)
+                            } catch (e: Exception) {
+                                Toast.makeText(context, context.getString(R.string.err_share_failed, e.message ?: ""), Toast.LENGTH_SHORT).show()
+                            }
+                            viewModel.dismissBackupSuccessDialog()
+                        },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF2084E4)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Share,
+                            contentDescription = "Share",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.export_share_file),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Close Button
+                    OutlinedButton(
+                        onClick = { viewModel.dismissBackupSuccessDialog() },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp),
+                        shape = RoundedCornerShape(16.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(
+                            contentColor = Color(0xFF6B7280)
+                        )
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Close",
+                            modifier = Modifier.size(20.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = stringResource(R.string.close),
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
